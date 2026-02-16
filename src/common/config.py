@@ -23,7 +23,14 @@ class Config:
     DATA_PARSED_PATH = PROJECT_ROOT / 'data' / 'parsed'
     
     # OCR Settings
-    OCR_TOOL = 'mistral'  # 'mistral' oder 'nougat'
+    OCR_DEFAULT_TOOL = os.getenv('OCR_DEFAULT_TOOL', 'auto')  # 'tesseract', 'mistral', 'auto'
+    OCR_DPI = int(os.getenv('OCR_DPI', '300'))
+    OCR_TESSERACT_LANG = os.getenv('OCR_TESSERACT_LANG', 'deu+eng')
+    
+    # Domain-spezifische OCR-Präferenzen (kann via ENV überschrieben werden)
+    OCR_DOMAIN_MATH = os.getenv('OCR_DOMAIN_MATH', 'mistral')
+    OCR_DOMAIN_LANGUAGES = os.getenv('OCR_DOMAIN_LANGUAGES', 'tesseract')
+    OCR_DOMAIN_ECONOMICS = os.getenv('OCR_DOMAIN_ECONOMICS', 'tesseract')
     
     # Logging
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
