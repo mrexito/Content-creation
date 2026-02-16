@@ -1,0 +1,20 @@
+Bilanzanalyse - Fallstudie
+
+Unternehmen: TechStart GmbH
+
+Bilanz zum 31.12.2024:
+
+AKTIVA:
+Anlagevermögen:        150.000 €
+Umlaufvermögen:        80.000 €
+Gesamt:                230.000 €
+
+PASSIVA:
+Eigenkapital:          120.000 €
+Fremdkapital:          110.000 €
+Gesamt:                230.000 €
+
+Aufgabe 1: Berechne die Eigenkapitalquote.
+
+Aufgabe 2: Der Umsatz betrug 500.000 €, die Kosten 450.000 €.
+Wie hoch ist der Gewinn?

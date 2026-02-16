@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv
+
+# Node.js
+node_modules/
+.next/
+out/
+build/
+
+# Secrets
+.env
+.env.local
+*.key
+*.pem
+
+# Data
+data/output/*
+!data/output/.gitkeep
+data/parsed/*
+!data/parsed/.gitkeep
+
+# Models
+*.bin
+*.ckpt
+models/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Results
+results/*.csv
+results/*.json
+!results/.gitkeep
+.env.dev

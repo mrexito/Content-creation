@@ -1,0 +1,11 @@
+Mathematik-Übungen
+
+Aufgabe 1: Löse die Gleichung: 2x + 5 = 13
+
+Aufgabe 2: Vereinfache: 3(x + 2) - 2(x - 1)
+
+Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten:
+a = 5 cm, b = 7 cm, c = 9 cm
+
+Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt.
+Wie hoch ist das Endkapital nach 5 Jahren?
