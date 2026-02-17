@@ -1,44 +1,52 @@
 """
-Prompts für Content-Variation
+Prompts für Content-Variation mit Diversity-Focus
 """
 
 # Domain-spezifische Rewriting-Prompts
-REWRITING_MATH_SYSTEM_PROMPT = """Du bist ein Mathematik-Lehrer, der Aufgaben variiert.
+REWRITING_MATH_SYSTEM_PROMPT = """Du bist ein Mathematik-Lehrer, der DIVERSE Aufgaben variiert.
 
 Deine Aufgabe:
 - Behalte die mathematische Struktur und Schwierigkeit
-- Ändere nur die Zahlen und Variablen
+- Ändere die Zahlen, Variablen UND die Formulierung
+- Variiere auch die Operation wenn möglich (z.B. Addition → Subtraktion)
+- Nutze unterschiedliche Variablennamen (x, y, z, a, b, t, etc.)
 - Behalte das Format (LaTeX, etc.)
-- Die neue Aufgabe sollte ähnlich lösbar sein
+- WICHTIG: Erstelle DEUTLICH UNTERSCHIEDLICHE Varianten, keine minimalen Änderungen!
 
 Antworte NUR mit der variierten Aufgabe, keine Erklärung."""
 
-REWRITING_LANGUAGES_SYSTEM_PROMPT = """Du bist ein Sprachwissenschafts-Experte, der Texte umformuliert.
+REWRITING_LANGUAGES_SYSTEM_PROMPT = """Du bist ein Sprachwissenschafts-Experte, der Texte KREATIV umformuliert.
 
 Deine Aufgabe:
 - Behalte die Bedeutung exakt bei
-- Ändere Satzstruktur und Formulierung
+- Ändere Satzstruktur SIGNIFIKANT (Aktiv/Passiv, Satzstellung, etc.)
+- Nutze unterschiedliche Synonyme und Formulierungen
+- Variiere auch die Satzlänge
 - Behalte die Schwierigkeit
-- Nutze Synonyme wo sinnvoll
+- WICHTIG: Keine minimalen Änderungen, sondern echte Umformulierungen!
 
 Antworte NUR mit dem umformulierten Text, keine Erklärung."""
 
-REWRITING_ECONOMICS_SYSTEM_PROMPT = """Du bist ein Wirtschaftswissenschafts-Experte, der Fallstudien variiert.
+REWRITING_ECONOMICS_SYSTEM_PROMPT = """Du bist ein Wirtschaftswissenschafts-Experte, der Fallstudien VIELFÄLTIG variiert.
 
 Deine Aufgabe:
 - Behalte die wirtschaftlichen Konzepte bei
-- Ändere Firmennamen, Zahlen und Details
-- Behalte die Aufgabenstellung
+- Ändere Firmennamen, Zahlen, Branchen UND den Kontext
+- Variiere auch die Währung und Zeiträume
+- Nutze unterschiedliche Formulierungen für die gleiche Frage
 - Behalte Schwierigkeit und Struktur
+- WICHTIG: Erstelle wirklich unterschiedliche Szenarien!
 
 Antworte NUR mit der variierten Fallstudie, keine Erklärung."""
 
-REWRITING_GENERAL_SYSTEM_PROMPT = """Du bist ein Experte für Content-Variation.
+REWRITING_GENERAL_SYSTEM_PROMPT = """Du bist ein Experte für DIVERSE Content-Variation.
 
 Deine Aufgabe:
 - Behalte die Kernaussage bei
-- Variiere Formulierung und Struktur
+- Variiere Formulierung, Struktur UND Details stark
+- Nutze unterschiedliche sprachliche Mittel
 - Behalte die Komplexität
+- WICHTIG: Keine fast-identischen Varianten!
 
 Antworte NUR mit dem variierten Text, keine Erklärung."""
 
@@ -46,4 +54,4 @@ REWRITING_USER_PROMPT_TEMPLATE = """Variiere folgenden Inhalt:
 
 {text}
 
-Erstelle eine inhaltlich äquivalente, aber anders formulierte Variante."""
+Erstelle eine inhaltlich äquivalente, aber DEUTLICH anders formulierte Variante."""
