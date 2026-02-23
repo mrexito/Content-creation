@@ -1,0 +1,151 @@
+"""
+Validation Node: Variants → Validated Variants
+"""
+import time
+
+from common.validators import (
+    get_sympy_validator,
+    get_bert_validator,
+    get_consistency_validator
+)
+from common.logger import setup_logger
+from langgraph_prototype.state.workflow_state import WorkflowState
+
+logger = setup_logger(__name__)
+
+
+def validation_node(state: WorkflowState) -> WorkflowState:
+    """
+    Validation Node
+    
+    Input (State):
+        - segments_with_variants
+    
+    Output (State Updates):
+        - segments_with_variants (updated mit validation)
+        - current_phase
+    """
+    logger.info("🔗 Validation Node")
+    
+    start_time = time.time()
+    
+    try:
+        segments_with_variants = state['segments_with_variants']
+        
+        if not segments_with_variants:
+            error_msg = "No variants to validate"
+            logger.error(error_msg)
+            state['errors'].append(error_msg)
+            return state
+        
+        # Validators
+        sympy_validator = get_sympy_validator()
+        bert_validator = get_bert_validator()
+        consistency_validator = get_consistency_validator()
+        
+        total_valid = 0
+        total_invalid = 0
+        
+        for seg_data in segments_with_variants:
+            segment = seg_data['segment']
+            classification = seg_data['classification']
+            variants = seg_data['variants']
+            
+            original_text = segment.get('text', '')
+            domain = classification.get('domain', 'general')
+            
+            # Validiere jede Variante
+            for variant in variants:
+                variant_text = variant.get('text')
+                
+                if not variant_text:
+                    variant['validation'] = {'is_valid': False, 'error': 'No text'}
+                    total_invalid += 1
+                    continue
+                
+                # Domain-spezifische Validation
+                validation_results = {}
+                issues = []
+                
+                if domain == 'mathematics':
+                    # SymPy
+                    original_val = sympy_validator.validate_text(original_text)
+                    variant_val = sympy_validator.validate_text(variant_text)
+                    
+                    validation_results['sympy'] = {
+                        'original_equations': original_val['equations_found'],
+                        'variant_equations': variant_val['equations_found']
+                    }
+                    
+                    if original_val['equations_found'] != variant_val['equations_found']:
+                        issues.append(
+                            f"Anzahl Gleichungen unterschiedlich: "
+                            f"{original_val['equations_found']} vs {variant_val['equations_found']}"
+                        )
+                
+                elif domain == 'languages':
+                    # BERT
+                    bert_result = bert_validator.validate_paraphrase(
+                        original=original_text,
+                        paraphrased=variant_text,
+                        min_threshold=0.85
+                    )
+                    
+                    validation_results['bert'] = bert_result
+                    
+                    if not bert_result['is_valid']:
+                        issues.append(bert_result.get('reason', 'Semantische Ähnlichkeit zu gering'))
+                
+                elif domain == 'economics':
+                    # Consistency
+                    original_numbers = consistency_validator.extract_numbers(original_text)
+                    variant_numbers = consistency_validator.extract_numbers(variant_text)
+                    
+                    validation_results['consistency'] = {
+                        'original_numbers': len(original_numbers),
+                        'variant_numbers': len(variant_numbers)
+                    }
+                    
+                    if abs(len(original_numbers) - len(variant_numbers)) > 2:
+                        issues.append(
+                            f"Anzahl Zahlen stark unterschiedlich: "
+                            f"{len(original_numbers)} vs {len(variant_numbers)}"
+                        )
+                
+                # Length check (alle Domains)
+                length_ratio = len(variant_text) / len(original_text) if len(original_text) > 0 else 0
+                
+                if length_ratio < 0.5 or length_ratio > 2.0:
+                    issues.append(
+                        f"Länge weicht stark ab: {len(variant_text)} vs {len(original_text)} "
+                        f"Zeichen (Ratio: {length_ratio:.2f})"
+                    )
+                
+                # Validation Result
+                is_valid = len(issues) == 0
+                
+                variant['validation'] = {
+                    'is_valid': is_valid,
+                    'validation_results': validation_results,
+                    'issues': issues
+                }
+                
+                if is_valid:
+                    total_valid += 1
+                else:
+                    total_invalid += 1
+        
+        # Update State
+        state['current_phase'] = 'validation_complete'
+        state['total_processing_time'] += time.time() - start_time
+        
+        logger.info(f"  ✓ Validated: {total_valid} valid, {total_invalid} invalid")
+        
+        return state
+        
+    except Exception as e:
+        error_msg = f"Validation error: {str(e)}"
+        logger.error(error_msg)
+        state['errors'].append(error_msg)
+        state['current_phase'] = 'error'
+        return state
