@@ -1,6 +1,6 @@
 """
 Validation Node: Variants → Validated Variants
-Mit domain-spezifischen Thresholds
+Mit domain-spezifischen Thresholds und Retry-Tracking
 """
 import time
 
@@ -17,13 +17,14 @@ logger = setup_logger(__name__)
 
 def validation_node(state: WorkflowState) -> WorkflowState:
     """
-    Validation Node mit domain-spezifischen Thresholds
+    Validation Node mit domain-spezifischen Thresholds und Retry-Tracking
     
     Input (State):
         - segments_with_variants
     
     Output (State Updates):
         - segments_with_variants (updated mit validation)
+        - validation_stats (für Retry-Logik)
         - current_phase
     """
     logger.info("🔗 Validation Node")
@@ -91,7 +92,7 @@ def validation_node(state: WorkflowState) -> WorkflowState:
                     bert_result = bert_validator.validate_paraphrase(
                         original=original_text,
                         paraphrased=variant_text,
-                        min_threshold=0.70  # ← GEÄNDERT von 0.85
+                        min_threshold=0.70
                     )
                     
                     validation_results['bert'] = bert_result
@@ -111,7 +112,7 @@ def validation_node(state: WorkflowState) -> WorkflowState:
                     
                     # Toleranz: ±3 Zahlen
                     number_diff = abs(len(original_numbers) - len(variant_numbers))
-                    if number_diff > 3:  # ← GEÄNDERT von 2
+                    if number_diff > 3:
                         issues.append(
                             f"Anzahl Zahlen stark unterschiedlich: "
                             f"{len(original_numbers)} vs {len(variant_numbers)}"
@@ -153,6 +154,34 @@ def validation_node(state: WorkflowState) -> WorkflowState:
         state['total_processing_time'] += time.time() - start_time
         
         logger.info(f"  ✓ Validated: {total_valid} valid, {total_invalid} invalid")
+        
+        # NEU: Tracking für Retry-Logik
+        state['validation_stats'] = {
+            'total_valid': total_valid,
+            'total_invalid': total_invalid,
+            'segments_needing_retry': []
+        }
+        
+        # Identifiziere Segmente die Retry brauchen
+        for seg_data in segments_with_variants:
+            segment_idx = seg_data.get('segment_idx', -1)
+            variants = seg_data['variants']
+            
+            # Prüfe ob ALLE Varianten invalid sind
+            all_invalid = all(
+                not v.get('validation', {}).get('is_valid', False)
+                for v in variants
+                if v.get('text')  # Nur Varianten mit Text
+            )
+            
+            if all_invalid and segment_idx >= 0:
+                # Prüfe ob noch Retries übrig
+                retry_count = state.get('retry_counts', {}).get(segment_idx, 0)
+                max_retries = state.get('max_retries', 3)
+                
+                if retry_count < max_retries:
+                    state['validation_stats']['segments_needing_retry'].append(segment_idx)
+                    logger.info(f"  🔄 Segment {segment_idx} needs retry ({retry_count}/{max_retries})")
         
         return state
         

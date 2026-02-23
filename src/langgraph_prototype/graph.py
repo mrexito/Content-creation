@@ -1,6 +1,5 @@
 """
-LangGraph Workflow Graph
-Definiert den kompletten State-basierten Workflow
+LangGraph Workflow Graph mit Retry-Loops
 """
 from langgraph.graph import StateGraph, END
 
@@ -11,37 +10,21 @@ from langgraph_prototype.nodes.classification_node import classification_node
 from langgraph_prototype.nodes.rewriting_node import rewriting_node
 from langgraph_prototype.nodes.validation_node import validation_node
 from langgraph_prototype.nodes.assembly_node import assembly_node
+from langgraph_prototype.edges import should_retry_after_validation
 
 from common.logger import setup_logger
 
 logger = setup_logger(__name__)
 
 
-def should_continue_after_validation(state: WorkflowState) -> str:
-    """
-    Conditional Edge: Entscheidet ob Workflow weitergehen kann
-    
-    Returns:
-        'assemble' wenn erfolgreich
-        'error' wenn Fehler aufgetreten
-    """
-    if state['current_phase'] == 'error':
-        return 'error'
-    
-    if state['current_phase'] == 'validation_complete':
-        return 'assemble'
-    
-    return 'error'
-
-
 def create_workflow_graph() -> StateGraph:
     """
-    Erstellt den LangGraph Workflow
+    Erstellt den LangGraph Workflow mit Retry-Loops
     
     Returns:
         Kompilierter StateGraph
     """
-    logger.info("Erstelle LangGraph Workflow...")
+    logger.info("Erstelle LangGraph Workflow mit Retry-Loops...")
     
     # Erstelle Graph
     workflow = StateGraph(WorkflowState)
@@ -54,20 +37,21 @@ def create_workflow_graph() -> StateGraph:
     workflow.add_node("validate", validation_node)
     workflow.add_node("assemble", assembly_node)
     
-    # Definiere Edges (Linear Flow)
+    # Definiere Edges (bis Validation)
     workflow.set_entry_point("parse")
     workflow.add_edge("parse", "segment")
     workflow.add_edge("segment", "classify")
     workflow.add_edge("classify", "rewrite")
     workflow.add_edge("rewrite", "validate")
     
-    # Conditional Edge nach Validation
+    # ⭐ HAUPTFEATURE: Conditional Edge mit Retry-Loop
     workflow.add_conditional_edges(
         "validate",
-        should_continue_after_validation,
+        should_retry_after_validation,
         {
-            "assemble": "assemble",
-            "error": END
+            "retry": "rewrite",      # ← LOOP zurück zu Rewriting!
+            "assemble": "assemble",  # ← Weiter zu Assembly
+            "error": END             # ← Bei Fehler stoppen
         }
     )
     
@@ -77,6 +61,6 @@ def create_workflow_graph() -> StateGraph:
     # Kompiliere
     app = workflow.compile()
     
-    logger.info("✓ LangGraph Workflow erstellt")
+    logger.info("✓ LangGraph Workflow mit Retry-Loops erstellt")
     
     return app

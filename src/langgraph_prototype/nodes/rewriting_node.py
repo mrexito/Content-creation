@@ -1,9 +1,10 @@
 """
-Rewriting Node: Segments → Variants
-Mit Retry-Logik basierend auf State
+Rewriting Node: Original → Varianten
+Domain-spezifische Content-Variation mit Diversity-Mechanismus und Retry-Awareness
 """
 import time
 from typing import Dict, Any
+from difflib import SequenceMatcher
 
 from common.llm_handler import get_llm_handler
 from common.logger import setup_logger
@@ -15,13 +16,12 @@ from langchain_prototype.prompts.rewriting_prompts import (
     REWRITING_GENERAL_SYSTEM_PROMPT,
     REWRITING_USER_PROMPT_TEMPLATE
 )
-from difflib import SequenceMatcher
 
 logger = setup_logger(__name__)
 
 
 class RewritingNode:
-    """Node für Content-Rewriting mit Diversity"""
+    """Node für Content-Rewriting mit Diversity und Retry-Awareness"""
     
     DOMAIN_PROMPTS = {
         'mathematics': REWRITING_MATH_SYSTEM_PROMPT,
@@ -71,7 +71,7 @@ class RewritingNode:
     
     def __call__(self, state: WorkflowState) -> WorkflowState:
         """
-        Rewriting Node
+        Rewriting Node mit Retry-Awareness
         
         Input (State):
             - classified_segments
@@ -84,6 +84,12 @@ class RewritingNode:
             - current_phase
         """
         logger.info("🔗 Rewriting Node")
+        
+        # Check if this is a retry
+        is_retry = state.get('current_phase') == 'validation_failed'
+        
+        if is_retry:
+            logger.info("  🔄 RETRY MODE: Generiere neue Varianten mit höherer Temperature")
         
         start_time = time.time()
         
@@ -106,17 +112,25 @@ class RewritingNode:
                 domain = classification.get('domain', 'general')
                 text = segment.get('text', '')
                 
-                logger.info(f"  Rewriting segment {idx+1}/{len(classified_segments)} ({domain})")
+                # Check retry count for this segment
+                retry_count = state.get('retry_counts', {}).get(idx, 0)
                 
-                # Generiere Varianten
+                logger.info(f"  Rewriting segment {idx+1}/{len(classified_segments)} ({domain}, retry: {retry_count})")
+                
+                # Generiere Varianten mit retry-angepasster Temperature
                 variants = []
                 variant_texts = []
+                
+                # Bei Retry: Höhere Base-Temperature
+                base_temperature = 0.95 if is_retry else 0.9
                 
                 for v_idx in range(num_variants):
                     max_attempts = 3
                     
                     for attempt in range(max_attempts):
-                        temperature = 0.9 + (attempt * 0.05)
+                        # Temperature steigt mit Retry-Count UND Attempt
+                        temperature = base_temperature + (retry_count * 0.1) + (attempt * 0.05)
+                        temperature = min(temperature, 1.2)  # Cap bei 1.2
                         
                         result = self._generate_variant(
                             text=text,
@@ -145,11 +159,15 @@ class RewritingNode:
                         variants.append({
                             'variant_id': v_idx + 1,
                             'text': variant_text,
-                            'attempts': attempt + 1
+                            'attempts': attempt + 1,
+                            'temperature_used': temperature,
+                            'retry_iteration': retry_count
                         })
+                        logger.debug(f"    ✓ Variante {v_idx+1} (T={temperature:.2f}, Retry={retry_count})")
                         break
                 
                 segments_with_variants.append({
+                    'segment_idx': idx,  # Index tracken für Retry
                     'segment': segment,
                     'classification': classification,
                     'variants': variants

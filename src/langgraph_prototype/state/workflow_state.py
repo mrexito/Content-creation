@@ -91,3 +91,57 @@ def create_initial_state(
         num_variants=num_variants,
         similarity_threshold=similarity_threshold
     )
+# ... (bestehender Code bleibt) ...
+
+def increment_retry_count(state: WorkflowState, segment_idx: int) -> WorkflowState:
+    """
+    Inkrementiert Retry-Count für ein Segment
+    
+    Args:
+        state: Current state
+        segment_idx: Index des Segments
+    
+    Returns:
+        Updated state
+    """
+    if 'retry_counts' not in state or state['retry_counts'] is None:
+        state['retry_counts'] = {}
+    
+    current_count = state['retry_counts'].get(segment_idx, 0)
+    state['retry_counts'][segment_idx] = current_count + 1
+    
+    return state
+
+
+def get_retry_count(state: WorkflowState, segment_idx: int) -> int:
+    """
+    Holt Retry-Count für ein Segment
+    
+    Args:
+        state: Current state
+        segment_idx: Index des Segments
+    
+    Returns:
+        Anzahl Retries
+    """
+    if 'retry_counts' not in state or state['retry_counts'] is None:
+        return 0
+    
+    return state['retry_counts'].get(segment_idx, 0)
+
+
+def should_retry_segment(state: WorkflowState, segment_idx: int) -> bool:
+    """
+    Entscheidet ob Segment retry braucht
+    
+    Args:
+        state: Current state
+        segment_idx: Index des Segments
+    
+    Returns:
+        True wenn retry nötig und erlaubt
+    """
+    retry_count = get_retry_count(state, segment_idx)
+    max_retries = state.get('max_retries', 3)
+    
+    return retry_count < max_retries
