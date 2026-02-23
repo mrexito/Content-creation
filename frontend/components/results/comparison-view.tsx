@@ -6,7 +6,7 @@ import { MetricsDashboard } from "./metrics-dashboard"
 import { SegmentsTable } from "./segments-table"
 import { JsonViewer } from "./json-viewer"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, XCircle, Download } from "lucide-react"
+import { CheckCircle, XCircle, Download, FileDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface ComparisonViewProps {
@@ -21,6 +21,16 @@ function downloadJson(data: unknown, filename: string) {
   a.download = filename
   a.click()
   URL.revokeObjectURL(url)
+}
+
+function downloadPdf(runId: string, framework: string, filename: string) {
+  // Bei "both" nehmen wir den zuerst verfügbaren Framework
+  const fw = framework === "both" ? "langchain" : framework
+  const url = `/api/download/${runId}/${fw}/${filename}`
+  const a = document.createElement("a")
+  a.href = url
+  a.download = filename
+  a.click()
 }
 
 export function ComparisonView({ run }: ComparisonViewProps) {
@@ -42,15 +52,88 @@ export function ComparisonView({ run }: ComparisonViewProps) {
             <span className="text-xs text-gray-400">{new Date(run.timestamp).toLocaleString("de-CH")}</span>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => downloadJson(run, `${run.id}.json`)}
-          className="border-gray-300 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-        >
-          <Download className="h-4 w-4 mr-1.5" />
-          Export JSON
-        </Button>
+        <div className="flex flex-col items-end gap-2">
+          {/* JSON export */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => downloadJson(run, `${run.id}.json`)}
+            className="border-gray-300 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+          >
+            <Download className="h-4 w-4 mr-1.5" />
+            Export JSON
+          </Button>
+
+          {/* Single-framework PDF buttons */}
+          {!hasBoth && active.pdf_files && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline" size="sm"
+                onClick={() => downloadPdf(run.id, run.framework, "tasks.pdf")}
+                className="border-blue-300 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+              >
+                <FileDown className="h-4 w-4 mr-1.5" />
+                Aufgaben PDF
+              </Button>
+              <Button
+                variant="outline" size="sm"
+                onClick={() => downloadPdf(run.id, run.framework, "solutions.pdf")}
+                className="border-emerald-300 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50"
+              >
+                <FileDown className="h-4 w-4 mr-1.5" />
+                Lösungen PDF
+              </Button>
+            </div>
+          )}
+
+          {/* Both-frameworks PDF buttons (one row per framework) */}
+          {hasBoth && (langchain?.pdf_files || langgraph?.pdf_files) && (
+            <div className="flex flex-col gap-1.5">
+              {langchain?.pdf_files && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 w-20 text-right">LangChain</span>
+                  <Button
+                    variant="outline" size="sm"
+                    onClick={() => downloadPdf(run.id, "langchain", "tasks.pdf")}
+                    className="border-blue-300 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                  >
+                    <FileDown className="h-3.5 w-3.5 mr-1" />
+                    Aufgaben
+                  </Button>
+                  <Button
+                    variant="outline" size="sm"
+                    onClick={() => downloadPdf(run.id, "langchain", "solutions.pdf")}
+                    className="border-emerald-300 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50"
+                  >
+                    <FileDown className="h-3.5 w-3.5 mr-1" />
+                    Lösungen
+                  </Button>
+                </div>
+              )}
+              {langgraph?.pdf_files && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 w-20 text-right">LangGraph</span>
+                  <Button
+                    variant="outline" size="sm"
+                    onClick={() => downloadPdf(run.id, "langgraph", "tasks.pdf")}
+                    className="border-blue-300 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                  >
+                    <FileDown className="h-3.5 w-3.5 mr-1" />
+                    Aufgaben
+                  </Button>
+                  <Button
+                    variant="outline" size="sm"
+                    onClick={() => downloadPdf(run.id, "langgraph", "solutions.pdf")}
+                    className="border-emerald-300 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50"
+                  >
+                    <FileDown className="h-3.5 w-3.5 mr-1" />
+                    Lösungen
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Metrics */}

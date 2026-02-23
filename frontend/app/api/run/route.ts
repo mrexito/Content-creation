@@ -9,7 +9,7 @@ const PROJECT_ROOT = path.resolve(process.cwd(), "..")
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { pdfPath, domain, framework, numVariants, maxRetries } = body
+    const { pdfPath, domain, framework, numVariants, maxRetries, ocrTool, llmProvider, llmModel } = body
 
     if (!pdfPath || !framework) {
       return NextResponse.json({ error: "pdfPath and framework are required" }, { status: 400 })
@@ -47,6 +47,9 @@ export async function POST(req: NextRequest) {
         maxRetries: maxRetries ?? 3,
         runId,
         progressPath,
+        ocrTool: ocrTool || "auto",
+        llmProvider: llmProvider || "auto",
+        llmModel: llmModel || "",
       }).then(({ success, error }) => {
         // Update progress to final state on completion
         const prog = {

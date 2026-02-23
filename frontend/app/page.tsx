@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
-import type { Domain, Framework, RunResult } from "@/lib/types"
+import type { Domain, Framework, OcrTool, LlmProvider, RunResult } from "@/lib/types"
 import { FileUpload } from "@/components/upload/file-upload"
 import { DomainSelector } from "@/components/upload/domain-selector"
 import { ConfigPanel } from "@/components/upload/config-panel"
@@ -37,6 +37,9 @@ export default function HomePage() {
   const [framework, setFramework] = useState<Framework>("both")
   const [numVariants, setNumVariants] = useState(2)
   const [maxRetries, setMaxRetries] = useState(3)
+  const [ocrTool, setOcrTool] = useState<OcrTool>("auto")
+  const [llmProvider, setLlmProvider] = useState<LlmProvider>("auto")
+  const [llmModel, setLlmModel] = useState("")
 
   const [appState, setAppState] = useState<AppState>("idle")
   const [activeRunId, setActiveRunId] = useState<string | null>(null)
@@ -79,7 +82,7 @@ export default function HomePage() {
       const runRes = await fetch("/api/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pdfPath, domain, framework, numVariants, maxRetries }),
+        body: JSON.stringify({ pdfPath, domain, framework, numVariants, maxRetries, ocrTool, llmProvider, llmModel }),
       })
       const runData = await runRes.json()
       if (!runData.success) throw new Error(runData.error)
@@ -96,7 +99,7 @@ export default function HomePage() {
         pdf_name: files[0].name,
         domain,
         framework,
-        config: { numVariants, maxRetries },
+        config: { numVariants, maxRetries, ocrTool, llmProvider, llmModel: llmModel || undefined },
         status: "running",
       }
       setCurrentRun(run)
@@ -104,7 +107,7 @@ export default function HomePage() {
       toast.error(`Fehler: ${err instanceof Error ? err.message : String(err)}`)
       setAppState("idle")
     }
-  }, [files, domain, framework, numVariants, maxRetries])
+  }, [files, domain, framework, numVariants, maxRetries, ocrTool, llmProvider, llmModel])
 
   const handleStop = () => {
     setAppState("idle")
@@ -184,8 +187,14 @@ export default function HomePage() {
               <ConfigPanel
                 numVariants={numVariants}
                 maxRetries={maxRetries}
+                ocrTool={ocrTool}
+                llmProvider={llmProvider}
+                llmModel={llmModel}
                 onVariantsChange={setNumVariants}
                 onRetriesChange={setMaxRetries}
+                onOcrToolChange={setOcrTool}
+                onLlmProviderChange={setLlmProvider}
+                onLlmModelChange={setLlmModel}
               />
             </CardContent>
           </Card>

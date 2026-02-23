@@ -106,6 +106,11 @@ def main():
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--progress", type=Path, required=True)
     parser.add_argument("--run-id", default="")
+    parser.add_argument("--ocr-tool", default="auto",
+                        choices=["auto", "tesseract", "mistral"])
+    parser.add_argument("--llm-provider", default="auto",
+                        choices=["auto", "openai", "bfh"])
+    parser.add_argument("--llm-model", default="")
     args = parser.parse_args()
 
     pdf_path = args.pdf
@@ -116,11 +121,25 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     progress_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Singleton-Handler mit CLI-Einstellungen initialisieren
+    from common.ocr_handler import reset_ocr_handler, get_ocr_handler
+    from common.llm_handler import reset_llm_handler, get_llm_handler
+    reset_ocr_handler()
+    get_ocr_handler(default_tool=args.ocr_tool)
+    reset_llm_handler()
+    get_llm_handler(
+        provider=args.llm_provider,
+        model=args.llm_model if args.llm_model else None,
+    )
+
     base_meta = {
         "pdf_name": pdf_path.name,
         "framework": "langgraph",
         "domain": args.domain,
         "run_id": args.run_id,
+        "ocr_tool": args.ocr_tool,
+        "llm_provider": args.llm_provider,
+        "llm_model": args.llm_model or "default",
     }
 
     # Write initial progress
@@ -177,6 +196,14 @@ def main():
         if final_doc.get("text_output"):
             txt_path.write_text(final_doc["text_output"])
 
+        # PDF-Generierung: Aufgaben-PDF und Lösungs-PDF
+        from common.pdf_generator import PdfGenerator
+        _generator = PdfGenerator()
+        tasks_path = output_dir / "tasks.pdf"
+        solutions_path = output_dir / "solutions.pdf"
+        _generator.generate_tasks_pdf(final_doc, tasks_path)
+        _generator.generate_solutions_pdf(final_doc, solutions_path)
+
         # Build frontend result.json
         meta = final_doc.get("metadata", {})
         segments_raw = final_state.get("segments_with_variants") or []
@@ -197,6 +224,10 @@ def main():
             },
             "segments": transform_segments(segments_raw),
             "output_files": [str(json_path), str(txt_path)],
+            "pdf_files": {
+                "tasks": str(tasks_path),
+                "solutions": str(solutions_path),
+            },
         }
 
         result_path = output_dir / "result.json"

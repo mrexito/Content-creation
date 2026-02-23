@@ -96,6 +96,11 @@ def main():
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--progress", type=Path, required=True)
     parser.add_argument("--run-id", default="")
+    parser.add_argument("--ocr-tool", default="auto",
+                        choices=["auto", "tesseract", "mistral"])
+    parser.add_argument("--llm-provider", default="auto",
+                        choices=["auto", "openai", "bfh"])
+    parser.add_argument("--llm-model", default="")
     args = parser.parse_args()
 
     pdf_path = args.pdf
@@ -106,11 +111,25 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     progress_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Singleton-Handler mit CLI-Einstellungen initialisieren
+    from common.ocr_handler import reset_ocr_handler, get_ocr_handler
+    from common.llm_handler import reset_llm_handler, get_llm_handler
+    reset_ocr_handler()
+    get_ocr_handler(default_tool=args.ocr_tool)
+    reset_llm_handler()
+    get_llm_handler(
+        provider=args.llm_provider,
+        model=args.llm_model if args.llm_model else None,
+    )
+
     base_meta = {
         "pdf_name": pdf_path.name,
         "framework": "langchain",
         "domain": args.domain,
         "run_id": args.run_id,
+        "ocr_tool": args.ocr_tool,
+        "llm_provider": args.llm_provider,
+        "llm_model": args.llm_model or "default",
     }
 
     def update(phase: str, completed: list):
@@ -230,12 +249,26 @@ def main():
                     save_result = self.assembly_chain.save_to_file(
                         assembly_result['assembled_document'], output_path
                     )
+
+                    # PDF-Generierung: Aufgaben-PDF und Lösungs-PDF
+                    from common.pdf_generator import PdfGenerator
+                    _generator = PdfGenerator()
+                    _tasks_path = output_path.parent / "tasks.pdf"
+                    _solutions_path = output_path.parent / "solutions.pdf"
+                    _generator.generate_tasks_pdf(assembly_result['assembled_document'], _tasks_path)
+                    _generator.generate_solutions_pdf(assembly_result['assembled_document'], _solutions_path)
+                    _pdf_files = {
+                        'tasks': str(_tasks_path),
+                        'solutions': str(_solutions_path),
+                    }
+
                     step("assembly")
                     total_time = _time.time() - start_time
 
                     return {
                         'success': True,
                         'output_files': save_result['saved_files'],
+                        'pdf_files': _pdf_files,
                         'statistics': {**pipeline_results, 'total_time': total_time},
                         'assembled_document': assembly_result['assembled_document'],
                         'segments_with_variants': segments_with_variants,
@@ -257,6 +290,10 @@ def main():
         assembly = stats.get("assembly", {})
         parsing = stats.get("parsing", {})
 
+        total_v = assembly.get("total_variants", 0)
+        valid_v = assembly.get("valid_variants", 0)
+        validation_rate = (valid_v / total_v) if total_v > 0 else 0.0
+
         frontend_result = {
             "success": True,
             "framework": "langchain",
@@ -267,12 +304,13 @@ def main():
                 "ocr_time": parsing.get("processing_time", 0),
                 "ocr_tool": parsing.get("tool_used", "unknown"),
                 "num_segments": stats.get("segmentation", {}).get("num_segments", 0),
-                "total_variants": assembly.get("total_variants", 0),
-                "valid_variants": assembly.get("valid_variants", 0),
-                "validation_rate": assembly.get("validation_rate", 0),
+                "total_variants": total_v,
+                "valid_variants": valid_v,
+                "validation_rate": validation_rate,
             },
             "segments": transform_segments(result.get("segments_with_variants", [])),
             "output_files": result.get("output_files", []),
+            "pdf_files": result.get("pdf_files"),
         }
 
         result_path = output_dir / "result.json"

@@ -1,5 +1,7 @@
 export type Framework = "langchain" | "langgraph" | "both"
 export type Domain = "math" | "languages" | "economics" | "auto"
+export type OcrTool = "tesseract" | "mistral" | "auto"
+export type LlmProvider = "openai" | "bfh" | "auto"
 export type Phase =
   | "idle"
   | "parsing"
@@ -19,6 +21,9 @@ export interface RunConfig {
   framework: Framework
   numVariants: number
   maxRetries: number
+  ocrTool: OcrTool
+  llmProvider: LlmProvider
+  llmModel: string
 }
 
 export interface ProgressState {
@@ -80,6 +85,10 @@ export interface PipelineResult {
   segments: SegmentResult[]
   error?: string
   output_files?: string[]
+  pdf_files?: {
+    tasks: string
+    solutions: string
+  }
 }
 
 export interface RunResult {
@@ -91,6 +100,9 @@ export interface RunResult {
   config: {
     numVariants: number
     maxRetries: number
+    ocrTool?: OcrTool
+    llmProvider?: LlmProvider
+    llmModel?: string
   }
   status: RunStatus
   langchain?: PipelineResult

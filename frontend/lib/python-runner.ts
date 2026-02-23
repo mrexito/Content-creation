@@ -14,6 +14,9 @@ export interface RunOptions {
   maxRetries: number
   runId: string
   progressPath: string
+  ocrTool?: string      // "auto" | "tesseract" | "mistral"
+  llmProvider?: string  // "auto" | "openai" | "bfh"
+  llmModel?: string     // model name, empty = provider default
 }
 
 export function runPipeline(opts: RunOptions): Promise<{ success: boolean; error?: string }> {
@@ -36,6 +39,9 @@ export function runPipeline(opts: RunOptions): Promise<{ success: boolean; error
     "--output-dir", outputDir,
     "--progress", opts.progressPath,
     "--run-id", opts.runId,
+    "--ocr-tool", opts.ocrTool ?? "auto",
+    "--llm-provider", opts.llmProvider ?? "auto",
+    ...(opts.llmModel ? ["--llm-model", opts.llmModel] : []),
   ]
 
   return new Promise((resolve) => {
