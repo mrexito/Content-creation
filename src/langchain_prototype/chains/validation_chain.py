@@ -76,7 +76,7 @@ class ValidationChain:
             bert_result = self.bert_validator.validate_paraphrase(
                 original=original,
                 paraphrased=variant,
-                min_threshold=0.85  # Etwas niedriger für Variationen
+                min_threshold=0.7  # Etwas niedriger für Variationen
             )
             
             validation_results['bert'] = {

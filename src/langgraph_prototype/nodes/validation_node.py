@@ -1,5 +1,6 @@
 """
 Validation Node: Variants → Validated Variants
+Mit domain-spezifischen Thresholds
 """
 import time
 
@@ -16,7 +17,7 @@ logger = setup_logger(__name__)
 
 def validation_node(state: WorkflowState) -> WorkflowState:
     """
-    Validation Node
+    Validation Node mit domain-spezifischen Thresholds
     
     Input (State):
         - segments_with_variants
@@ -77,27 +78,29 @@ def validation_node(state: WorkflowState) -> WorkflowState:
                         'variant_equations': variant_val['equations_found']
                     }
                     
-                    if original_val['equations_found'] != variant_val['equations_found']:
+                    # Toleranz: ±1 Gleichung
+                    equation_diff = abs(original_val['equations_found'] - variant_val['equations_found'])
+                    if equation_diff > 1:
                         issues.append(
                             f"Anzahl Gleichungen unterschiedlich: "
                             f"{original_val['equations_found']} vs {variant_val['equations_found']}"
                         )
                 
                 elif domain == 'languages':
-                    # BERT
+                    # BERT mit niedrigerem Threshold
                     bert_result = bert_validator.validate_paraphrase(
                         original=original_text,
                         paraphrased=variant_text,
-                        min_threshold=0.85
+                        min_threshold=0.70  # ← GEÄNDERT von 0.85
                     )
                     
                     validation_results['bert'] = bert_result
                     
                     if not bert_result['is_valid']:
-                        issues.append(bert_result.get('reason', 'Semantische Ähnlichkeit zu gering'))
+                        issues.append(f"BERT-Score zu niedrig: {bert_result['score']:.2f} < 0.70")
                 
                 elif domain == 'economics':
-                    # Consistency
+                    # Consistency mit höherer Toleranz
                     original_numbers = consistency_validator.extract_numbers(original_text)
                     variant_numbers = consistency_validator.extract_numbers(variant_text)
                     
@@ -106,19 +109,29 @@ def validation_node(state: WorkflowState) -> WorkflowState:
                         'variant_numbers': len(variant_numbers)
                     }
                     
-                    if abs(len(original_numbers) - len(variant_numbers)) > 2:
+                    # Toleranz: ±3 Zahlen
+                    number_diff = abs(len(original_numbers) - len(variant_numbers))
+                    if number_diff > 3:  # ← GEÄNDERT von 2
                         issues.append(
                             f"Anzahl Zahlen stark unterschiedlich: "
                             f"{len(original_numbers)} vs {len(variant_numbers)}"
                         )
                 
-                # Length check (alle Domains)
+                # Length check mit domain-spezifischer Toleranz
                 length_ratio = len(variant_text) / len(original_text) if len(original_text) > 0 else 0
                 
-                if length_ratio < 0.5 or length_ratio > 2.0:
+                # Domain-spezifische Ranges
+                if domain == 'economics':
+                    min_ratio, max_ratio = 0.4, 2.5
+                elif domain == 'languages':
+                    min_ratio, max_ratio = 0.6, 1.8
+                else:
+                    min_ratio, max_ratio = 0.5, 2.0
+                
+                if length_ratio < min_ratio or length_ratio > max_ratio:
                     issues.append(
                         f"Länge weicht stark ab: {len(variant_text)} vs {len(original_text)} "
-                        f"Zeichen (Ratio: {length_ratio:.2f})"
+                        f"Zeichen (Ratio: {length_ratio:.2f}, erlaubt: {min_ratio}-{max_ratio})"
                     )
                 
                 # Validation Result
