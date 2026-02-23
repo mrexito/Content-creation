@@ -63,6 +63,40 @@ def phase_progress(phase_name: str) -> int:
     return sum(PHASE_WEIGHTS[:idx])
 
 
+def transform_segments(segments_with_variants: list) -> list:
+    """Transform LangGraph state segments_with_variants to frontend SegmentResult format."""
+    result = []
+    for seg in segments_with_variants:
+        orig = seg.get('segment', {})
+        raw_variants = seg.get('variants', [])
+
+        transformed_variants = []
+        for vi, v in enumerate(raw_variants):
+            val = v.get('validation', {})
+            transformed_variants.append({
+                'variant_id': v.get('variant_id', vi + 1),
+                'text': v.get('text', ''),
+                'is_valid': val.get('is_valid', False),
+                'validation_issues': val.get('issues', []),
+            })
+
+        valid_count = sum(1 for v in transformed_variants if v['is_valid'])
+        result.append({
+            'original_segment': {
+                'text': orig.get('text', '') if isinstance(orig, dict) else str(orig),
+                'type': orig.get('type', 'unknown') if isinstance(orig, dict) else 'unknown',
+            },
+            'classification': seg.get('classification', {}),
+            'validated_variants': transformed_variants,
+            'validation_statistics': {
+                'total': len(transformed_variants),
+                'valid': valid_count,
+                'avg_diversity': 0.0,
+            },
+        })
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run LangGraph Pipeline")
     parser.add_argument("--pdf", required=True, type=Path)
@@ -161,7 +195,7 @@ def main():
                 "valid_variants": meta.get("valid_variants", 0),
                 "validation_rate": meta.get("validation_rate", 0),
             },
-            "segments": segments_raw,
+            "segments": transform_segments(segments_raw),
             "output_files": [str(json_path), str(txt_path)],
         }
 

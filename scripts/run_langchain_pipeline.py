@@ -53,6 +53,40 @@ def phase_progress(phase_name: str) -> int:
     return sum(PHASE_WEIGHTS[:idx])
 
 
+def transform_segments(segments_with_variants: list) -> list:
+    """Transform pipeline segments_with_variants to frontend SegmentResult format."""
+    result = []
+    for seg in segments_with_variants:
+        orig = seg.get('original_segment', {})
+        raw_variants = seg.get('validated_variants', [])
+
+        transformed_variants = []
+        for vi, v in enumerate(raw_variants):
+            val = v.get('validation', {})
+            transformed_variants.append({
+                'variant_id': v.get('variant_id', vi + 1),
+                'text': v.get('text', ''),
+                'is_valid': val.get('is_valid', False),
+                'validation_issues': val.get('issues', []),
+            })
+
+        valid_count = sum(1 for v in transformed_variants if v['is_valid'])
+        result.append({
+            'original_segment': {
+                'text': orig.get('text', '') if isinstance(orig, dict) else str(orig),
+                'type': orig.get('type', 'unknown') if isinstance(orig, dict) else 'unknown',
+            },
+            'classification': seg.get('classification', {}),
+            'validated_variants': transformed_variants,
+            'validation_statistics': {
+                'total': len(transformed_variants),
+                'valid': valid_count,
+                'avg_diversity': 0.0,
+            },
+        })
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run LangChain Pipeline")
     parser.add_argument("--pdf", required=True, type=Path)
@@ -204,6 +238,7 @@ def main():
                         'output_files': save_result['saved_files'],
                         'statistics': {**pipeline_results, 'total_time': total_time},
                         'assembled_document': assembly_result['assembled_document'],
+                        'segments_with_variants': segments_with_variants,
                     }
 
                 except Exception as e:
@@ -236,7 +271,7 @@ def main():
                 "valid_variants": assembly.get("valid_variants", 0),
                 "validation_rate": assembly.get("validation_rate", 0),
             },
-            "segments": result.get("assembled_document", {}).get("segments", []),
+            "segments": transform_segments(result.get("segments_with_variants", [])),
             "output_files": result.get("output_files", []),
         }
 
