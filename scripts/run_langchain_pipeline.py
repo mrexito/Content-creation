@@ -1,0 +1,271 @@
+"""
+LangChain Pipeline Runner – für Frontend-Integration
+
+Usage:
+    python scripts/run_langchain_pipeline.py \
+        --pdf data/input/math/equations_simple.pdf \
+        --domain math \
+        --variants 2 \
+        --retries 3 \
+        --output-dir data/output/langchain/run_xyz \
+        --progress data/output/langchain/run_xyz/progress.json \
+        --run-id run_xyz
+"""
+import sys
+import json
+import argparse
+import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+
+from common.config import Config
+from common.logger import setup_logger
+from langchain_prototype.pipeline import get_pipeline
+
+logger = setup_logger(__name__)
+
+PHASES = ["parsing", "segmentation", "classification", "rewriting", "validation", "assembly"]
+PHASE_WEIGHTS = [10, 15, 15, 40, 15, 5]  # sum = 100
+
+
+def write_progress(
+    progress_path: Path,
+    status: str,
+    current_phase: str,
+    phases_completed: list,
+    progress_percent: int,
+    metadata: dict,
+) -> None:
+    data = {
+        "status": status,
+        "current_phase": current_phase,
+        "phases_completed": phases_completed,
+        "progress_percent": progress_percent,
+        "metadata": metadata,
+    }
+    progress_path.write_text(json.dumps(data, indent=2, ensure_ascii=False))
+
+
+def phase_progress(phase_name: str) -> int:
+    """Cumulative progress when a phase starts."""
+    idx = PHASES.index(phase_name) if phase_name in PHASES else 0
+    return sum(PHASE_WEIGHTS[:idx])
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Run LangChain Pipeline")
+    parser.add_argument("--pdf", required=True, type=Path)
+    parser.add_argument("--domain", default="auto")
+    parser.add_argument("--variants", type=int, default=2)
+    parser.add_argument("--retries", type=int, default=3)
+    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--progress", type=Path, required=True)
+    parser.add_argument("--run-id", default="")
+    args = parser.parse_args()
+
+    pdf_path = args.pdf
+    domain = None if args.domain == "auto" else args.domain
+    output_dir = args.output_dir
+    progress_path = args.progress
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    progress_path.parent.mkdir(parents=True, exist_ok=True)
+
+    base_meta = {
+        "pdf_name": pdf_path.name,
+        "framework": "langchain",
+        "domain": args.domain,
+        "run_id": args.run_id,
+    }
+
+    def update(phase: str, completed: list):
+        pct = phase_progress(phase)
+        write_progress(progress_path, "running", phase, completed, pct, base_meta)
+
+    try:
+        # Monkey-patch pipeline to emit progress between phases
+        update("parsing", [])
+
+        pipeline = get_pipeline(domain=domain, num_variants=args.variants)
+
+        # We wrap process_pdf to emit progress at each stage
+        # Since LangChain pipeline is sequential, we track via a custom subclass
+        class ProgressPipeline(pipeline.__class__):
+            def process_pdf(self, pdf_path, output_path=None):
+                completed = []
+
+                def step(phase):
+                    completed.append(phase)
+                    next_phases = [p for p in PHASES if p not in completed]
+                    nxt = next_phases[0] if next_phases else "assembly"
+                    write_progress(
+                        progress_path, "running", nxt, completed,
+                        phase_progress(nxt) if nxt in PHASES else 95,
+                        base_meta,
+                    )
+
+                # Run each step and emit progress
+                import time as _time
+                from pathlib import Path as _Path
+
+                logger.info(f"Starte Pipeline für: {pdf_path.name}")
+                start_time = _time.time()
+
+                if output_path is None:
+                    output_path = Config.DATA_OUTPUT_PATH / 'langchain' / pdf_path.stem
+
+                pipeline_results = {}
+
+                from common.logger import setup_logger as _setup_logger
+                _logger = _setup_logger(__name__)
+
+                try:
+                    # 1. PARSING
+                    parse_result = self.parsing_chain.invoke({'pdf_path': str(pdf_path)})
+                    step("parsing")
+                    if not parse_result['success']:
+                        raise Exception(f"Parsing failed: {parse_result['metadata'].get('error')}")
+                    pipeline_results['parsing'] = parse_result['metadata']
+                    text = parse_result['text']
+
+                    # 2. SEGMENTATION
+                    seg_result = self.segmentation_chain.invoke({'text': text})
+                    step("segmentation")
+                    if not seg_result['success']:
+                        raise Exception(f"Segmentation failed")
+                    pipeline_results['segmentation'] = seg_result['metadata']
+                    segments = seg_result['segments']
+
+                    # 3-5. Classification / Rewriting / Validation
+                    write_progress(progress_path, "running", "classification", ["parsing", "segmentation"],
+                                   phase_progress("classification"), base_meta)
+                    segments_with_variants = []
+                    total = len(segments)
+                    for idx, segment in enumerate(segments, 1):
+                        cls_result = self.classification_chain.invoke({'segment': segment})
+                        if not cls_result['success']:
+                            continue
+                        classification = cls_result['classification']
+                        seg_domain = classification.get('domain', 'general')
+
+                        # progress within rewriting
+                        rewrite_pct = phase_progress("rewriting") + int(
+                            (idx / total) * PHASE_WEIGHTS[PHASES.index("rewriting")]
+                        )
+                        write_progress(progress_path, "running", "rewriting",
+                                       ["parsing", "segmentation", "classification"],
+                                       rewrite_pct, base_meta)
+
+                        rw_result = self.rewriting_chain.invoke({'segment': segment, 'domain': seg_domain})
+                        if not rw_result['success']:
+                            continue
+
+                        val_result = self.validation_chain.invoke({
+                            'original': rw_result['original'],
+                            'variants': rw_result['variants'],
+                            'domain': seg_domain,
+                        })
+                        segments_with_variants.append({
+                            'original_segment': segment,
+                            'classification': classification,
+                            'validated_variants': val_result['validated_variants'],
+                            'validation_statistics': val_result['statistics'],
+                        })
+
+                    step("classification")
+                    step("rewriting")
+                    step("validation")
+
+                    # 6. ASSEMBLY
+                    write_progress(progress_path, "running", "assembly",
+                                   ["parsing", "segmentation", "classification", "rewriting", "validation"],
+                                   phase_progress("assembly"), base_meta)
+
+                    assembly_result = self.assembly_chain.invoke({
+                        'segments_with_variants': segments_with_variants,
+                        'metadata': {
+                            'pdf_path': str(pdf_path),
+                            'domain': domain,
+                            'num_variants_requested': args.variants,
+                            **pipeline_results['parsing'],
+                        },
+                    })
+                    pipeline_results['assembly'] = assembly_result['statistics']
+
+                    save_result = self.assembly_chain.save_to_file(
+                        assembly_result['assembled_document'], output_path
+                    )
+                    step("assembly")
+                    total_time = _time.time() - start_time
+
+                    return {
+                        'success': True,
+                        'output_files': save_result['saved_files'],
+                        'statistics': {**pipeline_results, 'total_time': total_time},
+                        'assembled_document': assembly_result['assembled_document'],
+                    }
+
+                except Exception as e:
+                    total_time = _time.time() - start_time
+                    return {'success': False, 'error': str(e),
+                            'statistics': {**pipeline_results, 'total_time': total_time}}
+
+        prog_pipeline = ProgressPipeline(domain=domain, num_variants=args.variants)
+        result = prog_pipeline.process_pdf(pdf_path, output_path=output_dir / "assembled")
+
+        if not result["success"]:
+            raise RuntimeError(result.get("error", "Unknown error"))
+
+        # Build result.json for frontend
+        stats = result["statistics"]
+        assembly = stats.get("assembly", {})
+        parsing = stats.get("parsing", {})
+
+        frontend_result = {
+            "success": True,
+            "framework": "langchain",
+            "domain": args.domain,
+            "pdf_name": pdf_path.name,
+            "metrics": {
+                "total_time": stats.get("total_time", 0),
+                "ocr_time": parsing.get("processing_time", 0),
+                "ocr_tool": parsing.get("tool_used", "unknown"),
+                "num_segments": stats.get("segmentation", {}).get("num_segments", 0),
+                "total_variants": assembly.get("total_variants", 0),
+                "valid_variants": assembly.get("valid_variants", 0),
+                "validation_rate": assembly.get("validation_rate", 0),
+            },
+            "segments": result.get("assembled_document", {}).get("segments", []),
+            "output_files": result.get("output_files", []),
+        }
+
+        result_path = output_dir / "result.json"
+        result_path.write_text(json.dumps(frontend_result, indent=2, ensure_ascii=False))
+
+        write_progress(
+            progress_path,
+            "complete",
+            "complete",
+            PHASES,
+            100,
+            {**base_meta, "result_path": str(result_path)},
+        )
+        logger.info("Pipeline complete")
+        sys.exit(0)
+
+    except Exception as exc:
+        logger.error(f"Pipeline failed: {exc}")
+        write_progress(
+            progress_path,
+            "error",
+            "error",
+            [],
+            0,
+            {**base_meta, "error": str(exc)},
+        )
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

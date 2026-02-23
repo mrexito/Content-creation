@@ -88,3 +88,34 @@ Three domains in `data/input/`:
 - `data/output/langgraph/` — LangGraph results
 - `data/output/comparison/` — pipeline comparison JSON reports
 - `data/output/evaluation/` — evaluation reports (LangChain vs LangGraph)
+
+## Frontend (Next.js)
+
+```bash
+cd frontend
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # production build check
+```
+
+**Stack:** Next.js 16 (App Router), TypeScript strict, Tailwind CSS v4, shadcn/ui, recharts, lucide-react
+
+**Key files:**
+- `frontend/app/page.tsx` — main page: upload + run + live progress
+- `frontend/app/history/page.tsx` — past runs (localStorage)
+- `frontend/app/results/[id]/page.tsx` — result detail view
+- `frontend/lib/types.ts` — all shared TypeScript types
+- `frontend/lib/python-runner.ts` — server-side: spawns Python scripts, reads progress/result JSON
+- `frontend/lib/file-utils.ts` — client-safe utilities (no Node built-ins)
+- `frontend/lib/server-utils.ts` — server-only file utilities (fs/path)
+
+**How the frontend invokes Python:**
+1. `POST /api/upload` saves PDFs to `data/input/frontend-uploads/`
+2. `POST /api/run` spawns `scripts/run_langchain_pipeline.py` or `run_langgraph_pipeline.py` via `child_process.spawn` with `PYTHONPATH=src`
+3. `GET /api/progress/[runId]` reads `data/output/{framework}/{runId}/progress.json` (polled every 500ms)
+4. `GET /api/results/[runId]` reads `data/output/{framework}/{runId}/result.json`
+
+**Frontend pipeline scripts** (`scripts/run_langchain_pipeline.py`, `scripts/run_langgraph_pipeline.py`):
+- Accept `--pdf`, `--domain`, `--variants`, `--retries`, `--output-dir`, `--progress`, `--run-id`
+- Write progress updates to `--progress` path throughout execution
+- Write `result.json` with a standardized `PipelineResult` schema on completion
