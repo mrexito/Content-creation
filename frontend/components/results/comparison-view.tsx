@@ -28,25 +28,25 @@ export function ComparisonView({ run }: ComparisonViewProps) {
   const hasBoth = langchain && langgraph
   const active = langchain ?? langgraph
 
-  if (!active) return <p className="text-slate-300">Keine Ergebnisse verfügbar.</p>
+  if (!active) return <p className="text-gray-500">Keine Ergebnisse verfügbar.</p>
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="space-y-1">
-          <h2 className="text-lg font-semibold text-slate-100">{run.pdf_name}</h2>
+          <h2 className="text-lg font-bold text-gray-900">{run.pdf_name}</h2>
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant="outline" className="text-xs">{run.domain}</Badge>
-            <Badge variant="outline" className="text-xs">{run.framework}</Badge>
-            <span className="text-xs text-slate-300">{new Date(run.timestamp).toLocaleString("de-CH")}</span>
+            <Badge variant="outline" className="text-xs text-gray-600">{run.domain}</Badge>
+            <Badge variant="outline" className="text-xs text-gray-600">{run.framework}</Badge>
+            <span className="text-xs text-gray-400">{new Date(run.timestamp).toLocaleString("de-CH")}</span>
           </div>
         </div>
         <Button
           variant="outline"
           size="sm"
           onClick={() => downloadJson(run, `${run.id}.json`)}
-          className="border-slate-500 text-slate-200 hover:text-white"
+          className="border-gray-300 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
         >
           <Download className="h-4 w-4 mr-1.5" />
           Export JSON
@@ -59,24 +59,20 @@ export function ComparisonView({ run }: ComparisonViewProps) {
       {/* Detail tabs */}
       {hasBoth ? (
         <Tabs defaultValue="langchain">
-          <TabsList className="bg-slate-600">
-            <TabsTrigger value="langchain">
+          <TabsList className="bg-gray-100 border border-gray-200">
+            <TabsTrigger value="langchain" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
               LangChain
-              {langchain.success ? (
-                <CheckCircle className="h-3 w-3 ml-1.5 text-emerald-400" />
-              ) : (
-                <XCircle className="h-3 w-3 ml-1.5 text-red-400" />
-              )}
+              {langchain.success
+                ? <CheckCircle className="h-3 w-3 ml-1.5 text-emerald-500" />
+                : <XCircle className="h-3 w-3 ml-1.5 text-red-500" />}
             </TabsTrigger>
-            <TabsTrigger value="langgraph">
+            <TabsTrigger value="langgraph" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
               LangGraph
-              {langgraph.success ? (
-                <CheckCircle className="h-3 w-3 ml-1.5 text-emerald-400" />
-              ) : (
-                <XCircle className="h-3 w-3 ml-1.5 text-red-400" />
-              )}
+              {langgraph.success
+                ? <CheckCircle className="h-3 w-3 ml-1.5 text-emerald-500" />
+                : <XCircle className="h-3 w-3 ml-1.5 text-red-500" />}
             </TabsTrigger>
-            <TabsTrigger value="json">JSON</TabsTrigger>
+            <TabsTrigger value="json" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">JSON</TabsTrigger>
           </TabsList>
           <TabsContent value="langchain" className="mt-4">
             <SegmentsTable result={langchain} />
@@ -91,9 +87,9 @@ export function ComparisonView({ run }: ComparisonViewProps) {
         </Tabs>
       ) : (
         <Tabs defaultValue="segments">
-          <TabsList className="bg-slate-600">
-            <TabsTrigger value="segments">Segmente</TabsTrigger>
-            <TabsTrigger value="json">JSON</TabsTrigger>
+          <TabsList className="bg-gray-100 border border-gray-200">
+            <TabsTrigger value="segments" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">Segmente</TabsTrigger>
+            <TabsTrigger value="json" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">JSON</TabsTrigger>
           </TabsList>
           <TabsContent value="segments" className="mt-4">
             <SegmentsTable result={active} />

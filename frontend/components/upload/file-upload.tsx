@@ -42,14 +42,14 @@ export function FileUpload({ files, onChange }: FileUploadProps) {
         onDrop={onDrop}
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
           dragging
-            ? "border-blue-400 bg-blue-400/10"
-            : "border-slate-500 hover:border-slate-400 hover:bg-slate-600/30"
+            ? "border-blue-400 bg-blue-50"
+            : "border-gray-300 hover:border-blue-400 hover:bg-blue-50/40"
         }`}
         onClick={() => document.getElementById("pdf-input")?.click()}
       >
-        <Upload className="mx-auto h-8 w-8 text-slate-400 mb-2" />
-        <p className="text-sm text-slate-300">Drop PDFs here or click to browse</p>
-        <p className="text-xs text-slate-300 mt-1">Multiple files supported</p>
+        <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+        <p className="text-sm font-medium text-gray-700">Drop PDFs here or click to browse</p>
+        <p className="text-xs text-gray-400 mt-1">Multiple files supported</p>
         <input
           id="pdf-input"
           type="file"
@@ -65,16 +65,16 @@ export function FileUpload({ files, onChange }: FileUploadProps) {
           {files.map((f) => (
             <li
               key={f.name}
-              className="flex items-center justify-between bg-slate-600/60 rounded-md px-3 py-2"
+              className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md px-3 py-2"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <FileText className="h-4 w-4 text-blue-400 shrink-0" />
-                <span className="text-sm truncate text-slate-200">{f.name}</span>
-                <span className="text-xs text-slate-300 shrink-0">{formatBytes(f.size)}</span>
+                <FileText className="h-4 w-4 text-blue-500 shrink-0" />
+                <span className="text-sm font-medium truncate text-gray-800">{f.name}</span>
+                <span className="text-xs text-gray-400 shrink-0">{formatBytes(f.size)}</span>
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); remove(f.name) }}
-                className="ml-2 text-slate-300 hover:text-red-400 transition-colors"
+                className="ml-2 text-gray-400 hover:text-red-500 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>

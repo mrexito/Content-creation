@@ -13,23 +13,23 @@ interface RunsTableProps {
 }
 
 const STATUS_ICONS = {
-  complete: <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />,
-  error: <XCircle className="h-3.5 w-3.5 text-red-400" />,
-  running: <Loader2 className="h-3.5 w-3.5 text-blue-400 animate-spin" />,
-  pending: <Loader2 className="h-3.5 w-3.5 text-slate-300" />,
+  complete: <CheckCircle className="h-4 w-4 text-emerald-500" />,
+  error: <XCircle className="h-4 w-4 text-red-400" />,
+  running: <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />,
+  pending: <Loader2 className="h-4 w-4 text-gray-400" />,
 }
 
-const FRAMEWORK_COLORS: Record<string, string> = {
-  both: "bg-purple-500/20 text-purple-300 border-purple-800",
-  langchain: "bg-blue-500/20 text-blue-300 border-blue-800",
-  langgraph: "bg-emerald-500/20 text-emerald-300 border-emerald-800",
+const FRAMEWORK_STYLES: Record<string, string> = {
+  both: "bg-purple-100 text-purple-700 border-purple-200",
+  langchain: "bg-blue-100 text-blue-700 border-blue-200",
+  langgraph: "bg-emerald-100 text-emerald-700 border-emerald-200",
 }
 
 export function RunsTable({ runs, onDelete, onRerun }: RunsTableProps) {
   if (!runs.length) {
     return (
-      <div className="text-center py-16 text-slate-300">
-        <p className="text-sm">Noch keine Runs. Starte einen Run auf der Hauptseite.</p>
+      <div className="text-center py-16 border border-dashed border-gray-300 rounded-lg">
+        <p className="text-sm text-gray-500">Noch keine Runs. Starte einen Run auf der Hauptseite.</p>
       </div>
     )
   }
@@ -45,36 +45,36 @@ export function RunsTable({ runs, onDelete, onRerun }: RunsTableProps) {
         return (
           <div
             key={run.id}
-            className="flex items-center gap-4 bg-slate-600/40 rounded-lg px-4 py-3 border border-slate-600 hover:border-slate-500 transition-colors"
+            className="flex items-center gap-4 bg-white rounded-lg px-4 py-3 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
           >
             <div className="flex items-center gap-2 shrink-0">
               {STATUS_ICONS[run.status]}
             </div>
 
             <div className="flex-1 min-w-0 space-y-0.5">
-              <p className="text-sm font-medium text-slate-200 truncate">{run.pdf_name}</p>
+              <p className="text-sm font-semibold text-gray-800 truncate">{run.pdf_name}</p>
               <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant="outline" className={`text-xs ${FRAMEWORK_COLORS[run.framework] ?? ""}`}>
+                <Badge variant="outline" className={`text-xs ${FRAMEWORK_STYLES[run.framework] ?? ""}`}>
                   {run.framework}
                 </Badge>
-                <Badge variant="outline" className="text-xs">{run.domain}</Badge>
-                <span className="text-xs text-slate-300">
+                <Badge variant="outline" className="text-xs text-gray-500 border-gray-200">{run.domain}</Badge>
+                <span className="text-xs text-gray-400">
                   {new Date(run.timestamp).toLocaleString("de-CH")}
                 </span>
               </div>
             </div>
 
-            <div className="hidden sm:flex items-center gap-4 shrink-0 text-right">
+            <div className="hidden sm:flex items-center gap-6 shrink-0">
               {totalTime !== undefined && (
-                <div>
-                  <p className="text-xs text-slate-300">Zeit</p>
-                  <p className="text-sm font-mono text-slate-200">{totalTime.toFixed(1)}s</p>
+                <div className="text-right">
+                  <p className="text-xs text-gray-400">Zeit</p>
+                  <p className="text-sm font-semibold text-gray-700 tabular-nums">{totalTime.toFixed(1)}s</p>
                 </div>
               )}
               {validRate !== undefined && (
-                <div>
-                  <p className="text-xs text-slate-300">Validierung</p>
-                  <p className="text-sm font-mono text-slate-200">{(validRate * 100).toFixed(0)}%</p>
+                <div className="text-right">
+                  <p className="text-xs text-gray-400">Validierung</p>
+                  <p className="text-sm font-semibold text-gray-700 tabular-nums">{(validRate * 100).toFixed(0)}%</p>
                 </div>
               )}
             </div>
@@ -83,7 +83,7 @@ export function RunsTable({ runs, onDelete, onRerun }: RunsTableProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-slate-300 hover:text-slate-200"
+                className="h-8 w-8 text-gray-400 hover:text-gray-700"
                 onClick={() => onRerun(run)}
                 title="Erneut ausführen"
               >
@@ -92,7 +92,7 @@ export function RunsTable({ runs, onDelete, onRerun }: RunsTableProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-slate-300 hover:text-red-400"
+                className="h-8 w-8 text-gray-400 hover:text-red-500"
                 onClick={() => onDelete(run.id)}
                 title="Löschen"
               >
@@ -100,7 +100,7 @@ export function RunsTable({ runs, onDelete, onRerun }: RunsTableProps) {
               </Button>
               {run.status === "complete" && (
                 <Link href={`/results/${run.id}`}>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300 hover:text-blue-400">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-blue-600">
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>

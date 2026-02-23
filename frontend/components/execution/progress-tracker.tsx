@@ -13,11 +13,11 @@ interface ProgressTrackerProps {
   onComplete?: (results: Record<string, unknown>) => void
 }
 
-const STATUS_COLOR = {
-  running: "text-blue-400",
-  complete: "text-emerald-400",
-  error: "text-red-400",
-  pending: "text-slate-400",
+const STATUS_STYLES = {
+  running: "text-blue-600 border-blue-200 bg-blue-50",
+  complete: "text-emerald-600 border-emerald-200 bg-emerald-50",
+  error: "text-red-600 border-red-200 bg-red-50",
+  pending: "text-gray-500 border-gray-200 bg-gray-50",
 }
 
 export function ProgressTracker({ runId, framework, onComplete }: ProgressTrackerProps) {
@@ -39,7 +39,6 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
       )
       if (allDone) {
         setDone(true)
-        // Fetch results
         const rRes = await fetch(`/api/results/${runId}`)
         if (rRes.ok) {
           const results = await rRes.json()
@@ -57,18 +56,18 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
   }, [poll, done])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {frameworks.map((fw) => {
         const p = progress[fw]
         const status = p?.status ?? "pending"
         return (
-          <div key={fw} className="bg-slate-600/40 rounded-lg p-4 space-y-3">
+          <div key={fw} className="bg-white rounded-lg border border-gray-200 p-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-slate-200 capitalize">{fw}</span>
+                <span className="font-semibold text-gray-800 capitalize">{fw}</span>
                 <Badge
                   variant="outline"
-                  className={`text-xs ${STATUS_COLOR[status as keyof typeof STATUS_COLOR] ?? ""}`}
+                  className={`text-xs ${STATUS_STYLES[status as keyof typeof STATUS_STYLES] ?? ""}`}
                 >
                   {status === "running" && <Loader2 className="h-3 w-3 mr-1 animate-spin" />}
                   {status === "complete" && <CheckCircle className="h-3 w-3 mr-1" />}
@@ -76,7 +75,7 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
                   {status}
                 </Badge>
               </div>
-              <span className="text-sm text-slate-400">{p?.progress_percent ?? 0}%</span>
+              <span className="text-sm font-medium text-gray-500">{p?.progress_percent ?? 0}%</span>
             </div>
 
             <Progress value={p?.progress_percent ?? 0} className="h-1.5" />
@@ -89,7 +88,7 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
             )}
 
             {p?.metadata?.error && (
-              <p className="text-xs text-red-400 bg-red-950/30 rounded p-2 font-mono">
+              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2 font-mono">
                 {p.metadata.error}
               </p>
             )}

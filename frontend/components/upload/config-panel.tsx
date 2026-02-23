@@ -25,8 +25,8 @@ function Slider({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <label className="text-sm text-slate-300">{label}</label>
-        <span className="text-sm font-mono font-semibold text-blue-300 w-6 text-right">{value}</span>
+        <label className="text-sm font-medium text-gray-700">{label}</label>
+        <span className="text-sm font-semibold text-blue-600 tabular-nums w-5 text-right">{value}</span>
       </div>
       <input
         type="range"
@@ -34,9 +34,9 @@ function Slider({
         max={max}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-blue-500 cursor-pointer"
+        className="w-full accent-blue-600 cursor-pointer"
       />
-      <p className="text-xs text-slate-300">{hint}</p>
+      <p className="text-xs text-gray-400">{hint}</p>
     </div>
   )
 }

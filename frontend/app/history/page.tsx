@@ -58,17 +58,17 @@ export default function HistoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-100">Run History</h1>
-        <p className="text-slate-400 text-sm mt-1">{runs.length} gespeicherte Runs</p>
+        <h1 className="text-2xl font-bold text-gray-900">Run History</h1>
+        <p className="text-gray-500 text-sm mt-1">{runs.length} gespeicherte Runs</p>
       </div>
 
       <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           placeholder="Suchen…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 bg-slate-700 border-slate-500 text-slate-200 placeholder:text-slate-300"
+          className="pl-9 bg-white border-gray-300 text-gray-800 placeholder:text-gray-400 shadow-sm"
         />
       </div>
 

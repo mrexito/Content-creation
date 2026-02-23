@@ -37,10 +37,10 @@ export function PhaseIndicator({ currentPhase, phasesCompleted }: PhaseIndicator
             <div
               className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-all ${
                 done
-                  ? "bg-emerald-500/20 text-emerald-300"
+                  ? "bg-emerald-100 text-emerald-700"
                   : active
-                  ? "bg-blue-500/20 text-blue-300"
-                  : "bg-slate-600 text-slate-400"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-400"
               }`}
             >
               {done ? (
@@ -53,7 +53,7 @@ export function PhaseIndicator({ currentPhase, phasesCompleted }: PhaseIndicator
               {PHASE_LABELS[phase]}
             </div>
             {i < PHASES.length - 1 && (
-              <span className="text-slate-400 text-xs">→</span>
+              <span className="text-gray-300 text-xs">→</span>
             )}
           </div>
         )

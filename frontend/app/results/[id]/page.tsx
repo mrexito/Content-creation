@@ -57,7 +57,7 @@ export default function ResultPage({ params }: PageProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-slate-500 text-sm">
+      <div className="flex items-center justify-center h-64 text-gray-500 text-sm">
         Lade Ergebnisse…
       </div>
     )
@@ -66,7 +66,7 @@ export default function ResultPage({ params }: PageProps) {
   if (!run) {
     return (
       <div className="space-y-4">
-        <p className="text-slate-400">Run nicht gefunden: {id}</p>
+        <p className="text-gray-500">Run nicht gefunden: {id}</p>
         <Link href="/history">
           <Button variant="outline" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -80,7 +80,7 @@ export default function ResultPage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       <Link href="/history">
-        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-slate-200 -ml-2">
+        <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700 -ml-2">
           <ArrowLeft className="h-4 w-4 mr-2" />
           History
         </Button>

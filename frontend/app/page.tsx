@@ -140,8 +140,8 @@ export default function HomePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-100">Content Rewriting Demo</h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-gray-900">Content Rewriting Demo</h1>
+        <p className="text-gray-500 text-sm mt-1">
           LangChain vs LangGraph – Master Thesis BFH
         </p>
       </div>
@@ -149,36 +149,36 @@ export default function HomePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Config */}
         <div className="lg:col-span-1 space-y-4">
-          <Card className="bg-slate-700 border-slate-600">
+          <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-slate-300">1. PDF Upload</CardTitle>
+              <CardTitle className="text-sm font-semibold text-gray-700">1. PDF Upload</CardTitle>
             </CardHeader>
             <CardContent>
               <FileUpload files={files} onChange={setFiles} />
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-700 border-slate-600">
+          <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-slate-300">2. Domain</CardTitle>
+              <CardTitle className="text-sm font-semibold text-gray-700">2. Domain</CardTitle>
             </CardHeader>
             <CardContent>
               <DomainSelector value={domain} onChange={setDomain} />
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-700 border-slate-600">
+          <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-slate-300">3. Framework</CardTitle>
+              <CardTitle className="text-sm font-semibold text-gray-700">3. Framework</CardTitle>
             </CardHeader>
             <CardContent>
               <FrameworkSelector value={framework} onChange={setFramework} />
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-700 border-slate-600">
+          <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm text-slate-300">4. Konfiguration</CardTitle>
+              <CardTitle className="text-sm font-semibold text-gray-700">4. Konfiguration</CardTitle>
             </CardHeader>
             <CardContent>
               <ConfigPanel
@@ -192,7 +192,7 @@ export default function HomePage() {
 
           <div className="flex gap-2">
             <Button
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
               onClick={handleStart}
               disabled={!canStart}
             >
@@ -202,7 +202,7 @@ export default function HomePage() {
             {appState === "running" && (
               <Button
                 variant="outline"
-                className="border-red-800 text-red-400 hover:bg-red-950/30"
+                className="border-red-300 text-red-600 hover:bg-red-50"
                 onClick={handleStop}
               >
                 <Square className="h-4 w-4 mr-1" />
@@ -211,7 +211,7 @@ export default function HomePage() {
             )}
           </div>
 
-          <p className="text-xs text-slate-400 text-center">
+          <p className="text-xs text-gray-400 text-center">
             Space = Start/Stop · Esc = Stop
           </p>
         </div>
@@ -219,9 +219,9 @@ export default function HomePage() {
         {/* Right: Progress + Results */}
         <div className="lg:col-span-2 space-y-6">
           {activeRunId && (appState === "running" || appState === "done") && (
-            <Card className="bg-slate-700 border-slate-600">
+            <Card className="bg-white border-gray-200 shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm text-slate-300">Live Progress</CardTitle>
+                <CardTitle className="text-sm font-semibold text-gray-700">Live Progress</CardTitle>
               </CardHeader>
               <CardContent>
                 <ProgressTracker
@@ -235,13 +235,13 @@ export default function HomePage() {
 
           {appState === "done" && currentRun && (currentRun.langchain || currentRun.langgraph) && (
             <>
-              <Separator className="bg-slate-600" />
+              <Separator className="bg-gray-200" />
               <ComparisonView run={currentRun} />
             </>
           )}
 
           {appState === "idle" && !currentRun && (
-            <div className="flex items-center justify-center h-48 text-slate-400 text-sm">
+            <div className="flex items-center justify-center h-48 border border-dashed border-gray-300 rounded-lg text-gray-400 text-sm">
               PDF hochladen und Run starten →
             </div>
           )}
