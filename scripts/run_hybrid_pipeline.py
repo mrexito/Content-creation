@@ -13,6 +13,7 @@ Usage:
         --progress data/output/hybrid/run_xyz/progress.json \
         --run-id run_xyz
 """
+import os
 import sys
 import json
 import argparse
@@ -102,6 +103,16 @@ def main():
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--progress", required=True, type=Path)
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--ocr-tool", default="auto",
+                        choices=["auto", "tesseract", "mistral"],
+                        help="OCR tool: auto | tesseract | mistral")
+    parser.add_argument("--llm-provider", default="auto",
+                        choices=["auto", "openai", "bfh"],
+                        help="LLM provider: auto | openai | bfh")
+    parser.add_argument("--llm-model", default="",
+                        help="LLM model name (empty = provider default)")
+    parser.add_argument("--pre-parsed-text", type=Path, default=None,
+                        help="Pfad zu ocr_result.json (überspringt eigenen Parsing-Schritt)")
     args = parser.parse_args()
 
     output_dir = args.output_dir
@@ -109,17 +120,63 @@ def main():
     progress_path = args.progress
     progress_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Initialise OCR and LLM singletons with CLI settings
+    from common.ocr_handler import reset_ocr_handler, get_ocr_handler
+    from common.llm_handler import reset_llm_handler, get_llm_handler
+    reset_ocr_handler()
+    get_ocr_handler(default_tool=args.ocr_tool)
+    reset_llm_handler()
+    get_llm_handler(
+        provider=args.llm_provider,
+        model=args.llm_model if args.llm_model else None,
+    )
+
     domain = None if args.domain == "auto" else args.domain
 
+    # Load shared OCR result if provided
+    pre_parsed_text = None
+    pre_parsed_meta = None
+    if args.pre_parsed_text and args.pre_parsed_text.exists():
+        try:
+            ocr_data = json.loads(args.pre_parsed_text.read_text())
+            if ocr_data.get("success"):
+                pre_parsed_text = ocr_data["text"]
+                pre_parsed_meta = {
+                    "tool_used": ocr_data.get("tool_used", "shared"),
+                    "pages": ocr_data.get("pages", 0),
+                    "processing_time": ocr_data.get("processing_time", 0),
+                    "char_count": ocr_data.get("char_count", 0),
+                    "shared_ocr": True,
+                }
+                logger.info(
+                    f"Verwende geteiltes OCR-Ergebnis: {pre_parsed_meta['char_count']} Zeichen"
+                )
+            else:
+                logger.error(f"Geteiltes OCR fehlgeschlagen: {ocr_data.get('error')}")
+                write_progress(progress_path, "error", "error", [], 0, {
+                    "pdf_name": args.pdf.name, "run_id": args.run_id, "framework": "hybrid",
+                    "domain": args.domain, "ocr_tool": args.ocr_tool,
+                    "llm_provider": args.llm_provider, "llm_model": args.llm_model or "default",
+                    "error": f"OCR fehlgeschlagen: {ocr_data.get('error', 'Unbekannt')}",
+                })
+                sys.exit(1)
+        except Exception as e:
+            logger.warning(f"Konnte pre-parsed-text nicht lesen: {e}. Führe eigenes OCR durch.")
+
     base_meta = {
+        "pdf_name": args.pdf.name,
         "run_id": args.run_id,
         "framework": "hybrid",
-        "pdf": str(args.pdf),
         "domain": args.domain,
-        "variants": args.variants,
+        "ocr_tool": args.ocr_tool,
+        "llm_provider": args.llm_provider,
+        "llm_model": args.llm_model or "default",
     }
 
-    write_progress(progress_path, "running", "parsing", [], 0, base_meta)
+    if pre_parsed_text is not None:
+        write_progress(progress_path, "running", "segmentation", ["parsing"], 10, base_meta)
+    else:
+        write_progress(progress_path, "running", "parsing", [], 0, base_meta)
 
     try:
         pipeline = get_pipeline(
@@ -132,6 +189,8 @@ def main():
         result = pipeline.process_pdf(
             pdf_path=args.pdf,
             output_path=output_dir / args.run_id,
+            pre_parsed_text=pre_parsed_text,
+            pre_parsed_meta=pre_parsed_meta,
         )
 
         if not result["success"]:
@@ -192,20 +251,21 @@ def main():
 
         write_progress(
             progress_path,
-            "completed",
-            "assembly",
+            "complete",
+            "complete",
             PHASES,
             100,
             {**base_meta, **output_data["statistics"]},
         )
 
         logger.info(f"✅ Hybrid Pipeline Runner abgeschlossen → {result_path}")
+        sys.exit(0)
 
     except Exception as e:
         logger.error(f"Hybrid Pipeline Runner fehlgeschlagen: {e}")
         write_progress(
             progress_path,
-            "failed",
+            "error",
             "error",
             [],
             0,

@@ -134,6 +134,7 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
 
             # Segment für Retry vormerken wenn zu wenige valide Varianten
             max_retries = state.get("max_retries", 2)
+            # Read retry_count BEFORE incrementing (edge function mutations don't persist)
             retry_count = (state.get("retry_counts") or {}).get(seg_idx, 0)
 
             if seg_valid_count < MIN_VALID_VARIANTS and retry_count < max_retries:
@@ -144,6 +145,12 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
                 )
 
         validation_rate = total_valid / max(total_valid + total_invalid, 1)
+
+        # Increment retry_counts HERE (in node, not in edge function) so LangGraph persists it
+        retry_counts = dict(state.get("retry_counts") or {})
+        for seg_idx in segments_needing_retry:
+            retry_counts[seg_idx] = retry_counts.get(seg_idx, 0) + 1
+        state["retry_counts"] = retry_counts
 
         state["validation_stats"] = {
             "total_valid": total_valid,

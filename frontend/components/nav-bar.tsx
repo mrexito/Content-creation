@@ -17,8 +17,8 @@ export function NavBar() {
       <div className="container mx-auto px-4 max-w-7xl flex items-center justify-between h-14">
         <div className="flex items-center gap-2 font-semibold text-gray-900">
           <BarChart3 className="h-5 w-5 text-blue-600" />
-          <span className="hidden sm:block">LangChain vs LangGraph</span>
-          <span className="sm:hidden">LC vs LG</span>
+          <span className="hidden sm:block">LC vs LG vs Hybrid</span>
+          <span className="sm:hidden">LC·LG·HY</span>
         </div>
         <div className="flex items-center gap-1">
           {links.map(({ href, label, icon: Icon }) => (

@@ -34,7 +34,7 @@ function saveHistory(runs: RunResult[]) {
 export default function HomePage() {
   const [files, setFiles] = useState<File[]>([])
   const [domain, setDomain] = useState<Domain>("auto")
-  const [framework, setFramework] = useState<Framework>("both")
+  const [framework, setFramework] = useState<Framework>("all")
   const [numVariants, setNumVariants] = useState(2)
   const [maxRetries, setMaxRetries] = useState(3)
   const [ocrTool, setOcrTool] = useState<OcrTool>("auto")
@@ -125,6 +125,7 @@ export default function HomePage() {
         status: "complete",
         langchain: results.langchain as RunResult["langchain"],
         langgraph: results.langgraph as RunResult["langgraph"],
+        hybrid: results.hybrid as RunResult["hybrid"],
         duration: Date.now() - new Date(currentRun.timestamp).getTime(),
       }
       setCurrentRun(updatedRun)
@@ -145,7 +146,7 @@ export default function HomePage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Content Rewriting Demo</h1>
         <p className="text-gray-500 text-sm mt-1">
-          LangChain vs LangGraph – Master Thesis BFH
+          LangChain · LangGraph · Hybrid – Master Thesis BFH
         </p>
       </div>
 
@@ -242,7 +243,7 @@ export default function HomePage() {
             </Card>
           )}
 
-          {appState === "done" && currentRun && (currentRun.langchain || currentRun.langgraph) && (
+          {appState === "done" && currentRun && (currentRun.langchain || currentRun.langgraph || currentRun.hybrid) && (
             <>
               <Separator className="bg-gray-200" />
               <ComparisonView run={currentRun} />

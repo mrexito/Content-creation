@@ -74,6 +74,8 @@ class HybridPipeline:
         self,
         pdf_path: Path,
         output_path: Path = None,
+        pre_parsed_text: str = None,
+        pre_parsed_meta: dict = None,
     ) -> Dict[str, Any]:
         """
         Verarbeitet ein PDF komplett durch alle drei Phasen.
@@ -102,6 +104,11 @@ class HybridPipeline:
             num_variants=self.num_variants,
             max_retries=self.max_retries,
         )
+
+        # Pre-populate with shared OCR result to skip redundant parsing
+        if pre_parsed_text is not None:
+            state["raw_text"] = pre_parsed_text
+            state["ocr_metadata"] = pre_parsed_meta or {"shared_ocr": True}
 
         try:
             # ── Phase 1: LangChain Preprocessing ──────────────────────────────

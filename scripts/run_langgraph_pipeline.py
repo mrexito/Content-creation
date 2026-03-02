@@ -111,6 +111,8 @@ def main():
     parser.add_argument("--llm-provider", default="auto",
                         choices=["auto", "openai", "bfh"])
     parser.add_argument("--llm-model", default="")
+    parser.add_argument("--pre-parsed-text", type=Path, default=None,
+                        help="Pfad zu ocr_result.json (überspringt eigenen Parsing-Schritt)")
     args = parser.parse_args()
 
     pdf_path = args.pdf
@@ -132,6 +134,37 @@ def main():
         model=args.llm_model if args.llm_model else None,
     )
 
+    # Load shared OCR result if provided
+    pre_parsed_text = None
+    pre_parsed_meta = None
+    if args.pre_parsed_text and args.pre_parsed_text.exists():
+        try:
+            ocr_data = json.loads(args.pre_parsed_text.read_text())
+            if ocr_data.get("success"):
+                pre_parsed_text = ocr_data["text"]
+                pre_parsed_meta = {
+                    "tool_used": ocr_data.get("tool_used", "shared"),
+                    "pages": ocr_data.get("pages", 0),
+                    "processing_time": ocr_data.get("processing_time", 0),
+                    "char_count": ocr_data.get("char_count", 0),
+                    "shared_ocr": True,
+                }
+                logger.info(
+                    f"Verwende geteiltes OCR-Ergebnis: {pre_parsed_meta['char_count']} Zeichen"
+                )
+            else:
+                logger.error(f"Geteiltes OCR fehlgeschlagen: {ocr_data.get('error')}")
+                write_progress(progress_path, "error", "error", [], 0, {
+                    "pdf_name": pdf_path.name, "framework": "langgraph",
+                    "domain": args.domain, "run_id": args.run_id,
+                    "ocr_tool": args.ocr_tool, "llm_provider": args.llm_provider,
+                    "llm_model": args.llm_model or "default",
+                    "error": f"OCR fehlgeschlagen: {ocr_data.get('error', 'Unbekannt')}",
+                })
+                sys.exit(1)
+        except Exception as e:
+            logger.warning(f"Konnte pre-parsed-text nicht lesen: {e}. Führe eigenes OCR durch.")
+
     base_meta = {
         "pdf_name": pdf_path.name,
         "framework": "langgraph",
@@ -142,8 +175,11 @@ def main():
         "llm_model": args.llm_model or "default",
     }
 
-    # Write initial progress
-    write_progress(progress_path, "running", "parsing", [], 0, base_meta)
+    # Write initial progress – if parsing already done, skip to segmentation
+    if pre_parsed_text is not None:
+        write_progress(progress_path, "running", "segmentation", ["parsing"], 10, base_meta)
+    else:
+        write_progress(progress_path, "running", "parsing", [], 0, base_meta)
 
     try:
         workflow = create_workflow_graph()
@@ -155,8 +191,14 @@ def main():
             max_retries=args.retries,
         )
 
+        # Inject shared OCR result so parsing_node skips OCR
+        if pre_parsed_text is not None:
+            initial_state['raw_text'] = pre_parsed_text
+            initial_state['ocr_metadata'] = pre_parsed_meta
+            initial_state['current_phase'] = 'parsing_complete'
+
         # LangGraph supports streaming – use stream to emit per-node progress
-        completed_phases = []
+        completed_phases = ["parsing"] if pre_parsed_text is not None else []
         final_state = None
 
         for state in workflow.stream(initial_state):

@@ -12,9 +12,9 @@ Architektur-Entscheidung:
 """
 import time
 from pathlib import Path
-from typing import Dict, Any
 
 from common.logger import setup_logger
+from common.ocr_handler import reset_ocr_handler, get_ocr_handler
 from hybrid_prototype.state.hybrid_state import HybridWorkflowState
 
 # Wiederverwendung der LangChain-Chains (kein Code-Duplizierung)
@@ -72,22 +72,42 @@ class HybridPreprocessingPipeline:
         pdf_path = Path(state["pdf_path"])
 
         # ── Step 1: Parsing ───────────────────────────────────────────────────
-        logger.info("Step 1/3: Parsing PDF...")
-        parse_result = self.parsing_chain.invoke({"pdf_path": str(pdf_path)})
+        if state.get("raw_text"):
+            logger.info("Step 1/3: Parsing übersprungen (geteiltes OCR-Ergebnis)")
+            logger.info(
+                f"  ✓ Parsing (geteilt): {len(state['raw_text'])} Zeichen, "
+                f"Tool: {(state.get('ocr_metadata') or {}).get('tool_used', 'shared')}"
+            )
+        else:
+            logger.info("Step 1/3: Parsing PDF...")
+            parse_result = self.parsing_chain.invoke({"pdf_path": str(pdf_path)})
 
-        if not parse_result["success"]:
-            error_msg = f"Parsing fehlgeschlagen: {parse_result['metadata'].get('error')}"
-            logger.error(error_msg)
-            state["errors"].append(error_msg)
-            state["current_phase"] = "error"
-            return state
+            if not parse_result["success"]:
+                error_msg = f"Parsing fehlgeschlagen: {parse_result['metadata'].get('error')}"
+                logger.error(error_msg)
+                state["errors"].append(error_msg)
+                state["current_phase"] = "error"
+                return state
 
-        state["raw_text"] = parse_result["text"]
-        state["ocr_metadata"] = parse_result["metadata"]
-        logger.info(
-            f"  ✓ Parsing: {len(parse_result['text'])} Zeichen, "
-            f"Tool: {parse_result['metadata'].get('tool_used', 'unknown')}"
-        )
+            # Fallback: Mistral sometimes returns success with 0 chars (silent rate-limit failure)
+            if not parse_result["text"].strip():
+                logger.warning("  ⚠ OCR lieferte keinen Text – Fallback auf Tesseract")
+                reset_ocr_handler()
+                get_ocr_handler(default_tool="tesseract")
+                parse_result = self.parsing_chain.invoke({"pdf_path": str(pdf_path)})
+                if not parse_result.get("text", "").strip():
+                    error_msg = "OCR konnte keinen Text extrahieren (weder Mistral noch Tesseract)"
+                    logger.error(error_msg)
+                    state["errors"].append(error_msg)
+                    state["current_phase"] = "error"
+                    return state
+
+            state["raw_text"] = parse_result["text"]
+            state["ocr_metadata"] = parse_result["metadata"]
+            logger.info(
+                f"  ✓ Parsing: {len(parse_result['text'])} Zeichen, "
+                f"Tool: {parse_result['metadata'].get('tool_used', 'unknown')}"
+            )
 
         # ── Step 2: Segmentierung ─────────────────────────────────────────────
         logger.info("Step 2/3: Segmentierung...")

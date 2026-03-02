@@ -1,4 +1,4 @@
-export type Framework = "langchain" | "langgraph" | "both"
+export type Framework = "langchain" | "langgraph" | "hybrid" | "all"
 export type Domain = "math" | "languages" | "economics" | "auto"
 export type OcrTool = "tesseract" | "mistral" | "auto"
 export type LlmProvider = "openai" | "bfh" | "auto"
@@ -107,5 +107,6 @@ export interface RunResult {
   status: RunStatus
   langchain?: PipelineResult
   langgraph?: PipelineResult
+  hybrid?: PipelineResult
   duration?: number
 }

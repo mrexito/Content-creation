@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import type { ProgressState, Framework } from "@/lib/types"
 import { Progress } from "@/components/ui/progress"
 import { PhaseIndicator } from "./phase-indicator"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, XCircle, Loader2 } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface ProgressTrackerProps {
   runId: string
@@ -20,12 +21,26 @@ const STATUS_STYLES = {
   pending: "text-gray-500 border-gray-200 bg-gray-50",
 }
 
+const FW_LABELS: Record<string, string> = {
+  langchain: "LangChain",
+  langgraph: "LangGraph",
+  hybrid: "Hybrid",
+}
+
+const ALL_SINGLE_FRAMEWORKS = ["langchain", "langgraph", "hybrid"] as const
+type SingleFramework = typeof ALL_SINGLE_FRAMEWORKS[number]
+
 export function ProgressTracker({ runId, framework, onComplete }: ProgressTrackerProps) {
   const [progress, setProgress] = useState<Record<string, ProgressState>>({})
   const [done, setDone] = useState(false)
 
-  const frameworks: Array<"langchain" | "langgraph"> =
-    framework === "both" ? ["langchain", "langgraph"] : [framework]
+  const frameworks: SingleFramework[] = useMemo(() => {
+    if (framework === "all") return ["langchain", "langgraph", "hybrid"]
+    if ((framework as string) === "both") return ["langchain", "langgraph"] // backwards compat
+    if (ALL_SINGLE_FRAMEWORKS.includes(framework as SingleFramework))
+      return [framework as SingleFramework]
+    return ["langchain"]
+  }, [framework])
 
   const poll = useCallback(async () => {
     try {
@@ -37,16 +52,15 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
       const allDone = frameworks.every(
         (fw) => data[fw]?.status === "complete" || data[fw]?.status === "error"
       )
-      if (allDone) {
+      if (allDone && !done) {
         setDone(true)
+        // Always call onComplete, even when some frameworks failed (no result.json)
         const rRes = await fetch(`/api/results/${runId}`)
-        if (rRes.ok) {
-          const results = await rRes.json()
-          onComplete?.(results)
-        }
+        const results = rRes.ok ? await rRes.json() : {}
+        onComplete?.(results)
       }
     } catch {}
-  }, [runId, frameworks, onComplete])
+  }, [runId, frameworks, onComplete, done])
 
   useEffect(() => {
     if (done) return
@@ -64,7 +78,7 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
           <div key={fw} className="bg-white rounded-lg border border-gray-200 p-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-gray-800 capitalize">{fw}</span>
+                <span className="font-semibold text-gray-800">{FW_LABELS[fw] ?? fw}</span>
                 <Badge
                   variant="outline"
                   className={`text-xs ${STATUS_STYLES[status as keyof typeof STATUS_STYLES] ?? ""}`}
@@ -78,7 +92,15 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
               <span className="text-sm font-medium text-gray-500">{p?.progress_percent ?? 0}%</span>
             </div>
 
-            <Progress value={p?.progress_percent ?? 0} className="h-1.5" />
+            <Progress
+              value={status === "error" ? 100 : (p?.progress_percent ?? 0)}
+              className={cn(
+                "h-1.5",
+                status === "error" && "[&>div]:bg-red-400",
+                status === "complete" && "[&>div]:bg-emerald-500",
+                status === "running" && "[&>div]:bg-blue-500",
+              )}
+            />
 
             {p && (
               <PhaseIndicator
@@ -91,6 +113,31 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
               <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2 font-mono">
                 {p.metadata.error}
               </p>
+            )}
+            {status === "error" && !p?.metadata?.error && (
+              <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2">
+                Pipeline fehlgeschlagen.{" "}
+                <a
+                  href={`/api/logs/${runId}/${fw}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-red-800"
+                >
+                  Logs anzeigen
+                </a>
+              </p>
+            )}
+            {status === "error" && (
+              <div className="text-right">
+                <a
+                  href={`/api/logs/${runId}/${fw}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-gray-400 hover:text-gray-600 underline"
+                >
+                  run.log
+                </a>
+              </div>
             )}
           </div>
         )

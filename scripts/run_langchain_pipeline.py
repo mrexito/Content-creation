@@ -101,6 +101,8 @@ def main():
     parser.add_argument("--llm-provider", default="auto",
                         choices=["auto", "openai", "bfh"])
     parser.add_argument("--llm-model", default="")
+    parser.add_argument("--pre-parsed-text", type=Path, default=None,
+                        help="Pfad zu ocr_result.json (überspringt eigenen Parsing-Schritt)")
     args = parser.parse_args()
 
     pdf_path = args.pdf
@@ -122,6 +124,37 @@ def main():
         model=args.llm_model if args.llm_model else None,
     )
 
+    # Load shared OCR result if provided
+    pre_parsed_text = None
+    pre_parsed_meta = {}
+    if args.pre_parsed_text and args.pre_parsed_text.exists():
+        try:
+            ocr_data = json.loads(args.pre_parsed_text.read_text())
+            if ocr_data.get("success"):
+                pre_parsed_text = ocr_data["text"]
+                pre_parsed_meta = {
+                    "tool_used": ocr_data.get("tool_used", "shared"),
+                    "pages": ocr_data.get("pages", 0),
+                    "processing_time": ocr_data.get("processing_time", 0),
+                    "char_count": ocr_data.get("char_count", 0),
+                    "shared_ocr": True,
+                }
+                logger.info(
+                    f"Verwende geteiltes OCR-Ergebnis: {pre_parsed_meta['char_count']} Zeichen"
+                )
+            else:
+                logger.error(f"Geteiltes OCR fehlgeschlagen: {ocr_data.get('error')}")
+                write_progress(progress_path, "error", "error", [], 0, {
+                    **{"pdf_name": pdf_path.name, "framework": "langchain",
+                       "domain": args.domain, "run_id": args.run_id,
+                       "ocr_tool": args.ocr_tool, "llm_provider": args.llm_provider,
+                       "llm_model": args.llm_model or "default"},
+                    "error": f"OCR fehlgeschlagen: {ocr_data.get('error', 'Unbekannt')}",
+                })
+                sys.exit(1)
+        except Exception as e:
+            logger.warning(f"Konnte pre-parsed-text nicht lesen: {e}. Führe eigenes OCR durch.")
+
     base_meta = {
         "pdf_name": pdf_path.name,
         "framework": "langchain",
@@ -137,8 +170,11 @@ def main():
         write_progress(progress_path, "running", phase, completed, pct, base_meta)
 
     try:
-        # Monkey-patch pipeline to emit progress between phases
-        update("parsing", [])
+        # If parsing was already done via shared OCR, start at segmentation
+        if pre_parsed_text is not None:
+            update("segmentation", ["parsing"])
+        else:
+            update("parsing", [])
 
         pipeline = get_pipeline(domain=domain, num_variants=args.variants)
 
@@ -174,13 +210,18 @@ def main():
                 _logger = _setup_logger(__name__)
 
                 try:
-                    # 1. PARSING
-                    parse_result = self.parsing_chain.invoke({'pdf_path': str(pdf_path)})
-                    step("parsing")
-                    if not parse_result['success']:
-                        raise Exception(f"Parsing failed: {parse_result['metadata'].get('error')}")
-                    pipeline_results['parsing'] = parse_result['metadata']
-                    text = parse_result['text']
+                    # 1. PARSING – skip if shared OCR result provided
+                    if pre_parsed_text is not None:
+                        step("parsing")
+                        pipeline_results['parsing'] = pre_parsed_meta
+                        text = pre_parsed_text
+                    else:
+                        parse_result = self.parsing_chain.invoke({'pdf_path': str(pdf_path)})
+                        step("parsing")
+                        if not parse_result['success']:
+                            raise Exception(f"Parsing failed: {parse_result['metadata'].get('error')}")
+                        pipeline_results['parsing'] = parse_result['metadata']
+                        text = parse_result['text']
 
                     # 2. SEGMENTATION
                     seg_result = self.segmentation_chain.invoke({'text': text})

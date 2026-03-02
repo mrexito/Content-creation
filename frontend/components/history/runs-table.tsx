@@ -20,9 +20,19 @@ const STATUS_ICONS = {
 }
 
 const FRAMEWORK_STYLES: Record<string, string> = {
-  both: "bg-purple-100 text-purple-700 border-purple-200",
   langchain: "bg-blue-100 text-blue-700 border-blue-200",
   langgraph: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  hybrid: "bg-amber-100 text-amber-700 border-amber-200",
+  both: "bg-purple-100 text-purple-700 border-purple-200",
+  all: "bg-violet-100 text-violet-700 border-violet-200",
+}
+
+const FRAMEWORK_LABELS: Record<string, string> = {
+  langchain: "LangChain",
+  langgraph: "LangGraph",
+  hybrid: "Hybrid",
+  both: "Beide",
+  all: "Alle drei",
 }
 
 export function RunsTable({ runs, onDelete, onRerun }: RunsTableProps) {
@@ -39,8 +49,9 @@ export function RunsTable({ runs, onDelete, onRerun }: RunsTableProps) {
       {runs.map((run) => {
         const lc = run.langchain
         const lg = run.langgraph
-        const validRate = lc?.metrics.validation_rate ?? lg?.metrics.validation_rate
-        const totalTime = lc?.metrics.total_time ?? lg?.metrics.total_time
+        const hy = run.hybrid
+        const validRate = lc?.metrics.validation_rate ?? lg?.metrics.validation_rate ?? hy?.metrics.validation_rate
+        const totalTime = lc?.metrics.total_time ?? lg?.metrics.total_time ?? hy?.metrics.total_time
 
         return (
           <div
@@ -55,7 +66,7 @@ export function RunsTable({ runs, onDelete, onRerun }: RunsTableProps) {
               <p className="text-sm font-semibold text-gray-800 truncate">{run.pdf_name}</p>
               <div className="flex items-center gap-2 flex-wrap">
                 <Badge variant="outline" className={`text-xs ${FRAMEWORK_STYLES[run.framework] ?? ""}`}>
-                  {run.framework}
+                  {FRAMEWORK_LABELS[run.framework] ?? run.framework}
                 </Badge>
                 <Badge variant="outline" className="text-xs text-gray-500 border-gray-200">{run.domain}</Badge>
                 <span className="text-xs text-gray-400">

@@ -11,7 +11,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LangChain vs LangGraph – Thesis Demo",
+  title: "LC vs LG vs Hybrid – Thesis Demo",
   description: "Master Thesis: Automated Content Rewriting Comparison",
 };
 

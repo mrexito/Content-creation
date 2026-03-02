@@ -44,7 +44,7 @@ export default function ResultPage({ params }: PageProps) {
             timestamp: new Date().toISOString(),
             pdf_name: data.langchain?.pdf_name ?? data.langgraph?.pdf_name ?? "unknown.pdf",
             domain: data.langchain?.domain ?? data.langgraph?.domain ?? "auto",
-            framework: data.langchain && data.langgraph ? "both" : data.langchain ? "langchain" : "langgraph",
+            framework: data.hybrid || (data.langchain && data.langgraph) ? "all" : data.langchain ? "langchain" : "langgraph",
             config: { numVariants: 2, maxRetries: 3 },
             status: "complete",
             langchain: data.langchain,

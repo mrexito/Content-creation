@@ -1,10 +1,39 @@
 import { NextRequest, NextResponse } from "next/server"
 import { generateRunId } from "@/lib/file-utils"
 import { runPipeline, getProgressPath } from "@/lib/python-runner"
+import { spawn } from "child_process"
 import fs from "fs"
 import path from "path"
 
 const PROJECT_ROOT = path.resolve(process.cwd(), "..")
+
+/** Run OCR once and write result to outputPath. Returns true on success. */
+async function runOCR(opts: {
+  pdfPath: string
+  domain: string
+  ocrTool: string
+  outputPath: string
+}): Promise<boolean> {
+  const scriptPath = path.join(PROJECT_ROOT, "scripts", "run_ocr.py")
+  return new Promise((resolve) => {
+    const proc = spawn("python", [
+      scriptPath,
+      "--pdf", opts.pdfPath,
+      "--domain", opts.domain,
+      "--ocr-tool", opts.ocrTool,
+      "--output", opts.outputPath,
+    ], {
+      cwd: PROJECT_ROOT,
+      env: {
+        ...process.env,
+        PYTHONPATH: path.join(PROJECT_ROOT, "src"),
+        PYTHONUNBUFFERED: "1",
+      },
+    })
+    proc.on("close", (code) => resolve(code === 0))
+    proc.on("error", () => resolve(false))
+  })
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,13 +45,18 @@ export async function POST(req: NextRequest) {
     }
 
     const runId = generateRunId()
-    const frameworks: Array<"langchain" | "langgraph"> =
-      framework === "both" ? ["langchain", "langgraph"] : [framework]
+    type SingleFW = "langchain" | "langgraph" | "hybrid"
+    const frameworks: SingleFW[] =
+      framework === "all"
+        ? ["langchain", "langgraph", "hybrid"]
+        : (["langchain", "langgraph", "hybrid"] as string[]).includes(framework)
+        ? [framework as SingleFW]
+        : ["langchain"] // Fallback für alte History-Einträge mit "both"
 
     // Write initial progress for each framework
     for (const fw of frameworks) {
       const progressPath = getProgressPath(runId, fw)
-      const initial = {
+      fs.writeFileSync(progressPath, JSON.stringify({
         status: "running",
         current_phase: "parsing",
         phases_completed: [],
@@ -32,11 +66,69 @@ export async function POST(req: NextRequest) {
           framework: fw,
           domain: domain || "auto",
         },
-      }
-      fs.writeFileSync(progressPath, JSON.stringify(initial, null, 2))
+      }, null, 2))
     }
 
-    // Fire-and-forget: run in background
+    // ── OCR pre-step: run once when multiple frameworks are selected ──────────
+    // Single-framework runs also benefit from the centralised fallback logic.
+    const sharedDir = path.join(PROJECT_ROOT, "data", "output", "shared", runId)
+    fs.mkdirSync(sharedDir, { recursive: true })
+    const ocrResultPath = path.join(sharedDir, "ocr_result.json")
+
+    const ocrSuccess = await runOCR({
+      pdfPath,
+      domain: domain || "auto",
+      ocrTool: ocrTool || "auto",
+      outputPath: ocrResultPath,
+    })
+
+    if (!ocrSuccess) {
+      // Mark all frameworks as failed — no point running them without text
+      for (const fw of frameworks) {
+        const progressPath = getProgressPath(runId, fw)
+        try {
+          const existing = JSON.parse(fs.readFileSync(progressPath, "utf-8"))
+          if (existing.status === "complete" || existing.status === "error") continue
+        } catch {}
+        fs.writeFileSync(progressPath, JSON.stringify({
+          status: "error",
+          current_phase: "error",
+          phases_completed: [],
+          progress_percent: 0,
+          metadata: {
+            pdf_name: path.basename(pdfPath),
+            framework: fw,
+            domain: domain || "auto",
+            error: "OCR-Vorverarbeitung fehlgeschlagen. Prüfe OCR-Tool und PDF.",
+          },
+        }, null, 2))
+      }
+      return NextResponse.json({
+        success: true,
+        runId,
+        frameworks,
+        pdfName: path.basename(pdfPath),
+        ocrFailed: true,
+      })
+    }
+
+    // Update initial progress: parsing done, now per-framework processing starts
+    for (const fw of frameworks) {
+      const progressPath = getProgressPath(runId, fw)
+      fs.writeFileSync(progressPath, JSON.stringify({
+        status: "running",
+        current_phase: "segmentation",
+        phases_completed: ["parsing"],
+        progress_percent: 10,
+        metadata: {
+          pdf_name: path.basename(pdfPath),
+          framework: fw,
+          domain: domain || "auto",
+        },
+      }, null, 2))
+    }
+
+    // ── Fire-and-forget: start all frameworks in parallel ────────────────────
     for (const fw of frameworks) {
       const progressPath = getProgressPath(runId, fw)
       runPipeline({
@@ -50,8 +142,16 @@ export async function POST(req: NextRequest) {
         ocrTool: ocrTool || "auto",
         llmProvider: llmProvider || "auto",
         llmModel: llmModel || "",
+        preParsedTextPath: ocrResultPath,
       }).then(({ success, error }) => {
-        // Update progress to final state on completion
+        // Only write if Python didn't already write a final status.
+        // Python writes its own complete/error progress with detailed messages;
+        // overwriting it would destroy the error message from the Python log.
+        try {
+          const existing = JSON.parse(fs.readFileSync(progressPath, "utf-8"))
+          if (existing.status === "complete" || existing.status === "error") return
+        } catch {}
+        // Fallback: Python didn't reach a final write (e.g. killed) — write ourselves
         const prog = {
           status: success ? "complete" : "error",
           current_phase: success ? "complete" : "error",

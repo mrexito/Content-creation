@@ -33,15 +33,8 @@ def should_retry_or_proceed(state: HybridWorkflowState) -> str:
     segments_needing_retry = validation_stats.get("segments_needing_retry", [])
 
     if segments_needing_retry:
-        # Erhöhe Retry-Counts für die betroffenen Segmente
-        retry_counts = state.get("retry_counts") or {}
-        for seg_idx in segments_needing_retry:
-            retry_counts[seg_idx] = retry_counts.get(seg_idx, 0) + 1
-        state["retry_counts"] = retry_counts
-
-        # Setze Phase für Rewriting-Node zurück
-        state["current_phase"] = "validation_failed"
-
+        # Note: retry_counts are incremented in the validation node (not here),
+        # because LangGraph does not persist state mutations made in edge functions.
         logger.info(
             f"  Edge: {len(segments_needing_retry)} Segmente benötigen Retry → 'retry'"
         )
