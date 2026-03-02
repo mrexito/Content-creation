@@ -71,16 +71,24 @@ function JsonAccordion({ result, fwKey }: { result: PipelineResult; fwKey: strin
         <span className="text-sm font-medium text-gray-700">
           {FW_LABEL[fwKey] ?? fwKey} – result.json
         </span>
-        <button
+        <span
+          role="button"
+          tabIndex={0}
           onClick={(e) => {
             e.stopPropagation()
             downloadJson(result, `${fwKey}_result.json`)
           }}
-          className="ml-auto text-xs text-gray-400 hover:text-gray-700 flex items-center gap-1"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.stopPropagation()
+              downloadJson(result, `${fwKey}_result.json`)
+            }
+          }}
+          className="ml-auto text-xs text-gray-400 hover:text-gray-700 flex items-center gap-1 cursor-pointer"
         >
           <Download className="h-3 w-3" />
           Download
-        </button>
+        </span>
       </button>
       {open && (
         <div className="border-t border-gray-200 bg-white p-4 max-h-96 overflow-auto">

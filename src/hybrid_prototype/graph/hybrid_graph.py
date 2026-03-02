@@ -58,12 +58,15 @@ def create_hybrid_graph():
     return app
 
 
-def run_hybrid_graph(state: HybridWorkflowState) -> HybridWorkflowState:
+def run_hybrid_graph(state: HybridWorkflowState, progress_callback=None) -> HybridWorkflowState:
     """
     Führt den Hybrid-Graphen mit dem gegebenen State aus.
 
     Args:
-        state: HybridWorkflowState nach abgeschlossenem Preprocessing
+        state:             HybridWorkflowState nach abgeschlossenem Preprocessing
+        progress_callback: Optionaler Callable[[str], None] – wird nach jedem
+                           abgeschlossenen Node mit dem Phasennamen aufgerufen
+                           (z.B. "rewriting", "validation")
 
     Returns:
         Aktualisierter State mit segments_with_variants und validation_stats
@@ -73,7 +76,24 @@ def run_hybrid_graph(state: HybridWorkflowState) -> HybridWorkflowState:
     logger.info("HYBRID LANGGRAPH (Rewriting + Validation) – Start")
     logger.info("=" * 60)
 
-    final_state = app.invoke(state)
+    # Phase-Namen der Hybrid-Nodes
+    _PHASE_MAP = {
+        "rewriting_complete": "rewriting",
+        "validation_complete": "validation",
+    }
+
+    final_state = None
+    for node_snapshot in app.stream(state):
+        node_name = list(node_snapshot.keys())[0]
+        node_state = node_snapshot[node_name]
+        current_phase = node_state.get("current_phase", "")
+        phase_done = _PHASE_MAP.get(current_phase)
+        if phase_done and progress_callback:
+            progress_callback(phase_done)
+        final_state = node_state
+
+    if final_state is None:
+        final_state = state
 
     if final_state.get("current_phase") == "error":
         logger.error("LangGraph Phase mit Fehler beendet")

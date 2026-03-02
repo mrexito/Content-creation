@@ -76,6 +76,7 @@ class HybridPipeline:
         output_path: Path = None,
         pre_parsed_text: str = None,
         pre_parsed_meta: dict = None,
+        progress_callback=None,
     ) -> Dict[str, Any]:
         """
         Verarbeitet ein PDF komplett durch alle drei Phasen.
@@ -119,8 +120,15 @@ class HybridPipeline:
                     f"Preprocessing fehlgeschlagen: {state['errors']}"
                 )
 
+            if progress_callback:
+                # Preprocessing covers parsing → segmentation → classification
+                if not (pre_parsed_text is not None):
+                    progress_callback("parsing")
+                progress_callback("segmentation")
+                progress_callback("classification")
+
             # ── Phase 2: LangGraph Rewriting + Validation ──────────────────────
-            state = run_hybrid_graph(state)
+            state = run_hybrid_graph(state, progress_callback=progress_callback)
 
             if state["current_phase"] == "error":
                 raise RuntimeError(
@@ -129,6 +137,9 @@ class HybridPipeline:
 
             # ── Phase 3: LangChain Postprocessing ─────────────────────────────
             state = self.postprocessing.run(state, output_path=output_path)
+
+            if progress_callback:
+                progress_callback("assembly")
 
             total_time = time.time() - pipeline_start
 

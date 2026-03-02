@@ -170,10 +170,20 @@ def main():
         "llm_model": args.llm_model or "default",
     }
 
+    completed_phases_hybrid: list = ["parsing"] if pre_parsed_text is not None else []
+
     if pre_parsed_text is not None:
         write_progress(progress_path, "running", "segmentation", ["parsing"], 10, base_meta)
     else:
         write_progress(progress_path, "running", "parsing", [], 0, base_meta)
+
+    def on_phase_complete(phase: str) -> None:
+        if phase not in completed_phases_hybrid:
+            completed_phases_hybrid.append(phase)
+        remaining = [p for p in PHASES if p not in completed_phases_hybrid]
+        next_phase = remaining[0] if remaining else "assembly"
+        pct = phase_progress(next_phase) if next_phase in PHASES else 95
+        write_progress(progress_path, "running", next_phase, list(completed_phases_hybrid), pct, base_meta)
 
     try:
         pipeline = get_pipeline(
@@ -188,6 +198,7 @@ def main():
             output_path=output_dir / args.run_id,
             pre_parsed_text=pre_parsed_text,
             pre_parsed_meta=pre_parsed_meta,
+            progress_callback=on_phase_complete,
         )
 
         if not result["success"]:
