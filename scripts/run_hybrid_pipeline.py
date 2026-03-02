@@ -13,16 +13,13 @@ Usage:
         --progress data/output/hybrid/run_xyz/progress.json \
         --run-id run_xyz
 """
-import os
 import sys
 import json
 import argparse
-import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from common.config import Config
 from common.logger import setup_logger
 from hybrid_prototype.pipeline import get_pipeline
 
@@ -228,25 +225,49 @@ def main():
 
         stats = result.get("statistics", {})
         graph_stats = stats.get("graph", {})
+        preproc_stats = stats.get("preprocessing", {})
 
-        output_data = {
-            "run_id": args.run_id,
-            "framework": "hybrid",
+        total_valid = graph_stats.get("total_valid", 0)
+        total_invalid = graph_stats.get("total_invalid", 0)
+        total_variants = total_valid + total_invalid
+
+        # PDF-Generierung: Aufgaben-PDF und Lösungs-PDF
+        tasks_path = output_dir / "tasks.pdf"
+        solutions_path = output_dir / "solutions.pdf"
+        pdf_files = None
+        try:
+            from common.pdf_generator import PdfGenerator
+            _generator = PdfGenerator()
+            _generator.generate_tasks_pdf(assembled_doc, tasks_path)
+            _generator.generate_solutions_pdf(assembled_doc, solutions_path)
+            pdf_files = {"tasks": str(tasks_path), "solutions": str(solutions_path)}
+        except Exception as pdf_err:
+            logger.warning(f"PDF-Generierung fehlgeschlagen: {pdf_err}")
+
+        # Ergebnis im Frontend-Format (identisch zu LangChain/LangGraph)
+        frontend_result: dict = {
             "success": True,
-            "segments": transformed,
-            "statistics": {
-                "total_segments": len(transformed),
-                "total_variants": graph_stats.get("total_valid", 0),
-                "valid_variants": graph_stats.get("total_valid", 0),
+            "framework": "hybrid",
+            "domain": args.domain,
+            "pdf_name": args.pdf.name,
+            "metrics": {
+                "total_time": stats.get("total_time", 0.0),
+                "ocr_time": preproc_stats.get("ocr_time", 0),
+                "ocr_tool": preproc_stats.get("ocr_tool", "unknown"),
+                "num_segments": len(transformed),
+                "total_variants": total_variants,
+                "valid_variants": total_valid,
                 "validation_rate": graph_stats.get("validation_rate", 0.0),
-                "processing_time": stats.get("total_time", 0.0),
             },
+            "segments": transformed,
             "output_files": result.get("output_files", []),
         }
+        if pdf_files:
+            frontend_result["pdf_files"] = pdf_files
 
         result_path = output_dir / "result.json"
         result_path.write_text(
-            json.dumps(output_data, indent=2, ensure_ascii=False)
+            json.dumps(frontend_result, indent=2, ensure_ascii=False)
         )
 
         write_progress(
@@ -255,7 +276,7 @@ def main():
             "complete",
             PHASES,
             100,
-            {**base_meta, **output_data["statistics"]},
+            {**base_meta, "result_path": str(result_path)},
         )
 
         logger.info(f"✅ Hybrid Pipeline Runner abgeschlossen → {result_path}")
