@@ -20,7 +20,7 @@ logger = setup_logger(__name__)
 OCRTool = Literal['tesseract', 'mistral', 'auto']
 
 TESSERACT_CONFIG = '--psm 1 --oem 3'
-MISTRAL_OCR_MODEL = 'pixtral-12b-2409'
+MISTRAL_OCR_MODEL = 'mistral-ocr-latest'
 
 class OCRHandler:
     """
@@ -138,37 +138,46 @@ class OCRHandler:
         """OCR mit Mistral API"""
         try:
             from mistralai import Mistral
-            
+
             # Bild zu Base64
             buffered = io.BytesIO()
             image.save(buffered, format="PNG")
             img_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
-            
+            img_size_kb = len(buffered.getvalue()) / 1024
+
+            # Debug: Outgoing request info
+            api_key = Config.MISTRAL_API_KEY
+            masked_key = f"{api_key[:8]}...{api_key[-4:]}" if api_key and len(api_key) > 12 else repr(api_key)
+            print(f"\n[MISTRAL OCR] >>> OUTGOING REQUEST")
+            print(f"[MISTRAL OCR]     Model: {MISTRAL_OCR_MODEL}")
+            print(f"[MISTRAL OCR]     API Key: {masked_key}")
+            print(f"[MISTRAL OCR]     Image size: {img_size_kb:.1f} KB (base64)")
+            print(f"[MISTRAL OCR]     Image format: data:image/png;base64 (inline)")
+
             # Mistral API Call
-            client = Mistral(api_key=Config.MISTRAL_API_KEY)
-            
-            response = client.chat.complete(
+            client = Mistral(api_key=api_key)
+
+            print(f"[MISTRAL OCR]     Sending request to Mistral OCR API...")
+
+            response = client.ocr.process(
                 model=MISTRAL_OCR_MODEL,
-                messages=[{
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": """Extrahiere den gesamten Text aus diesem Dokument. 
-                            Behalte die Struktur bei (Überschriften, Absätze, Listen).
-                            Formeln sollten in LaTeX-Format sein."""
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": f"data:image/png;base64,{img_base64}"
-                        }
-                    ]
-                }]
+                document={
+                    "type": "image_url",
+                    "image_url": f"data:image/png;base64,{img_base64}"
+                }
             )
-            
-            return response.choices[0].message.content
-            
+
+            # Debug: Incoming response info
+            content = "\n\n".join(page.markdown for page in response.pages)
+            print(f"[MISTRAL OCR] <<< INCOMING RESPONSE")
+            print(f"[MISTRAL OCR]     Pages in response: {len(response.pages)}")
+            print(f"[MISTRAL OCR]     Response length: {len(content)} chars")
+            print(f"[MISTRAL OCR]     Preview: {repr(content[:200])}")
+
+            return content
+
         except Exception as e:
+            print(f"[MISTRAL OCR] !!! EXCEPTION: {type(e).__name__}: {e}")
             logger.error(f"Mistral OCR Fehler: {e}")
             return ""
     
@@ -210,9 +219,13 @@ class OCRHandler:
         # Wähle Tool
         tool = self._choose_tool(domain, force_tool)
         logger.info(f"  Gewähltes Tool: {tool}" + (f" (Domain: {domain})" if domain else ""))
-        
+        print(f"\n[OCR HANDLER] PDF: {pdf_path.name}")
+        print(f"[OCR HANDLER] Mistral API Key vorhanden: {bool(Config.MISTRAL_API_KEY)}")
+        print(f"[OCR HANDLER] mistral_available: {self.mistral_available}")
+        print(f"[OCR HANDLER] Gewähltes Tool: {tool} (domain={domain}, force_tool={force_tool})")
+
         start_time = time.time()
-        
+
         try:
             # PDF zu Bildern
             images = self._pdf_to_images(pdf_path)
