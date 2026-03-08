@@ -251,7 +251,7 @@ class LLMHandler:
                     'success': True,
                     'warning': 'Parsed mit Fallback-Methode'
                 }
-            except:
+            except (ValueError, SyntaxError):
                 pass
             
             # Komplett fehlgeschlagen

@@ -52,6 +52,9 @@ export default function ResultPage({ params }: PageProps) {
           })
         }
       })
+      .catch(() => {
+        // Run not found or API error — leave run as null, handled in render
+      })
       .finally(() => setLoading(false))
   }, [id])
 

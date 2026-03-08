@@ -2,7 +2,7 @@
 BERT Validator für semantische Ähnlichkeit
 Nutzt BERTScore für Text-Vergleiche
 """
-from typing import Dict, List
+from typing import Any, Dict, List
 from bert_score import score
 import torch
 
@@ -121,7 +121,7 @@ class BERTValidator:
         original: str,
         paraphrased: str,
         min_threshold: float = 0.92
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """
         Prüft ob eine Paraphrase semantisch äquivalent ist
         

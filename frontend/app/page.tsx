@@ -57,7 +57,7 @@ export default function HomePage() {
     }
     window.addEventListener("keydown", handler)
     return () => window.removeEventListener("keydown", handler)
-  })
+  }, [appState, handleStart, handleStop])
 
   const handleStart = useCallback(async () => {
     if (!files.length) {
@@ -109,11 +109,11 @@ export default function HomePage() {
     }
   }, [files, domain, framework, numVariants, maxRetries, ocrTool, llmProvider, llmModel])
 
-  const handleStop = () => {
+  const handleStop = useCallback(() => {
     setAppState("idle")
     setActiveRunId(null)
     toast.info("Run gestoppt")
-  }
+  }, [])
 
   const handleComplete = useCallback(
     (results: Record<string, unknown>) => {

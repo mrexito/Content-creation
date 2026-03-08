@@ -19,6 +19,9 @@ logger = setup_logger(__name__)
 # Verfügbare OCR-Tools
 OCRTool = Literal['tesseract', 'mistral', 'auto']
 
+TESSERACT_CONFIG = '--psm 1 --oem 3'
+MISTRAL_OCR_MODEL = 'pixtral-12b-2409'
+
 class OCRHandler:
     """
     Zentrale Klasse für OCR-Verarbeitung mit Multi-Tool-Support
@@ -124,7 +127,7 @@ class OCRHandler:
             text = pytesseract.image_to_string(
                 image,
                 lang=self.tesseract_lang,
-                config='--psm 1 --oem 3'
+                config=TESSERACT_CONFIG
             )
             return text
         except Exception as e:
@@ -145,7 +148,7 @@ class OCRHandler:
             client = Mistral(api_key=Config.MISTRAL_API_KEY)
             
             response = client.chat.complete(
-                model="pixtral-12b-2409",
+                model=MISTRAL_OCR_MODEL,
                 messages=[{
                     "role": "user",
                     "content": [

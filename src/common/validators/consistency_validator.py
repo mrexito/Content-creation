@@ -3,7 +3,7 @@ Consistency Validator für Zahlen-Text-Konsistenz
 Prüft ob Zahlen im Text mit Zahlen in Tabellen/Berechnungen übereinstimmen
 """
 import re
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 from collections import Counter
 
 from ..logger import setup_logger
@@ -56,7 +56,7 @@ class ConsistencyValidator:
         text: str,
         expected_numbers: List[float],
         tolerance: float = 0.01
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """
         Prüft ob erwartete Zahlen im Text vorkommen
         
@@ -102,7 +102,7 @@ class ConsistencyValidator:
     def check_balance_sheet_consistency(
         self,
         text: str
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """
         Spezielle Prüfung für Bilanzen
         Prüft ob Aktiva = Passiva
@@ -160,7 +160,7 @@ class ConsistencyValidator:
         self,
         text: str,
         calculation: str
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """
         Prüft ob eine Berechnung im Text konsistent ist
         
