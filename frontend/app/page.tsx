@@ -11,7 +11,7 @@ import { ComparisonView } from "@/components/results/comparison-view"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Play, Square } from "lucide-react"
+import { Play, Square, RotateCcw } from "lucide-react"
 import { toast } from "sonner"
 import { generateRunId } from "@/lib/file-utils"
 
@@ -101,6 +101,31 @@ export default function HomePage() {
     toast.info("Run gestoppt")
   }, [])
 
+  const handleReset = useCallback(() => {
+    setFiles([])
+    setAppState("idle")
+    setActiveRunId(null)
+    setCurrentRun(null)
+    setDomain("auto")
+    setFramework("all")
+    setNumVariants(2)
+    setMaxRetries(3)
+    setOcrTool("auto")
+    setLlmProvider("auto")
+    setLlmModel("")
+    toast.info("Dashboard zurückgesetzt – bereit für neuen Run")
+  }, [])
+
+  const handleFilesChange = useCallback((newFiles: File[]) => {
+    setFiles(newFiles)
+    if (newFiles.length > 0 && appState === "done") {
+      setCurrentRun(null)
+      setActiveRunId(null)
+      setAppState("idle")
+      toast.info("Neue Datei erkannt – Run zurückgesetzt")
+    }
+  }, [appState])
+
   // Keyboard shortcuts — nach handleStart/handleStop deklariert (const wird nicht gehoisted)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -158,7 +183,7 @@ export default function HomePage() {
               <CardTitle className="text-sm font-semibold text-gray-700">1. PDF Upload</CardTitle>
             </CardHeader>
             <CardContent>
-              <FileUpload files={files} onChange={setFiles} />
+              <FileUpload files={files} onChange={handleFilesChange} />
             </CardContent>
           </Card>
 
@@ -217,6 +242,16 @@ export default function HomePage() {
               >
                 <Square className="h-4 w-4 mr-1" />
                 Stop
+              </Button>
+            )}
+            {appState === "done" && (
+              <Button
+                variant="outline"
+                className="border-gray-300 text-gray-600 hover:bg-gray-50"
+                onClick={handleReset}
+              >
+                <RotateCcw className="h-4 w-4 mr-1" />
+                Neu starten
               </Button>
             )}
           </div>

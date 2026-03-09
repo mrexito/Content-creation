@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import type { RunResult, Domain, Framework } from "@/lib/types"
 import { RunsTable } from "@/components/history/runs-table"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Search, Trash2 } from "lucide-react"
 
 function loadHistory(): RunResult[] {
   if (typeof window === "undefined") return []
@@ -43,6 +44,13 @@ export default function HistoryPage() {
     toast.success("Run gelöscht")
   }
 
+  const handleClearHistory = useCallback(() => {
+    if (!window.confirm("Gesamte History löschen?")) return
+    localStorage.removeItem("runs")
+    setRuns([])
+    toast.success("History gelöscht")
+  }, [])
+
   const handleRerun = (run: RunResult) => {
     // Store rerun config in sessionStorage, navigate to home
     sessionStorage.setItem("rerun", JSON.stringify({
@@ -57,9 +65,21 @@ export default function HistoryPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Run History</h1>
-        <p className="text-gray-500 text-sm mt-1">{runs.length} gespeicherte Runs</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Run History</h1>
+          <p className="text-gray-500 text-sm mt-1">{runs.length} gespeicherte Runs</p>
+        </div>
+        {runs.length > 0 && (
+          <Button
+            variant="outline"
+            className="border-red-300 text-red-600 hover:bg-red-50"
+            onClick={handleClearHistory}
+          >
+            <Trash2 className="h-4 w-4 mr-1" />
+            History löschen
+          </Button>
+        )}
       </div>
 
       <div className="relative max-w-sm">
