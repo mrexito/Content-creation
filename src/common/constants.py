@@ -48,6 +48,16 @@ def normalize_domain(domain: str) -> str:
     return _DOMAIN_ALIASES.get(domain.strip().lower(), DOMAIN_GENERAL)
 
 
+# ── Segment-Typen ─────────────────────────────────────────────────────────────
+# THESIS: Segmentfilter — methodische Entscheidung
+# Titel und Musterlösungen werden bewusst nicht umgeschrieben, da:
+# 1. Titel sind strukturelle Metadaten, keine inhaltlichen Lernelemente
+# 2. Musterlösungen dürfen nicht verfälscht werden (fachliche Korrektheit)
+# 3. Nur 'task', 'theory', 'example' sind valide Rewriting-Kandidaten
+# Siehe Thesis Kapitel 5.x: Segmentfilter-Logik
+NON_REWRITABLE_TYPES: frozenset = frozenset({"title", "solution", "metadata"})
+REWRITABLE_TYPES: frozenset = frozenset({"task", "theory", "example"})
+
 # ── Validierungs-Schwellwerte ──────────────────────────────────────────────────
 # Gemeinsamer BERTScore-Threshold für LangChain, LangGraph und Hybrid.
 # Wert 0.70 ist bewusst niedriger als BERTScore-Standard (0.92),

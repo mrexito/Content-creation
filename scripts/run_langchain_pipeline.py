@@ -20,6 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from common.config import Config
+from common.constants import NON_REWRITABLE_TYPES
 from common.logger import setup_logger
 from langchain_prototype.pipeline import get_pipeline
 
@@ -70,6 +71,8 @@ def transform_segments(segments_with_variants: list) -> list:
                 'validation_issues': val.get('issues', []),
             })
 
+        val_stats = seg.get('validation_statistics', {})
+        skipped = val_stats.get('skipped', False)
         valid_count = sum(1 for v in transformed_variants if v['is_valid'])
         result.append({
             'original_segment': {
@@ -82,6 +85,7 @@ def transform_segments(segments_with_variants: list) -> list:
                 'total': len(transformed_variants),
                 'valid': valid_count,
                 'avg_diversity': 0.0,
+                'skipped': skipped,
             },
         })
     return result
@@ -237,6 +241,18 @@ def main():
                     segments_with_variants = []
                     total = len(segments)
                     for idx, segment in enumerate(segments, 1):
+                        # THESIS: Segmentfilter — Titel/Musterlösungen überspringen
+                        segment_type = segment.get('type', 'unknown')
+                        if segment_type in NON_REWRITABLE_TYPES:
+                            _logger.info(f"  Segment {idx}: Überspringe type='{segment_type}' (nicht rewritable)")
+                            segments_with_variants.append({
+                                'original_segment': segment,
+                                'classification': {'domain': 'general', 'content_type': segment_type, 'confidence': 1.0},
+                                'validated_variants': [],
+                                'validation_statistics': {'skipped': True, 'reason': f'type={segment_type} is not rewritable'},
+                            })
+                            continue
+
                         cls_result = self.classification_chain.invoke({'segment': segment})
                         if not cls_result['success']:
                             continue

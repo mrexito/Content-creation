@@ -63,6 +63,7 @@ export interface SegmentResult {
     total: number
     valid: number
     avg_diversity: number
+    skipped?: boolean
   }
 }
 

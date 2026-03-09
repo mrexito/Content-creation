@@ -6,7 +6,7 @@ import time
 from typing import Dict, Any
 from difflib import SequenceMatcher
 
-from common.constants import DOMAIN_LANGUAGES
+from common.constants import DOMAIN_LANGUAGES, NON_REWRITABLE_TYPES
 from common.llm_handler import get_llm_handler
 from common.logger import setup_logger
 from langgraph_prototype.state.workflow_state import WorkflowState
@@ -112,7 +112,21 @@ class RewritingNode:
                 classification = cs['classification']
                 domain = classification.get('domain', 'general')
                 text = segment.get('text', '')
-                
+
+                # THESIS: Segmentfilter — Titel/Musterlösungen überspringen
+                segment_type = segment.get('type', 'unknown')
+                if segment_type in NON_REWRITABLE_TYPES:
+                    logger.info(f"  Überspringe Segment {idx+1} (type='{segment_type}', nicht rewritable)")
+                    segments_with_variants.append({
+                        'segment_idx': idx,
+                        'segment': segment,
+                        'classification': classification,
+                        'variants': [],
+                        'skipped': True,
+                        'skip_reason': f'type={segment_type} is not rewritable',
+                    })
+                    continue
+
                 # Check retry count for this segment
                 retry_count = state.get('retry_counts', {}).get(idx, 0)
                 

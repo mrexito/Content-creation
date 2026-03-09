@@ -85,6 +85,7 @@ def transform_segments(segments_with_variants: list) -> list:
                 'validation_issues': val.get('issues', []),
             })
 
+        skipped = seg.get('skipped', False)
         valid_count = sum(1 for v in transformed_variants if v['is_valid'])
         result.append({
             'original_segment': {
@@ -97,6 +98,7 @@ def transform_segments(segments_with_variants: list) -> list:
                 'total': len(transformed_variants),
                 'valid': valid_count,
                 'avg_diversity': 0.0,
+                'skipped': skipped,
             },
         })
     return result

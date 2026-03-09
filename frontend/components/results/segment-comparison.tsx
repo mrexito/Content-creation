@@ -34,6 +34,14 @@ const FW_CONFIG = {
   },
 } as const
 
+const NON_REWRITABLE_SEGMENT_TYPES = new Set(["title", "solution", "metadata"])
+
+const SEGMENT_TYPE_LABELS: Record<string, string> = {
+  title:    "Titel",
+  solution: "Musterlösung",
+  metadata: "Metadaten",
+}
+
 const DOMAIN_STYLES: Record<string, string> = {
   math: "bg-blue-100 text-blue-700",
   economics: "bg-amber-100 text-amber-700",
@@ -86,6 +94,10 @@ export function SegmentComparison({ langchain, langgraph, hybrid }: SegmentCompa
         const domain =
           segData.find((s) => s.segment)?.segment?.classification?.domain ?? "general"
 
+        const segmentType =
+          segData.find((s) => s.segment)?.segment?.original_segment?.type ?? "unknown"
+        const isSkipped = NON_REWRITABLE_SEGMENT_TYPES.has(segmentType)
+
         const summaries = segData.map((s) => {
           const seg = s.segment
           if (!seg) return { key: s.key, config: s.config, text: "–", hasData: false, allValid: false, noneValid: true }
@@ -127,22 +139,28 @@ export function SegmentComparison({ langchain, langgraph, hybrid }: SegmentCompa
                   {domain}
                 </span>
                 <div className="flex items-center gap-1.5 ml-1">
-                  {summaries.map((s) => (
-                    <span
-                      key={s.key}
-                      className={`text-xs px-1.5 py-0.5 rounded font-medium ${
-                        s.hasData
-                          ? s.allValid
-                            ? "bg-emerald-100 text-emerald-700"
-                            : s.noneValid
-                            ? "bg-red-100 text-red-600"
-                            : "bg-amber-100 text-amber-700"
-                          : "bg-gray-100 text-gray-400"
-                      }`}
-                    >
-                      {s.config.label.replace("Lang", "")}:{s.text}
+                  {isSkipped ? (
+                    <span className="text-xs px-1.5 py-0.5 rounded font-medium bg-gray-100 text-gray-400 italic">
+                      {SEGMENT_TYPE_LABELS[segmentType] ?? segmentType} – übersprungen
                     </span>
-                  ))}
+                  ) : (
+                    summaries.map((s) => (
+                      <span
+                        key={s.key}
+                        className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                          s.hasData
+                            ? s.allValid
+                              ? "bg-emerald-100 text-emerald-700"
+                              : s.noneValid
+                              ? "bg-red-100 text-red-600"
+                              : "bg-amber-100 text-amber-700"
+                            : "bg-gray-100 text-gray-400"
+                        }`}
+                      >
+                        {s.config.label.replace("Lang", "")}:{s.text}
+                      </span>
+                    ))
+                  )}
                 </div>
               </div>
             </button>
@@ -161,7 +179,17 @@ export function SegmentComparison({ langchain, langgraph, hybrid }: SegmentCompa
                   </div>
                 </div>
 
+                {/* Skipped or framework columns */}
+                {isSkipped ? (
+                  <div className="px-4 py-5 text-center bg-gray-50">
+                    <p className="text-xs text-gray-400 italic">
+                      {SEGMENT_TYPE_LABELS[segmentType] ?? segmentType} — wird nicht umgeschrieben
+                    </p>
+                  </div>
+                ) : null}
+
                 {/* Framework columns */}
+                {!isSkipped && (
                 <div className={`grid gap-px bg-gray-200 ${colClass}`}>
                   {segData.map(({ key, config, segment }) => (
                     <div key={key} className="bg-white">
@@ -257,6 +285,7 @@ export function SegmentComparison({ langchain, langgraph, hybrid }: SegmentCompa
                     </div>
                   ))}
                 </div>
+                )}
               </div>
             )}
           </div>

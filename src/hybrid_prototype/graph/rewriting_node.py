@@ -10,7 +10,7 @@ import time
 from difflib import SequenceMatcher
 from typing import List
 
-from common.constants import DOMAIN_LANGUAGES
+from common.constants import DOMAIN_LANGUAGES, NON_REWRITABLE_TYPES
 from common.llm_handler import get_llm_handler
 from common.logger import setup_logger
 from hybrid_prototype.state.hybrid_state import HybridWorkflowState
@@ -113,6 +113,28 @@ def hybrid_rewriting_node(state: HybridWorkflowState) -> HybridWorkflowState:
             original_text = segment.get("text", "")
             domain = classification.get("domain", "general")
             retry_count = retry_counts.get(idx, 0)
+
+            # THESIS: Segmentfilter — Titel/Musterlösungen überspringen
+            segment_type = segment.get("type", "unknown")
+            if segment_type in NON_REWRITABLE_TYPES:
+                logger.info(f"  Überspringe Segment {idx+1} (type='{segment_type}', nicht rewritable)")
+                skipped_entry = {
+                    "segment_idx": idx,
+                    "segment": segment,
+                    "classification": classification,
+                    "variants": [],
+                    "skipped": True,
+                    "skip_reason": f"type={segment_type} is not rewritable",
+                }
+                replaced = False
+                for i, sv in enumerate(result_segments):
+                    if sv["segment_idx"] == idx:
+                        result_segments[i] = skipped_entry
+                        replaced = True
+                        break
+                if not replaced:
+                    result_segments.append(skipped_entry)
+                continue
 
             system_prompt = DOMAIN_PROMPTS.get(domain, REWRITING_GENERAL_SYSTEM_PROMPT)
 

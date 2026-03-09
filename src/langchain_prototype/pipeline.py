@@ -7,6 +7,7 @@ from typing import Dict, Any
 import time
 
 from common.config import Config
+from common.constants import NON_REWRITABLE_TYPES
 from common.logger import setup_logger
 from langchain_prototype.chains.parsing_chain import get_parsing_chain
 from langchain_prototype.chains.segmentation_chain import get_segmentation_chain
@@ -98,7 +99,21 @@ class LangChainPipeline:
             
             for idx, segment in enumerate(segments, 1):
                 logger.info(f"  Segment {idx}/{len(segments)}")
-                
+
+                # THESIS: Segmentfilter — methodische Entscheidung
+                # Titel und Musterlösungen werden nicht umgeschrieben (strukturelle Metadaten
+                # bzw. fachlich unveränderliche Inhalte). Siehe Thesis Kapitel 5.x.
+                segment_type = segment.get('type', 'unknown')
+                if segment_type in NON_REWRITABLE_TYPES:
+                    logger.info(f"  Segment {idx}: Überspringe type='{segment_type}' (nicht rewritable)")
+                    segments_with_variants.append({
+                        'original_segment': segment,
+                        'classification': {'domain': 'general', 'content_type': segment_type, 'confidence': 1.0},
+                        'validated_variants': [],
+                        'validation_statistics': {'skipped': True, 'reason': f'type={segment_type} is not rewritable'}
+                    })
+                    continue
+
                 # 3. Klassifizierung
                 classify_result = self.classification_chain.invoke({'segment': segment})
                 

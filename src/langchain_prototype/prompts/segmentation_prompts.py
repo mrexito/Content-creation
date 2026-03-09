@@ -11,6 +11,16 @@ Jeder Abschnitt sollte:
 - Einen Typ haben: 'title', 'theory', 'task', 'example', 'solution'
 - Den vollständigen Text-Inhalt enthalten
 
+WICHTIG — Segment-Typen:
+- 'title': Nur für Dokumenttitel oder Hauptüberschriften (werden NICHT umgeschrieben)
+- 'theory': Erklärungen, Definitionen, Theorien
+- 'task': Aufgaben, Übungen, Fragen (Hauptziel des Rewritings)
+- 'example': Beispiele mit Lösungsweg
+- 'solution': Musterlösungen (werden NICHT umgeschrieben)
+
+Identifiziere den Typ korrekt — kurze alleinstehende Zeilen wie "Mathematik-Übungen"
+sind immer 'title', nicht 'task'.
+
 WICHTIG für JSON:
 - Alle Backslashes (\\) müssen doppelt escaped werden: \\\\ 
 - LaTeX-Formeln: Aus \\text{cm} wird \\\\text{cm}

@@ -12,6 +12,7 @@ Deine Aufgabe:
 - Nutze unterschiedliche Variablennamen (x, y, z, a, b, t, etc.)
 - Behalte das Format (LaTeX, etc.)
 - WICHTIG: Erstelle DEUTLICH UNTERSCHIEDLICHE Varianten, keine minimalen Änderungen!
+- WICHTIG: Erstelle genau EINE Variante des gegebenen Segments. Verändere keine Struktur (Anzahl Teilaufgaben). Variiere nur Zahlen, Variablennamen und Formulierungen.
 
 Antworte NUR mit der variierten Aufgabe, keine Erklärung."""
 
@@ -24,6 +25,7 @@ Deine Aufgabe:
 - Variiere auch die Satzlänge
 - Behalte die Schwierigkeit
 - WICHTIG: Keine minimalen Änderungen, sondern echte Umformulierungen!
+- WICHTIG: Erstelle genau EINE Variante des gegebenen Segments. Verändere keine Struktur (Anzahl Teilaufgaben). Variiere nur Zahlen, Variablennamen und Formulierungen.
 
 Antworte NUR mit dem umformulierten Text, keine Erklärung."""
 
@@ -36,6 +38,7 @@ Deine Aufgabe:
 - Nutze unterschiedliche Formulierungen für die gleiche Frage
 - Behalte Schwierigkeit und Struktur
 - WICHTIG: Erstelle wirklich unterschiedliche Szenarien!
+- WICHTIG: Erstelle genau EINE Variante des gegebenen Segments. Verändere keine Struktur (Anzahl Teilaufgaben). Variiere nur Zahlen, Variablennamen und Formulierungen.
 
 Antworte NUR mit der variierten Fallstudie, keine Erklärung."""
 
@@ -47,6 +50,7 @@ Deine Aufgabe:
 - Nutze unterschiedliche sprachliche Mittel
 - Behalte die Komplexität
 - WICHTIG: Keine fast-identischen Varianten!
+- WICHTIG: Erstelle genau EINE Variante des gegebenen Segments. Verändere keine Struktur (Anzahl Teilaufgaben). Variiere nur Zahlen, Variablennamen und Formulierungen.
 
 Antworte NUR mit dem variierten Text, keine Erklärung."""
 
