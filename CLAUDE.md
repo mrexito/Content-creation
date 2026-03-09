@@ -1,3 +1,30 @@
+After completing a task that involves tool use, provide a quick summary of the work you've done
+
+By default, implement changes rather than only suggesting them. If the user's intent is unclear, infer the most useful likely action and proceed, using tools to discover any missing details instead of guessing. Try to infer the user's intent about whether a tool call (e.g. file edit or read) is intended or not, and act accordingly.
+
+Use parallel tool calls:
+If you intend to call multiple tools and there are no dependencies
+between the tool calls, make all of the independent tool calls in
+parallel. Prioritize calling tools simultaneously whenever the
+actions can be done in parallel rather than sequentially. For
+example, when reading 3 files, run 3 tool calls in parallel to read
+all 3 files into context at the same time. Maximize use of parallel
+tool calls where possible to increase speed and efficiency.
+However, if some tool calls depend on previous calls to inform
+dependent values like the parameters, do not call these tools in
+parallel and instead call them sequentially. Never use placeholders
+or guess missing parameters in tool calls.
+
+If you create any temporary new files, scripts, or helper files for iteration, clean up these files by removing them at the end of the task.
+
+Reduce hallucinations:
+Never speculate about code you have not opened. If the user
+references a specific file, you MUST read the file before
+answering. Make sure to investigate and read relevant files BEFORE
+answering questions about the codebase. Never make any claims about
+code before investigating unless you are certain of the correct
+answer - give grounded and hallucination-free answers.
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -41,11 +68,13 @@ Scripts add `src/` to the path via `sys.path.insert(0, ...)`. When running scrip
 ## Configuration
 
 All config lives in `.env.dev` (not `.env`). Copy and edit it:
+
 ```bash
 cp .env.dev .env.dev.local
 ```
 
 Key config options:
+
 - `LLM_PROVIDER`: `'openai'`, `'bfh'`, or `'auto'` (auto-detects from available API keys)
 - `OCR_DEFAULT_TOOL`: `'tesseract'`, `'mistral'`, or `'auto'`
 - `OCR_DOMAIN_MATH/LANGUAGES/ECONOMICS`: per-domain OCR tool overrides
@@ -77,6 +106,7 @@ All three implement the same 6-step pipeline but with different orchestration pa
 ### Test Domains
 
 Three domains in `data/input/`:
+
 - `math/equations_simple.pdf` — uses Mistral OCR + SymPy validation
 - `languages/grammar_exercise.pdf` — uses Tesseract + BERTScore
 - `economics/balance_sheet.pdf` — uses Tesseract + consistency checks
@@ -104,6 +134,7 @@ npm run build   # production build check
 **Stack:** Next.js 16 (App Router), TypeScript strict, Tailwind CSS v4, shadcn/ui, recharts, lucide-react
 
 **Key files:**
+
 - `frontend/app/page.tsx` — main page: upload + run + live progress
 - `frontend/app/history/page.tsx` — past runs (localStorage)
 - `frontend/app/results/[id]/page.tsx` — result detail view
@@ -113,12 +144,14 @@ npm run build   # production build check
 - `frontend/lib/server-utils.ts` — server-only file utilities (fs/path)
 
 **How the frontend invokes Python:**
+
 1. `POST /api/upload` saves PDFs to `data/input/frontend-uploads/`
 2. `POST /api/run` spawns `scripts/run_langchain_pipeline.py` or `run_langgraph_pipeline.py` via `child_process.spawn` with `PYTHONPATH=src`
 3. `GET /api/progress/[runId]` reads `data/output/{framework}/{runId}/progress.json` (polled every 500ms)
 4. `GET /api/results/[runId]` reads `data/output/{framework}/{runId}/result.json`
 
 **Frontend pipeline scripts** (`scripts/run_langchain_pipeline.py`, `scripts/run_langgraph_pipeline.py`):
+
 - Accept `--pdf`, `--domain`, `--variants`, `--retries`, `--output-dir`, `--progress`, `--run-id`
 - Write progress updates to `--progress` path throughout execution
 - Write `result.json` with a standardized `PipelineResult` schema on completion

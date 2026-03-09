@@ -15,6 +15,31 @@ from langgraph_prototype.state.workflow_state import WorkflowState
 logger = setup_logger(__name__)
 
 
+def _check_placeholder_preservation(original: str, variant: str) -> dict:
+    """
+    Prüft ob Aufgaben-Platzhalter aus dem Original in der Variante erhalten sind.
+    Verhindert dass das LLM Lücken ausfüllt statt zu variieren.
+    """
+    placeholders = ['□', '___', '→ ___', '→___', '________']
+
+    original_count = sum(original.count(p) for p in placeholders)
+    variant_count  = sum(variant.count(p)  for p in placeholders)
+
+    if original_count == 0:
+        return {'is_valid': True, 'original_count': 0, 'variant_count': 0, 'skipped': True}
+
+    ratio = variant_count / original_count
+    is_valid = ratio >= 0.8
+
+    return {
+        'is_valid': is_valid,
+        'original_count': original_count,
+        'variant_count': variant_count,
+        'ratio': ratio,
+        'skipped': False
+    }
+
+
 def validation_node(state: WorkflowState) -> WorkflowState:
     """
     Validation Node mit domain-spezifischen Thresholds und Retry-Tracking
@@ -99,7 +124,19 @@ def validation_node(state: WorkflowState) -> WorkflowState:
                     
                     if not bert_result['is_valid']:
                         issues.append(f"BERT-Score zu niedrig: {bert_result['score']:.2f} < 0.70")
-                
+
+                    # Placeholder-Check
+                    placeholder_result = _check_placeholder_preservation(original_text, variant_text)
+                    validation_results['placeholder'] = placeholder_result
+
+                    if not placeholder_result.get('skipped') and not placeholder_result['is_valid']:
+                        issues.append(
+                            f"Platzhalter nicht erhalten: "
+                            f"{placeholder_result['variant_count']} von "
+                            f"{placeholder_result['original_count']} Platzhaltern vorhanden "
+                            f"(min. 80% erforderlich)"
+                        )
+
                 elif domain == 'economics':
                     # Consistency mit höherer Toleranz
                     original_numbers = consistency_validator.extract_numbers(original_text)
@@ -125,7 +162,7 @@ def validation_node(state: WorkflowState) -> WorkflowState:
                 if domain == 'economics':
                     min_ratio, max_ratio = 0.4, 2.5
                 elif domain == 'languages':
-                    min_ratio, max_ratio = 0.6, 1.8
+                    min_ratio, max_ratio = 0.6, 1.5
                 else:
                     min_ratio, max_ratio = 0.5, 2.0
                 

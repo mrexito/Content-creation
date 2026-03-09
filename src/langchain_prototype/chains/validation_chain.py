@@ -13,6 +13,22 @@ from common.logger import setup_logger
 
 logger = setup_logger(__name__)
 
+# Marker-Strings die auf einen Prompt-Leak im LLM-Output hinweisen
+_PROMPT_LEAK_MARKERS = [
+    "Erstelle eine inhaltlich äquivalente",
+    "Erstelle ein inhaltlich",
+    "DEUTLICH anders formulierte Variante",
+    "inhaltlich äquivalente, aber DEUTLICH",
+    "anders formulierte Variante",
+]
+
+def _has_prompt_leak(text: str) -> bool:
+    """
+    Prüft ob der LLM-Output versehentlich den Prompt-Text enthält.
+    Dies passiert wenn das Modell den User-Prompt als Teil des Outputs ausgibt.
+    """
+    return any(marker in text for marker in _PROMPT_LEAK_MARKERS)
+
 
 class ValidationChain:
     """
@@ -26,6 +42,35 @@ class ValidationChain:
         self.consistency_validator = get_consistency_validator()
         logger.info("ValidationChain initialisiert")
     
+    def _check_placeholder_preservation(self, original: str, variant: str) -> dict:
+        """
+        Prüft ob Aufgaben-Platzhalter aus dem Original in der Variante erhalten sind.
+        Verhindert dass das LLM Lücken ausfüllt statt zu variieren.
+
+        Returns:
+            Dict mit is_valid, original_count, variant_count, missing
+        """
+        placeholders = ['□', '___', '→ ___', '→___', '________']
+
+        original_count = sum(original.count(p) for p in placeholders)
+        variant_count  = sum(variant.count(p)  for p in placeholders)
+
+        # Kein Placeholder im Original → Check nicht anwendbar
+        if original_count == 0:
+            return {'is_valid': True, 'original_count': 0, 'variant_count': 0, 'skipped': True}
+
+        # Mindestens 80% der Platzhalter müssen erhalten sein
+        ratio = variant_count / original_count
+        is_valid = ratio >= 0.8
+
+        return {
+            'is_valid': is_valid,
+            'original_count': original_count,
+            'variant_count': variant_count,
+            'ratio': ratio,
+            'skipped': False
+        }
+
     def validate_variant(
         self,
         original: str,
@@ -45,7 +90,16 @@ class ValidationChain:
         """
         validation_results = {}
         issues = []
-        
+
+        # Prompt-Leak-Check: LLM-Output darf keinen Prompt-Text enthalten
+        if _has_prompt_leak(variant):
+            return {
+                'is_valid': False,
+                'validation_results': {'prompt_leak': True},
+                'issues': ['Prompt-Text im Output erkannt — LLM hat den Eingabe-Prompt ausgegeben'],
+                'domain': domain
+            }
+
         # Domain-spezifische Validierung
         if domain == 'mathematics':
             # SymPy Validierung
@@ -87,7 +141,19 @@ class ValidationChain:
             
             if not bert_result['is_valid']:
                 issues.append(bert_result.get('reason', 'Semantische Ähnlichkeit zu gering'))
-        
+
+            # Placeholder-Check: Lücken dürfen nicht ausgefüllt werden
+            placeholder_result = self._check_placeholder_preservation(original, variant)
+            validation_results['placeholder'] = placeholder_result
+
+            if not placeholder_result.get('skipped') and not placeholder_result['is_valid']:
+                issues.append(
+                    f"Platzhalter nicht erhalten: "
+                    f"{placeholder_result['variant_count']} von "
+                    f"{placeholder_result['original_count']} Platzhaltern vorhanden "
+                    f"(min. 80% erforderlich)"
+                )
+
         elif domain == 'economics':
             # Consistency Validierung (Zahlen)
             logger.debug("Validiere Wirtschaft-Inhalt mit Consistency Validator")
@@ -114,10 +180,18 @@ class ValidationChain:
         # Längen-Check (sollte nicht zu stark abweichen)
         length_ratio = len(variant) / len(original) if len(original) > 0 else 0
         
-        if length_ratio < 0.5 or length_ratio > 2.0:
+        # Domain-spezifische Längen-Toleranz
+        if domain == 'languages':
+            min_ratio, max_ratio = 0.6, 1.5
+        elif domain == 'economics':
+            min_ratio, max_ratio = 0.4, 2.5
+        else:
+            min_ratio, max_ratio = 0.5, 2.0
+
+        if length_ratio < min_ratio or length_ratio > max_ratio:
             issues.append(
                 f"Länge weicht stark ab: {len(variant)} vs {len(original)} Zeichen "
-                f"(Ratio: {length_ratio:.2f})"
+                f"(Ratio: {length_ratio:.2f}, erlaubt: {min_ratio:.1f}–{max_ratio:.1f})"
             )
         
         validation_results['length_check'] = {

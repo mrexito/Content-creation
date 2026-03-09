@@ -23,6 +23,32 @@ logger = setup_logger(__name__)
 # Mindestanzahl valider Varianten pro Segment bevor Retry
 MIN_VALID_VARIANTS = 1
 
+PLACEHOLDERS = ['☐', '□', '___', '→ ___', '→___', '________']
+
+
+def _check_placeholder_preservation(original: str, variant: str) -> dict:
+    """
+    Prüft ob Aufgaben-Platzhalter aus dem Original in der Variante erhalten sind.
+    Verhindert dass das LLM Lücken ausfüllt statt zu variieren.
+    Unterstützt ☐ (U+2610, Hybrid OCR) und □ (U+25A1).
+    """
+    original_count = sum(original.count(p) for p in PLACEHOLDERS)
+    variant_count  = sum(variant.count(p)  for p in PLACEHOLDERS)
+
+    if original_count == 0:
+        return {'is_valid': True, 'original_count': 0, 'variant_count': 0, 'skipped': True}
+
+    ratio = variant_count / original_count
+    is_valid = ratio >= 0.8
+
+    return {
+        'is_valid': is_valid,
+        'original_count': original_count,
+        'variant_count': variant_count,
+        'ratio': ratio,
+        'skipped': False
+    }
+
 
 def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
     """
@@ -84,6 +110,7 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
 
                 issues = []
                 score = 1.0
+                placeholder_result = None
 
                 # ── Domain-spezifische Validierung ───────────────────────────
                 if domain == "mathematics":
@@ -105,6 +132,16 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
                         issues.append(reason)
                         score = min(score, bert_result.get("score", 0.5))
 
+                    # Placeholder-Check: Lücken dürfen nicht ausgefüllt werden
+                    placeholder_result = _check_placeholder_preservation(original_text, variant_text)
+                    if not placeholder_result.get('skipped') and not placeholder_result['is_valid']:
+                        issues.append(
+                            f"Platzhalter nicht erhalten: "
+                            f"{placeholder_result['variant_count']} von "
+                            f"{placeholder_result['original_count']} Platzhaltern vorhanden "
+                            f"(min. 80% erforderlich)"
+                        )
+
                 elif domain == "economics":
                     original_numbers = consistency_validator.extract_numbers(original_text)
                     econ_result = consistency_validator.check_number_consistency(
@@ -121,6 +158,8 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
                     "issues": issues,
                     "score": score,
                 }
+                if placeholder_result is not None:
+                    variant["validation"]["placeholder"] = placeholder_result
 
                 if is_valid:
                     total_valid += 1

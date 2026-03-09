@@ -185,14 +185,57 @@ LABEL_MAP = {
 }
 
 
+def strip_latex_preamble(text: str) -> str:
+    """
+    Remove LaTeX document-structure commands from a text string.
+
+    Strips \\documentclass, \\usepackage, \\begin{document}/\\end{document},
+    \\begin{enumerate}/\\end{enumerate}, \\begin{itemize}/\\end{itemize},
+    and \\section*{...} (replaced by its content).
+    Replaces \\item with '- ' to preserve list structure as plain text.
+    Does NOT strip inline math commands (\\frac, \\cdot, \\text, etc.).
+    """
+    # Remove \documentclass{...}
+    text = re.sub(r'\\documentclass\{[^}]*\}', '', text)
+    # Remove \usepackage[...]{...} or \usepackage{...}
+    text = re.sub(r'\\usepackage(?:\[[^\]]*\])?\{[^}]*\}', '', text)
+    # Remove \begin{document} and \end{document}
+    text = re.sub(r'\\(?:begin|end)\{document\}', '', text)
+    # Remove \begin{enumerate}, \end{enumerate}, \begin{itemize}, \end{itemize}
+    text = re.sub(r'\\(?:begin|end)\{(?:enumerate|itemize)\}', '', text)
+    # Replace \section*{content} with just content
+    text = re.sub(r'\\section\*\{([^}]*)\}', r'\1', text)
+    # Replace \item with '- '
+    text = re.sub(r'\\item\s*', '- ', text)
+    # Normalize doubled backslashes before LaTeX commands (\\cmd → \cmd)
+    text = re.sub(r'\\{2,}([a-zA-Z])', r'\\\1', text)
+    # Remove spurious \ext{ commands (OCR artefact), keeping the brace
+    text = re.sub(r'\\ext\{', '{', text)
+    return text.strip()
+
+
 def _best_text(segment: Dict) -> str:
     """Return the text of the best valid variant, or the original."""
     variants = segment.get('variants', [])
     if variants:
         best = max(variants, key=lambda v: v.get('validation_score', 0.0))
         if best.get('text'):
-            return best['text']
-    return segment.get('original', '')
+            return strip_latex_preamble(best['text'])
+    return strip_latex_preamble(segment.get('original', ''))
+
+
+PROMPT_LEAK_MARKERS = [
+    "Erstelle eine inhaltlich",
+    "Erstelle ein inhaltlich",
+    "DEUTLICH anders",
+    "inhaltlich äquivalentes",
+    "inhaltlich gleichwertige",
+]
+
+
+def _is_prompt_leak(text: str) -> bool:
+    """Return True if the segment text contains prompt template fragments."""
+    return any(marker in text for marker in PROMPT_LEAK_MARKERS)
 
 
 # ---------------------------------------------------------------------------
@@ -315,9 +358,14 @@ def _build_pdf(
     task_counter = 0
     solution_counter = 0
 
-    for segment in segments:
+    for idx, segment in enumerate(segments):
         seg_type = segment.get('segment_type', 'unknown').lower()
         if seg_type == 'solution' and not include_solutions:
+            continue
+
+        text = _best_text(segment)
+        if _is_prompt_leak(text):
+            logger.warning(f"Prompt-Leak erkannt in Segment {idx}, Segment wird übersprungen.")
             continue
 
         if seg_type == 'task':
@@ -334,7 +382,6 @@ def _build_pdf(
 
         story.append(Paragraph(_xml_escape(label), header_style))
 
-        text = _best_text(segment)
         if text:
             story.extend(
                 _text_to_flowables(text, styles['body'], tmpfiles,
