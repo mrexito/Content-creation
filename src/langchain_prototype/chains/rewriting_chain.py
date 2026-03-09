@@ -5,6 +5,7 @@ Domain-spezifische Content-Variation mit Diversity-Mechanismus
 from typing import Dict, Any, List
 from difflib import SequenceMatcher
 
+from common.constants import DOMAIN_LANGUAGES
 from common.llm_handler import get_llm_handler
 from common.logger import setup_logger
 from langchain_prototype.prompts.rewriting_prompts import (
@@ -118,11 +119,17 @@ class RewritingChain:
                 else:
                     user_prompt = REWRITING_USER_PROMPT_TEMPLATE.format(text=text)
                 
-                # LLM aufrufen (höhere Temperature für mehr Diversität)
+                # Temperature-Paradox: Für Languages darf Temperature nicht erhöht
+                # werden, da BERTScore semantische Nähe erfordert.
+                if domain == DOMAIN_LANGUAGES:
+                    temperature = 0.7  # Konstant niedrig für BERT-Validierung
+                else:
+                    temperature = 0.9 + (attempt * 0.05)  # Steigt bei Wiederholungen
+
                 result = self.llm.generate(
                     prompt=user_prompt,
                     system_prompt=system_prompt,
-                    temperature=0.9 + (attempt * 0.05)  # Erhöhe Temperature bei Wiederholungen
+                    temperature=temperature
                 )
                 
                 if not result['success']:

@@ -1,6 +1,6 @@
 """
-Systematische Evaluation: LangChain vs LangGraph
-Testet beide Prototypen mit allen Domains (math, languages, economics)
+Systematische Evaluation: LangChain vs LangGraph vs Hybrid
+Testet alle drei Prototypen mit allen Domains (math, languages, economics)
 """
 from pathlib import Path
 import sys
@@ -11,11 +11,17 @@ from datetime import datetime
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from common.config import Config
+from common.logger import setup_logger
+from common.constants import normalize_domain
 from langchain_prototype.pipeline import get_pipeline as get_langchain_pipeline
 from langgraph_prototype.state.workflow_state import create_initial_state
 from langgraph_prototype.graph import create_workflow_graph
+from hybrid_prototype.pipeline import HybridPipeline
+
+logger = setup_logger(__name__)
 
 # Test-Konfiguration
+# Schlüssel = Ordnername unter data/input/, 'domain' = kanonischer Domain-String
 TEST_CONFIG = {
     'math': {
         'pdf': 'equations_simple.pdf',
@@ -58,26 +64,26 @@ def run_langchain_test(domain_name: str, config: dict) -> dict:
         }
     
     try:
-        # Pipeline erstellen
+        # Pipeline erstellen (Domain normalisieren)
         pipeline = get_langchain_pipeline(
-            domain=config['domain'],
+            domain=normalize_domain(config['domain']),
             num_variants=config['num_variants']
         )
-        
+
         # Ausführen
         start_time = time.time()
         result = pipeline.process_pdf(pdf_path)
         total_time = time.time() - start_time
-        
+
         if result['success']:
             stats = result['statistics']
-            
+
             print(f"✅ Erfolgreich!")
             print(f"   Zeit: {total_time:.2f}s")
             print(f"   Segmente: {stats['segmentation']['num_segments']}")
             print(f"   Varianten: {stats['assembly']['valid_variants']}/{stats['assembly']['total_variants']}")
             print(f"   Validierung: {stats['assembly']['valid_variants']/stats['assembly']['total_variants']*100:.1f}%")
-            
+
             return {
                 'success': True,
                 'framework': 'langchain',
@@ -100,8 +106,9 @@ def run_langchain_test(domain_name: str, config: dict) -> dict:
                 'domain': domain_name,
                 'error': result.get('error')
             }
-            
+
     except Exception as e:
+        logger.exception(f"LangChain Exception für {domain_name}")
         print(f"❌ Exception: {str(e)}")
         return {
             'success': False,
@@ -136,11 +143,11 @@ def run_langgraph_test(domain_name: str, config: dict) -> dict:
     try:
         # Workflow erstellen
         workflow = create_workflow_graph()
-        
-        # Initial State
+
+        # Initial State (Domain normalisieren)
         initial_state = create_initial_state(
             pdf_path=str(pdf_path),
-            domain=config['domain'],
+            domain=normalize_domain(config['domain']),
             num_variants=config['num_variants']
         )
         
@@ -195,10 +202,92 @@ def run_langgraph_test(domain_name: str, config: dict) -> dict:
             }
             
     except Exception as e:
+        logger.exception(f"LangGraph Exception für {domain_name}")
         print(f"❌ Exception: {str(e)}")
         return {
             'success': False,
             'framework': 'langgraph',
+            'domain': domain_name,
+            'error': str(e)
+        }
+
+
+def run_hybrid_test(domain_name: str, config: dict) -> dict:
+    """
+    Führt Hybrid-Test für eine Domain aus
+
+    Returns:
+        Dict mit results und metadata
+    """
+    print(f"\n{'='*70}")
+    print(f"Hybrid - {domain_name.upper()}")
+    print(f"{'='*70}\n")
+
+    pdf_path = Config.DATA_INPUT_PATH / domain_name / config['pdf']
+
+    if not pdf_path.exists():
+        print(f"❌ PDF nicht gefunden: {pdf_path}")
+        return {
+            'success': False,
+            'error': f'PDF not found: {pdf_path}',
+            'domain': domain_name,
+            'framework': 'hybrid'
+        }
+
+    try:
+        pipeline = HybridPipeline(
+            domain=normalize_domain(config['domain']),
+            num_variants=config['num_variants']
+        )
+
+        start_time = time.time()
+        result = pipeline.process_pdf(pdf_path)
+        total_time = time.time() - start_time
+
+        if result['success']:
+            stats = result.get('statistics', {})
+            assembly_stats = stats.get('assembly', stats.get('postprocessing', {}))
+            total_variants = assembly_stats.get('total_variants', 0)
+            valid_variants = assembly_stats.get('valid_variants', 0)
+            num_segments = stats.get('segmentation', {}).get('num_segments', 0) or \
+                           stats.get('preprocessing', {}).get('num_segments', 0)
+
+            print(f"✅ Erfolgreich!")
+            print(f"   Zeit: {total_time:.2f}s")
+            print(f"   Segmente: {num_segments}")
+            if total_variants > 0:
+                print(f"   Varianten: {valid_variants}/{total_variants}")
+                print(f"   Validierung: {valid_variants/total_variants*100:.1f}%")
+
+            return {
+                'success': True,
+                'framework': 'hybrid',
+                'domain': domain_name,
+                'pdf_path': str(pdf_path),
+                'total_time': total_time,
+                'num_segments': num_segments,
+                'total_variants': total_variants,
+                'valid_variants': valid_variants,
+                'validation_rate': valid_variants / total_variants if total_variants > 0 else 0,
+                'ocr_tool': stats.get('parsing', {}).get('tool_used', 'N/A'),
+                'ocr_time': stats.get('parsing', {}).get('processing_time', 0),
+                'output_files': result.get('output_files', [])
+            }
+        else:
+            print(f"❌ Fehlgeschlagen: {result.get('error')}")
+            return {
+                'success': False,
+                'framework': 'hybrid',
+                'domain': domain_name,
+                'error': result.get('error')
+            }
+
+    except Exception as e:
+        logger.exception(f"Hybrid Exception für {domain_name}")
+        print(f"❌ Exception: {str(e)}")
+        return {
+            'success': False,
+            'framework': 'hybrid',
             'domain': domain_name,
             'error': str(e)
         }
@@ -291,25 +380,29 @@ def generate_comparison_report(results: list) -> str:
 
 def main():
     """Hauptfunktion: Führt alle Tests aus"""
-    
+
     print("=" * 80)
-    print("MULTI-DOMAIN EVALUATION: LangChain vs LangGraph")
+    print("MULTI-DOMAIN EVALUATION: LangChain vs LangGraph vs Hybrid")
     print("=" * 80)
-    print(f"\nTesting {len(TEST_CONFIG)} domains with 2 frameworks each")
-    print(f"Total tests: {len(TEST_CONFIG) * 2}\n")
-    
+    print(f"\nTesting {len(TEST_CONFIG)} domains with 3 frameworks each")
+    print(f"Total tests: {len(TEST_CONFIG) * 3}\n")
+
     results = []
-    
-    # Für jede Domain: LangChain + LangGraph
+
+    # Für jede Domain: LangChain + LangGraph + Hybrid
     for domain_name, config in TEST_CONFIG.items():
-        
+
         # LangChain
         lc_result = run_langchain_test(domain_name, config)
         results.append(lc_result)
-        
+
         # LangGraph
         lg_result = run_langgraph_test(domain_name, config)
         results.append(lg_result)
+
+        # Hybrid
+        hybrid_result = run_hybrid_test(domain_name, config)
+        results.append(hybrid_result)
     
     # Generiere Report
     print("\n\n" + "=" * 80)
@@ -342,7 +435,7 @@ def main():
     print(f"   {report_path}")
     
     print("\n" + "=" * 80)
-    print("✅ EVALUATION ABGESCHLOSSEN!")
+    print("✅ EVALUATION ABGESCHLOSSEN! (LangChain | LangGraph | Hybrid)")
     print("=" * 80 + "\n")
 
 

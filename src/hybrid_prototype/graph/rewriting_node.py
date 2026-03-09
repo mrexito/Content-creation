@@ -10,6 +10,7 @@ import time
 from difflib import SequenceMatcher
 from typing import List
 
+from common.constants import DOMAIN_LANGUAGES
 from common.llm_handler import get_llm_handler
 from common.logger import setup_logger
 from hybrid_prototype.state.hybrid_state import HybridWorkflowState
@@ -42,9 +43,18 @@ def _too_similar(candidate: str, existing: List[str]) -> bool:
     return any(_similarity(candidate, ex) >= MIN_SIMILARITY_THRESHOLD for ex in existing)
 
 
-def _adaptive_temperature(base: float, attempt: int) -> float:
-    """Erhöht Temperatur bei jedem Fehlversuch leicht für mehr Diversität."""
-    return min(base + attempt * 0.15, 1.3)
+def _adaptive_temperature(base: float, attempt: int, domain: str = "") -> float:
+    """
+    Berechnet die Temperature domain-spezifisch.
+
+    Temperature-Paradox: Für die Languages-Domain darf die Temperature
+    bei Retries NICHT erhöht werden, da BERTScore semantische Nähe zum
+    Original erfordert — höhere Temperature → grössere Abweichung →
+    niedrigerer BERTScore → mehr Retries (Teufelskreis).
+    """
+    if domain == DOMAIN_LANGUAGES:
+        return 0.7  # Konstant niedrig für BERT-Validierung
+    return min(base + attempt * 0.1, 1.0)
 
 
 def hybrid_rewriting_node(state: HybridWorkflowState) -> HybridWorkflowState:
@@ -123,7 +133,7 @@ def hybrid_rewriting_node(state: HybridWorkflowState) -> HybridWorkflowState:
             for v_idx in range(num_variants):
                 generated = False
                 for attempt in range(MAX_ATTEMPTS_PER_VARIANT):
-                    temperature = _adaptive_temperature(0.8, attempt + retry_count)
+                    temperature = _adaptive_temperature(0.8, attempt + retry_count, domain)
 
                     prev_context = ""
                     if variant_texts:

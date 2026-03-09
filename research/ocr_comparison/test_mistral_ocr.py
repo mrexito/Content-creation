@@ -1,14 +1,18 @@
 """
 Test-Script für Mistral OCR
+
+Nutzt den dedizierten Mistral OCR-Endpunkt (client.ocr.process) mit
+dem Modell 'mistral-ocr-latest' (verfügbar seit März 2025).
+
+Option A (bevorzugt): PDF direkt als base64 hochladen — kein Umweg
+über pdf2image/PIL nötig.
 """
 import base64
 import json
+import time
 from pathlib import Path
 from mistralai import Mistral
 import sys
-from pdf2image import convert_from_path
-from PIL import Image
-import io
 
 # Füge src zu Python-Path hinzu
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'src'))
@@ -18,111 +22,79 @@ from common.logger import setup_logger
 
 logger = setup_logger(__name__)
 
-def pdf_to_images(pdf_path: Path) -> list:
-    """
-    Konvertiert PDF zu Bildern (eine pro Seite)
-    
-    Returns:
-        Liste von PIL Images
-    """
-    try:
-        images = convert_from_path(pdf_path, dpi=200)
-        logger.info(f"PDF hat {len(images)} Seite(n)")
-        return images
-    except Exception as e:
-        logger.error(f"Fehler beim PDF-Konvertieren: {e}")
-        return []
-
-def image_to_base64(image: Image.Image) -> str:
-    """Konvertiert PIL Image zu Base64"""
-    buffered = io.BytesIO()
-    image.save(buffered, format="PNG")
-    img_bytes = buffered.getvalue()
-    return base64.b64encode(img_bytes).decode('utf-8')
 
 def test_mistral_ocr(pdf_path: Path) -> dict:
     """
-    Testet Mistral OCR auf einem PDF
-    
+    Testet Mistral OCR auf einem PDF (direkt, kein Umweg über Bilder).
+
+    Verwendet client.ocr.process() mit model='mistral-ocr-latest'.
+
     Returns:
-        dict mit extracted_text, processing_time, token_count
+        dict mit extracted_text, processing_time, pages, model, success
     """
-    import time
-    
-    logger.info(f"Teste Mistral OCR mit: {pdf_path.name}")
-    
+    logger.info(f"Teste Mistral OCR (PDF-direkt) mit: {pdf_path.name}")
+
     if not Config.MISTRAL_API_KEY:
         logger.error("MISTRAL_API_KEY nicht gesetzt!")
-        return None
-    
-    # PDF zu Bildern konvertieren
-    images = pdf_to_images(pdf_path)
-    if not images:
         return {
             'extracted_text': None,
             'processing_time': 0,
-            'error': 'PDF konnte nicht in Bilder konvertiert werden',
+            'error': 'MISTRAL_API_KEY nicht gesetzt',
             'success': False
         }
-    
-    # Mistral Client
+
     client = Mistral(api_key=Config.MISTRAL_API_KEY)
-    
-    all_text = []
-    total_time = 0
-    
-    # Jede Seite einzeln verarbeiten
-    for idx, image in enumerate(images):
-        logger.info(f"  Verarbeite Seite {idx + 1}/{len(images)}")
-        
-        # Bild zu Base64
-        img_base64 = image_to_base64(image)
-        
-        # API Call
-        start_time = time.time()
-        
-        try:
-            response = client.chat.complete(
-                model="pixtral-12b-2409",
-                messages=[{
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": """Extrahiere den gesamten Text aus diesem Dokument. 
-                            Behalte die Struktur bei (Überschriften, Absätze, Listen).
-                            Formeln sollten in LaTeX-Format sein."""
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": f"data:image/png;base64,{img_base64}"
-                        }
-                    ]
-                }]
-            )
-            
-            page_time = time.time() - start_time
-            total_time += page_time
-            
-            page_text = response.choices[0].message.content
-            all_text.append(f"--- Seite {idx + 1} ---\n{page_text}")
-            
-            logger.info(f"  ✓ Seite {idx + 1} in {page_time:.2f}s")
-            
-        except Exception as e:
-            logger.error(f"  ✗ Fehler auf Seite {idx + 1}: {str(e)}")
-            all_text.append(f"--- Seite {idx + 1} ---\n[FEHLER: {str(e)}]")
-    
-    result = {
-        'extracted_text': '\n\n'.join(all_text),
-        'processing_time': total_time,
-        'pages': len(images),
-        'model': 'pixtral-12b-2409',
-        'success': True
-    }
-    
-    logger.info(f"✓ Gesamt-Zeit: {total_time:.2f}s für {len(images)} Seite(n)")
-    return result
+    start_time = time.time()
+
+    try:
+        with open(pdf_path, "rb") as f:
+            pdf_bytes = f.read()
+
+        pdf_base64 = base64.b64encode(pdf_bytes).decode("utf-8")
+
+        response = client.ocr.process(
+            model="mistral-ocr-latest",
+            document={
+                "type": "document_url",
+                "document_url": f"data:application/pdf;base64,{pdf_base64}"
+            }
+        )
+
+        processing_time = time.time() - start_time
+
+        if not response.pages:
+            logger.warning(f"Leere Antwort für {pdf_path.name}")
+            return {
+                'extracted_text': '',
+                'processing_time': processing_time,
+                'pages': 0,
+                'model': 'mistral-ocr-latest',
+                'success': True
+            }
+
+        text = "\n\n".join(page.markdown for page in response.pages)
+        logger.info(
+            f"  ✓ {len(response.pages)} Seite(n) in {processing_time:.2f}s, "
+            f"{len(text)} Zeichen"
+        )
+
+        return {
+            'extracted_text': text,
+            'processing_time': processing_time,
+            'pages': len(response.pages),
+            'model': 'mistral-ocr-latest',
+            'success': True
+        }
+
+    except Exception as e:
+        processing_time = time.time() - start_time
+        logger.error(f"  ✗ Fehler: {type(e).__name__}: {e}")
+        return {
+            'extracted_text': None,
+            'processing_time': processing_time,
+            'error': str(e),
+            'success': False
+        }
 
 def test_all_pdfs():
     """Testet alle PDFs im input Ordner"""
@@ -161,21 +133,25 @@ def test_all_pdfs():
     return results
 
 if __name__ == '__main__':
-    print("🚀 Starte Mistral OCR Tests...\n")
+    print("🚀 Starte Mistral OCR Tests (mistral-ocr-latest)...\n")
     results = test_all_pdfs()
-    
+
     # Summary
     print("\n" + "="*50)
     print("ZUSAMMENFASSUNG")
     print("="*50)
-    
+
     total = len(results)
     success = sum(1 for r in results.values() if r.get('success'))
-    avg_time = sum(r.get('processing_time', 0) for r in results.values()) / total if total > 0 else 0
+    avg_time = (
+        sum(r.get('processing_time', 0) for r in results.values()) / total
+        if total > 0 else 0
+    )
     total_pages = sum(r.get('pages', 0) for r in results.values())
-    
-    print(f"Getestete PDFs: {total}")
-    print(f"Erfolgreich: {success}/{total}")
-    print(f"Gesamt-Seiten: {total_pages}")
-    print(f"Durchschn. Zeit: {avg_time:.2f}s")
-    print(f"Zeit pro Seite: {avg_time/total_pages:.2f}s" if total_pages > 0 else "")
+
+    print(f"Getestete PDFs:   {total}")
+    print(f"Erfolgreich:      {success}/{total}")
+    print(f"Gesamt-Seiten:    {total_pages}")
+    print(f"Durchschn. Zeit:  {avg_time:.2f}s")
+    if total_pages > 0:
+        print(f"Zeit pro Seite:   {avg_time / total_pages:.2f}s")

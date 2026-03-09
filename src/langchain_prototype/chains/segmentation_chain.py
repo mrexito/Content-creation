@@ -64,8 +64,11 @@ class SegmentationChain:
         
         # Parse Segments
         segments = result['parsed_data'].get('segments', [])
-        
+
+        # Identische Prompts (langchain_prototype.prompts.segmentation_prompts) werden
+        # von LangChain und LangGraph geteilt – methodisch erforderlich für fairen Vergleich.
         logger.info(f"Segmentierung erfolgreich: {len(segments)} Abschnitte")
+        logger.debug(f"Segmentierung: {len(segments)} Segmente aus {len(text)} Zeichen")
         
         return {
             'segments': segments,

@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 from bert_score import score
 import torch
 
+from ..constants import BERT_THRESHOLD
 from ..logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -63,7 +64,6 @@ class BERTValidator:
                 'precision': float(P[0]),
                 'recall': float(R[0]),
                 'f1': float(F1[0]),
-                'threshold_passed': float(F1[0]) >= 0.92  # Dein Schwellwert
             }
             
         except Exception as e:
@@ -107,7 +107,6 @@ class BERTValidator:
                     'precision': float(P[i]),
                     'recall': float(R[i]),
                     'f1': float(F1[i]),
-                    'threshold_passed': float(F1[i]) >= 0.92
                 })
             
             return results
@@ -120,7 +119,7 @@ class BERTValidator:
         self,
         original: str,
         paraphrased: str,
-        min_threshold: float = 0.92
+        min_threshold: float = BERT_THRESHOLD
     ) -> Dict[str, Any]:
         """
         Prüft ob eine Paraphrase semantisch äquivalent ist

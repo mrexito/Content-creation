@@ -41,7 +41,7 @@ fsspec==2026.2.0
 h11==0.16.0
 hf-xet==1.2.0
 httpcore==1.0.9
-httpx==0.27.2
+httpx==0.28.1
 httpx-sse==0.4.3
 huggingface_hub==0.36.2
 idna==3.11
@@ -108,7 +108,7 @@ notebook==7.5.3
 notebook_shim==0.2.4
 nougat-ocr==0.1.17
 numpy==2.2.6
-openai==1.54.5
+openai==1.68.2
 opencv-python-headless==4.13.0.92
 orjson==3.11.7
 ormsgpack==1.12.2

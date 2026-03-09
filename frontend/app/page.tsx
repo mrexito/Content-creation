@@ -45,20 +45,6 @@ export default function HomePage() {
   const [activeRunId, setActiveRunId] = useState<string | null>(null)
   const [currentRun, setCurrentRun] = useState<RunResult | null>(null)
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.code === "Space" && e.target === document.body) {
-        e.preventDefault()
-        if (appState === "idle") handleStart()
-        else if (appState === "running") handleStop()
-      }
-      if (e.code === "Escape" && appState === "running") handleStop()
-    }
-    window.addEventListener("keydown", handler)
-    return () => window.removeEventListener("keydown", handler)
-  }, [appState, handleStart, handleStop])
-
   const handleStart = useCallback(async () => {
     if (!files.length) {
       toast.error("Bitte mindestens ein PDF hochladen")
@@ -114,6 +100,20 @@ export default function HomePage() {
     setActiveRunId(null)
     toast.info("Run gestoppt")
   }, [])
+
+  // Keyboard shortcuts — nach handleStart/handleStop deklariert (const wird nicht gehoisted)
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.code === "Space" && e.target === document.body) {
+        e.preventDefault()
+        if (appState === "idle") handleStart()
+        else if (appState === "running") handleStop()
+      }
+      if (e.code === "Escape" && appState === "running") handleStop()
+    }
+    window.addEventListener("keydown", handler)
+    return () => window.removeEventListener("keydown", handler)
+  }, [appState, handleStart, handleStop])
 
   const handleComplete = useCallback(
     (results: Record<string, unknown>) => {

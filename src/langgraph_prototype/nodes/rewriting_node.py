@@ -6,6 +6,7 @@ import time
 from typing import Dict, Any
 from difflib import SequenceMatcher
 
+from common.constants import DOMAIN_LANGUAGES
 from common.llm_handler import get_llm_handler
 from common.logger import setup_logger
 from langgraph_prototype.state.workflow_state import WorkflowState
@@ -121,16 +122,23 @@ class RewritingNode:
                 variants = []
                 variant_texts = []
                 
-                # Bei Retry: Höhere Base-Temperature
+                # Temperature-Paradox: Für die Languages-Domain darf die Temperature
+                # bei Retries NICHT erhöht werden, da BERTScore semantische Nähe zum
+                # Original erfordert — höhere Temperature → grössere Abweichung →
+                # niedrigerer BERTScore → mehr Retries (Teufelskreis).
+                # Math/Economics: leichter Anstieg zur Diversitätssteigerung.
                 base_temperature = 0.95 if is_retry else 0.9
-                
+
                 for v_idx in range(num_variants):
                     max_attempts = 3
-                    
+
                     for attempt in range(max_attempts):
-                        # Temperature steigt mit Retry-Count UND Attempt
-                        temperature = base_temperature + (retry_count * 0.1) + (attempt * 0.05)
-                        temperature = min(temperature, 1.2)  # Cap bei 1.2
+                        if domain == DOMAIN_LANGUAGES:
+                            # Konstant niedrig für BERT-Validierung
+                            temperature = 0.7
+                        else:
+                            temperature = base_temperature + (retry_count * 0.05) + (attempt * 0.05)
+                            temperature = min(temperature, 1.0)  # Cap bei 1.0
                         
                         result = self._generate_variant(
                             text=text,

@@ -1,5 +1,9 @@
 """
 Edge Conditions für LangGraph Workflow
+
+WICHTIG: Edge-Funktionen in LangGraph persistieren keine State-Mutationen.
+Diese Funktion ist daher rein lesend (pure function) — alle State-Updates
+(retry_counts, current_phase) werden ausschliesslich in validation_node.py vorgenommen.
 """
 from langgraph_prototype.state.workflow_state import WorkflowState
 from common.logger import setup_logger
@@ -9,38 +13,29 @@ logger = setup_logger(__name__)
 
 def should_retry_after_validation(state: WorkflowState) -> str:
     """
-    Conditional Edge: Entscheidet ob nach Validation retry nötig
-    
+    Conditional Edge: Liest current_phase und entscheidet über Routing.
+
+    State-Mutationen (retry_counts, current_phase) werden NICHT hier,
+    sondern in validation_node.py vorgenommen.
+
     Returns:
-        'retry' wenn Segmente retry brauchen
-        'assemble' wenn alle ok oder max retries erreicht
-        'error' bei Fehler
+        'retry'    – validation_node hat 'validation_failed' gesetzt
+        'assemble' – validation_node hat 'validation_complete' gesetzt
+        'error'    – unerwarteter Phase-Status oder Fehler
     """
-    if state['current_phase'] == 'error':
+    phase = state.get('current_phase', '')
+
+    if phase == 'error':
         return 'error'
-    
-    if state['current_phase'] != 'validation_complete':
-        return 'error'
-    
-    # Prüfe ob Segmente Retry brauchen
-    validation_stats = state.get('validation_stats', {})
-    segments_needing_retry = validation_stats.get('segments_needing_retry', [])
-    
-    if segments_needing_retry:
-        logger.info(f"🔄 {len(segments_needing_retry)} segments need retry")
-        
-        # Inkrementiere Retry-Counts
-        if 'retry_counts' not in state:
-            state['retry_counts'] = {}
-        
-        for seg_idx in segments_needing_retry:
-            current = state['retry_counts'].get(seg_idx, 0)
-            state['retry_counts'][seg_idx] = current + 1
-        
-        # Markiere als validation_failed für Rewriting-Node
-        state['current_phase'] = 'validation_failed'
-        
+
+    if phase == 'validation_failed':
+        n = len(state.get('validation_stats', {}).get('segments_needing_retry', []))
+        logger.info(f"🔄 {n} Segment(e) benötigen Retry → zurück zu Rewriting")
         return 'retry'
-    else:
-        logger.info("✓ All segments validated, proceeding to assembly")
+
+    if phase == 'validation_complete':
+        logger.info("✓ Alle Segmente validiert → weiter zu Assembly")
         return 'assemble'
+
+    logger.error(f"Unbekannte Phase nach Validation: '{phase}'")
+    return 'error'

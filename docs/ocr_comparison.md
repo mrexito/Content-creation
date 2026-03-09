@@ -4,7 +4,12 @@
 
 ## Getestete Technologien
 
-### 1. Mistral OCR (pixtral-12b-2409)
+### 1. Mistral OCR (mistral-ocr-latest)
+
+> **Hinweis:** Der dedizierte OCR-Endpunkt `mistral-ocr-latest` ist erst seit
+> März 2025 verfügbar. Frühere Tests nutzten noch `mistral-ocr-latest` via
+> `client.chat.complete()` (Vision-Modell als OCR-Ersatz). Die aktuelle
+> Implementierung verwendet `client.ocr.process()` mit `mistral-ocr-latest`.
 
 **Status:** ✅ Funktioniert sehr gut
 

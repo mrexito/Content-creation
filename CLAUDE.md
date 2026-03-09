@@ -53,22 +53,25 @@ Key config options:
 
 ## Architecture
 
-### Two Parallel Implementations
+### Three Implementations
 
-Both implement the same 6-step pipeline but with different orchestration patterns:
+All three implement the same 6-step pipeline but with different orchestration patterns:
 
 **LangChain** (`src/langchain_prototype/`): Chain-based, sequential. `LangChainPipeline` in `pipeline.py` calls chains in order. Each step (`parsing_chain`, `segmentation_chain`, etc.) is independent and invoked manually.
 
-**LangGraph** (`src/langgraph_prototype/`): State-machine-based. `create_workflow_graph()` in `graph.py` builds a `StateGraph` where nodes communicate via `WorkflowState` (a `TypedDict`). Has a conditional edge after validation to either assemble or end with error.
+**LangGraph** (`src/langgraph_prototype/`): State-machine-based. `create_workflow_graph()` in `graph.py` builds a `StateGraph` where nodes communicate via `WorkflowState` (a `TypedDict`). Conditional edge after validation routes to retry or assembly. **IMPORTANT:** State mutations MUST happen in nodes, never in edge functions (edge mutations are silently discarded by LangGraph).
+
+**Hybrid** (`src/hybrid_prototype/`): 3-Phase architecture. Phase 1: LangChain (OCR+Segmentation+Classification). Phase 2: LangGraph StateGraph (Rewriting↔Validation retry loop). Phase 3: LangChain (Assembly+Export).
 
 ### Shared Components (`src/common/`)
 
+- `constants.py`: **Kanonische Domain-Konstanten** (`DOMAIN_MATH = "mathematics"`, etc.) und `BERT_THRESHOLD = 0.70`. Enthält `normalize_domain()` Funktion die `'math'` → `'mathematics'` normalisiert. Muss für alle Domain-Vergleiche im Code verwendet werden.
 - `llm_handler.py`: Singleton `LLMHandler` wrapping OpenAI SDK for both OpenAI and BFH (OpenAI-compatible). Use `get_llm_handler()` / `reset_llm_handler()` to manage the singleton. Call `reset_llm_handler()` before switching providers.
-- `ocr_handler.py`: Wraps Tesseract and Mistral OCR.
+- `ocr_handler.py`: Wraps Tesseract and Mistral OCR (`mistral-ocr-latest` via `client.ocr.process()`). Domain-Präferenzen nutzen kanonische Konstanten.
 - `config.py`: Loads `.env.dev` at import time. Exposes `Config` class with all settings as class attributes.
 - `validators/`: Domain-specific validators:
   - `SymPyValidator` — math domain (validates equation correctness)
-  - `BERTValidator` — languages domain (BERTScore semantic similarity)
+  - `BERTValidator` — languages domain (BERTScore semantic similarity, threshold `BERT_THRESHOLD=0.70`)
   - `ConsistencyValidator` — economics domain (numeric consistency checks)
 
 ### Test Domains

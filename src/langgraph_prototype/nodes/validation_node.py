@@ -149,40 +149,58 @@ def validation_node(state: WorkflowState) -> WorkflowState:
                 else:
                     total_invalid += 1
         
-        # Update State
-        state['current_phase'] = 'validation_complete'
         state['total_processing_time'] += time.time() - start_time
-        
+
         logger.info(f"  ✓ Validated: {total_valid} valid, {total_invalid} invalid")
-        
-        # NEU: Tracking für Retry-Logik
-        state['validation_stats'] = {
-            'total_valid': total_valid,
-            'total_invalid': total_invalid,
-            'segments_needing_retry': []
-        }
-        
+
         # Identifiziere Segmente die Retry brauchen
+        # WICHTIG: retry_counts hier inkrementieren (nicht in der Edge-Funktion!).
+        # LangGraph persistiert State-Mutationen in Edge-Funktionen nicht.
+        segments_needing_retry = []
+
         for seg_data in segments_with_variants:
             segment_idx = seg_data.get('segment_idx', -1)
             variants = seg_data['variants']
-            
+
             # Prüfe ob ALLE Varianten invalid sind
             all_invalid = all(
                 not v.get('validation', {}).get('is_valid', False)
                 for v in variants
                 if v.get('text')  # Nur Varianten mit Text
             )
-            
+
             if all_invalid and segment_idx >= 0:
-                # Prüfe ob noch Retries übrig
+                # Prüfe ob noch Retries übrig (vor dem Increment lesen!)
                 retry_count = state.get('retry_counts', {}).get(segment_idx, 0)
                 max_retries = state.get('max_retries', 3)
-                
+
                 if retry_count < max_retries:
-                    state['validation_stats']['segments_needing_retry'].append(segment_idx)
-                    logger.info(f"  🔄 Segment {segment_idx} needs retry ({retry_count}/{max_retries})")
-        
+                    segments_needing_retry.append(segment_idx)
+                    logger.info(
+                        f"  🔄 Segment {segment_idx} needs retry "
+                        f"({retry_count + 1}/{max_retries})"
+                    )
+
+        # retry_counts im Node-Return inkrementieren (damit LangGraph sie persistiert)
+        retry_counts = dict(state.get('retry_counts') or {})
+        for seg_idx in segments_needing_retry:
+            retry_counts[seg_idx] = retry_counts.get(seg_idx, 0) + 1
+        state['retry_counts'] = retry_counts
+
+        state['validation_stats'] = {
+            'total_valid': total_valid,
+            'total_invalid': total_invalid,
+            'segments_needing_retry': segments_needing_retry,
+        }
+
+        # current_phase so setzen dass die Edge-Funktion sauber routen kann
+        # 'validation_failed' → Edge leitet zurück zu Rewriting
+        # 'validation_complete' → Edge leitet weiter zu Assembly
+        if segments_needing_retry:
+            state['current_phase'] = 'validation_failed'
+        else:
+            state['current_phase'] = 'validation_complete'
+
         return state
         
     except Exception as e:
