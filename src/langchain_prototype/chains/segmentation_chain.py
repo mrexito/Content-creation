@@ -1,15 +1,20 @@
 """
 Segmentation Chain: Text → Abschnitte
-Nutzt LLM für intelligente Segmentierung
-"""
-from typing import Dict, Any, List
-import json
 
-from common.llm_handler import get_llm_handler
+LCEL-Implementierung:
+    ChatPromptTemplate | ChatOpenAI | StrOutputParser
+    (+ manuelles JSON-Parsing via _extract_json)
+"""
+from typing import Dict, Any
+
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
 from common.logger import setup_logger
+from langchain_prototype.lcel_llm import get_lcel_llm, _extract_json
 from langchain_prototype.prompts.segmentation_prompts import (
     SEGMENTATION_SYSTEM_PROMPT,
-    SEGMENTATION_USER_PROMPT_TEMPLATE
+    SEGMENTATION_USER_PROMPT_TEMPLATE,
 )
 
 logger = setup_logger(__name__)
@@ -17,82 +22,77 @@ logger = setup_logger(__name__)
 
 class SegmentationChain:
     """
-    Chain für Text-Segmentierung
+    LCEL-Chain für Text-Segmentierung.
+
+    Chain-Komposition (LCEL-Pattern):
+        prompt | llm | parser
     """
-    
+
     def __init__(self):
-        """Initialisiert die Segmentation Chain"""
-        self.llm = get_llm_handler()
-        logger.info("SegmentationChain initialisiert")
-    
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "{system_prompt}"),
+            ("human", "{user_prompt}"),
+        ])
+        llm = get_lcel_llm(temperature=0.3)
+        parser = StrOutputParser()
+
+        # LCEL-Chain via |-Operator (LangChain Expression Language)
+        self._chain = prompt | llm | parser
+
+        logger.info("SegmentationChain (LCEL) initialisiert")
+
     def segment_text(self, text: str) -> Dict[str, Any]:
         """
-        Segmentiert Text in Abschnitte
-        
+        Segmentiert Text in Abschnitte.
+
         Args:
             text: Zu segmentierender Text
-        
+
         Returns:
             Dict mit segments, metadata, success
         """
         logger.info(f"Segmentiere Text ({len(text)} Zeichen)")
-        
-        # Prompt zusammenbauen
-        user_prompt = SEGMENTATION_USER_PROMPT_TEMPLATE.format(text=text)
-        
-        # LLM aufrufen (strukturiertes JSON)
-        result = self.llm.generate_structured(
-            prompt=user_prompt,
-            response_format={
-                "segments": [
-                    {"type": "string", "text": "string"}
-                ]
-            },
-            system_prompt=SEGMENTATION_SYSTEM_PROMPT
-        )
-        
-        if not result['success']:
-            logger.error(f"Segmentierung fehlgeschlagen: {result.get('error')}")
-            return {
-                'segments': [],
-                'metadata': {
-                    'success': False,
-                    'error': result.get('error')
-                },
-                'success': False
-            }
-        
-        # Parse Segments
-        segments = result['parsed_data'].get('segments', [])
 
-        # Identische Prompts (langchain_prototype.prompts.segmentation_prompts) werden
-        # von LangChain und LangGraph geteilt – methodisch erforderlich für fairen Vergleich.
+        user_prompt = SEGMENTATION_USER_PROMPT_TEMPLATE.format(text=text)
+
+        try:
+            raw = self._chain.invoke({
+                "system_prompt": SEGMENTATION_SYSTEM_PROMPT,
+                "user_prompt": user_prompt,
+            })
+            parsed = _extract_json(raw)
+            segments = parsed.get("segments", [])
+        except Exception as e:
+            logger.error(f"Segmentierung fehlgeschlagen: {e}")
+            return {
+                "segments": [],
+                "metadata": {"success": False, "error": str(e)},
+                "success": False,
+            }
+
         logger.info(f"Segmentierung erfolgreich: {len(segments)} Abschnitte")
         logger.debug(f"Segmentierung: {len(segments)} Segmente aus {len(text)} Zeichen")
-        
+
         return {
-            'segments': segments,
-            'metadata': {
-                'num_segments': len(segments),
-                'model': result.get('model'),
-                'provider': result.get('provider'),
-                'success': True
+            "segments": segments,
+            "metadata": {
+                "num_segments": len(segments),
+                "success": True,
             },
-            'success': True
+            "success": True,
         }
-    
+
     def invoke(self, input_data: Dict) -> Dict[str, Any]:
         """
-        LangChain-kompatible invoke Methode
-        
+        LangChain-kompatible invoke-Methode.
+
         Args:
             input_data: Dict mit 'text' key
-        
+
         Returns:
             Dict mit segmentation results
         """
-        text = input_data.get('text', '')
-        return self.segment_text(text)
+        return self.segment_text(input_data.get("text", ""))
 
 
 def get_segmentation_chain() -> SegmentationChain:

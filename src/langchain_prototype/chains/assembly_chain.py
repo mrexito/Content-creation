@@ -1,11 +1,17 @@
 """
 Assembly Chain: Validated Variants → Final Document
 Baut das finale Dokument aus validierten Varianten zusammen
+
+LCEL-Kompatibilität:
+    Kein LLM-Aufruf — Assembly ist reine Dokument-Aggregation.
+    Die Chain ist via RunnableLambda als formales LCEL-Runnable verpackt.
 """
 from typing import Dict, Any, List
 from pathlib import Path
 import json
 from datetime import datetime
+
+from langchain_core.runnables import RunnableLambda
 
 from common.config import Config
 from common.logger import setup_logger
@@ -20,7 +26,11 @@ class AssemblyChain:
     
     def __init__(self):
         """Initialisiert die Assembly Chain"""
-        logger.info("AssemblyChain initialisiert")
+        # RunnableLambda-Wrapper: macht AssemblyChain formal LCEL-kompatibel.
+        # Assembly macht keinen LLM-Aufruf — nur Dokument-Aggregation.
+        self._runnable = RunnableLambda(self.invoke)
+
+        logger.info("AssemblyChain (LCEL-kompatibel) initialisiert")
     
     def assemble_document(
         self,

@@ -1,12 +1,18 @@
 """
 Parsing Chain: PDF → Text
 Nutzt OCR-Handler (Tesseract/Mistral)
+
+LCEL-Kompatibilität:
+    OCR ist kein LLM-Schritt — kein LCEL-Chain-Aufruf nötig.
+    Die Chain ist via RunnableLambda als formales LCEL-Runnable verpackt.
 """
 from pathlib import Path
 from typing import Dict, Any
 
-from common.ocr_handler import get_ocr_handler  # ← Geändert
-from common.logger import setup_logger         # ← Geändert
+from langchain_core.runnables import RunnableLambda
+
+from common.ocr_handler import get_ocr_handler
+from common.logger import setup_logger
 
 logger = setup_logger(__name__)
 
@@ -23,7 +29,12 @@ class ParsingChain:
         """
         self.domain = domain
         self.ocr = get_ocr_handler()
-        logger.info(f"ParsingChain initialisiert (Domain: {domain or 'any'})")
+
+        # RunnableLambda-Wrapper: macht ParsingChain formal LCEL-kompatibel.
+        # OCR ist kein LLM-Schritt und wird nicht auf ChatPromptTemplate umgestellt.
+        self._runnable = RunnableLambda(self.invoke)
+
+        logger.info(f"ParsingChain (LCEL-kompatibel) initialisiert (Domain: {domain or 'any'})")
     
     def parse_pdf(self, pdf_path: Path) -> Dict[str, Any]:
         """

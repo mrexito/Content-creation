@@ -1,8 +1,15 @@
 """
 Validation Chain: Varianten → Validated Variants
 Nutzt domain-spezifische Validators
+
+LCEL-Kompatibilität:
+    Kein LLM-Aufruf nötig — die Validierung erfolgt durch spezialisierte
+    Bibliotheken (SymPy, BERTScore, Zahlen-Consistency).
+    Die Chain ist via RunnableLambda als formales LCEL-Runnable verpackt.
 """
 from typing import Dict, Any, List
+
+from langchain_core.runnables import RunnableLambda
 
 from common.validators import (
     get_sympy_validator,
@@ -40,7 +47,12 @@ class ValidationChain:
         self.sympy_validator = get_sympy_validator()
         self.bert_validator = get_bert_validator()
         self.consistency_validator = get_consistency_validator()
-        logger.info("ValidationChain initialisiert")
+
+        # RunnableLambda-Wrapper: macht ValidationChain formal LCEL-kompatibel.
+        # Kein LLM-Aufruf — Validierung erfolgt durch SymPy / BERTScore / Zahlen-Check.
+        self._runnable = RunnableLambda(self.invoke)
+
+        logger.info("ValidationChain (LCEL-kompatibel) initialisiert")
     
     def _check_placeholder_preservation(self, original: str, variant: str) -> dict:
         """
