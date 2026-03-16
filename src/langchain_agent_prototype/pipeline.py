@@ -133,9 +133,10 @@ class LangChainAgentPipeline:
             segments = seg_result["segments"]
 
             # Klassifizierung aller Segmente (für domain_hint an den Agenten)
-            # Hinweis: multi_agent ignoriert domain_hint vollständig — ClassifierAgent
-            # bestimmt die Domain eigenständig. Deshalb wird classification_chain
-            # für multi_agent übersprungen (spart N_rewritable LLM-Calls).
+            # Hinweis: orchestrator ruft classify_segment Tool intern auf — Pre-Klassifizierung
+            # wäre ein doppelter LLM-Call (~N_rewritable Extra-Calls pro Dokument).
+            # multi_agent hat keinen domain_hint-Parameter — ClassifierAgent klassifiziert selbst.
+            # Beide Agenten-Varianten überspringen daher die Pre-Klassifizierung.
             logger.info(f"Phase 1/3: Klassifizierung ({len(segments)} Segmente)...")
             classified_segments = []
             for seg in segments:
@@ -147,17 +148,8 @@ class LangChainAgentPipeline:
                         "skip": True,
                     })
                     continue
-                if self.variant == "multi_agent":
-                    # multi_agent hat keinen domain_hint-Parameter — ClassifierAgent
-                    # klassifiziert selbst; Pre-Klassifizierung wäre wirkungslos.
-                    domain_for_seg = self.domain or "general"
-                else:
-                    cls_result = self.classification_chain.invoke({"segment": seg})
-                    domain_for_seg = (
-                        cls_result["classification"].get("domain", "general")
-                        if cls_result["success"]
-                        else (self.domain or "general")
-                    )
+                # Beide Agenten-Varianten klassifizieren intern; kein pre-classify LLM-Call nötig.
+                domain_for_seg = self.domain or "general"
                 classified_segments.append({
                     "segment": seg,
                     "domain": domain_for_seg,

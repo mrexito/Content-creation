@@ -63,3 +63,16 @@ REWRITABLE_TYPES: frozenset = frozenset({"task", "theory", "example"})
 # Wert 0.70 ist bewusst niedriger als BERTScore-Standard (0.92),
 # um bedeutungserhaltende Paraphrasen nicht zu streng zu bestrafen.
 BERT_THRESHOLD: float = 0.70
+
+# Toleranz für Gleichungs-Anzahlabweichung (Mathematik-Domain)
+EQUATION_COUNT_TOLERANCE: int = 1
+
+# Toleranz für Zahlen-Anzahlabweichung (Wirtschaft-Domain)
+NUMBER_COUNT_TOLERANCE: int = 3
+
+# Domain-spezifische Längen-Toleranzen für Varianten (min_ratio, max_ratio)
+LENGTH_RATIO_BOUNDS: dict = {
+    DOMAIN_LANGUAGES: (0.6, 1.5),
+    DOMAIN_ECONOMICS: (0.4, 2.5),
+    "default":        (0.5, 2.0),
+}

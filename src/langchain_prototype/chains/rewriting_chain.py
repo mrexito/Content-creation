@@ -11,13 +11,13 @@ die Temperature bei Languages konstant (0.7) bleibt, bei anderen Domains
 aber mit jedem Retry steigt.
 """
 from typing import Dict, Any, List
-from difflib import SequenceMatcher
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable
 
 from common.constants import DOMAIN_LANGUAGES
+from common.utils import calculate_similarity
 from common.logger import setup_logger
 from langchain_prototype.lcel_llm import get_lcel_llm
 from langchain_prototype.prompts.rewriting_prompts import (
@@ -93,14 +93,10 @@ class RewritingChain:
     # Hilfsmethoden (unverändert)
     # ------------------------------------------------------------------
 
-    def _calculate_similarity(self, text1: str, text2: str) -> float:
-        """Berechnet Text-Ähnlichkeit (0–1)."""
-        return SequenceMatcher(None, text1.lower(), text2.lower()).ratio()
-
     def _is_too_similar(self, new_variant: str, existing_variants: List[str]) -> bool:
         """True wenn neue Variante zu ähnlich zu einer bestehenden ist."""
         for existing in existing_variants:
-            similarity = self._calculate_similarity(new_variant, existing)
+            similarity = calculate_similarity(new_variant, existing)
             if similarity >= self.min_similarity_threshold:
                 logger.debug(
                     f"Variante zu ähnlich: {similarity:.2f} >= "
@@ -216,7 +212,7 @@ class RewritingChain:
         diversity_score = None
         if len(successful_variants) >= 2:
             similarities = [
-                self._calculate_similarity(
+                calculate_similarity(
                     successful_variants[a]["text"],
                     successful_variants[b]["text"],
                 )

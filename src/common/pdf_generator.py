@@ -6,6 +6,7 @@ import re
 import struct
 import tempfile
 import os
+from html import escape as _html_escape
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
 
@@ -141,13 +142,7 @@ def _render_math(latex: str, fontsize_pt: float = 11.0) -> Optional[Tuple[str, f
 
 def _xml_escape(text: str) -> str:
     """Escape XML special characters for ReportLab Paragraph content."""
-    return (
-        text
-        .replace('&', '&amp;')
-        .replace('<', '&lt;')
-        .replace('>', '&gt;')
-        .replace('"', '&quot;')
-    )
+    return _html_escape(text, quote=True)
 
 
 def _make_styles() -> Dict[str, ParagraphStyle]:

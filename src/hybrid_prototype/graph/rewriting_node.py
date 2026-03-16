@@ -7,10 +7,10 @@ Unterstützt Retry-Schleifen: beim erneuten Durchlauf werden nur
 Segmente neu geschrieben, die bei der Validation gescheitert sind.
 """
 import time
-from difflib import SequenceMatcher
 from typing import List
 
 from common.constants import DOMAIN_LANGUAGES, NON_REWRITABLE_TYPES
+from common.utils import calculate_similarity
 from common.llm_handler import get_llm_handler
 from common.logger import setup_logger
 from hybrid_prototype.state.hybrid_state import HybridWorkflowState
@@ -35,12 +35,8 @@ MIN_SIMILARITY_THRESHOLD = 0.72
 MAX_ATTEMPTS_PER_VARIANT = 3
 
 
-def _similarity(a: str, b: str) -> float:
-    return SequenceMatcher(None, a.lower(), b.lower()).ratio()
-
-
 def _too_similar(candidate: str, existing: List[str]) -> bool:
-    return any(_similarity(candidate, ex) >= MIN_SIMILARITY_THRESHOLD for ex in existing)
+    return any(calculate_similarity(candidate, ex) >= MIN_SIMILARITY_THRESHOLD for ex in existing)
 
 
 def _adaptive_temperature(base: float, attempt: int, domain: str = "") -> float:

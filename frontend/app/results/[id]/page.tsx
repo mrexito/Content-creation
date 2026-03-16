@@ -36,7 +36,7 @@ export default function ResultPage({ params }: PageProps) {
 
     // Try fetching from API (if run is still in progress)
     fetch(`/api/results/${id}`)
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error(r.statusText); return r.json() })
       .then((data) => {
         const anyResult = data.langchain ?? data.langgraph ?? data.hybrid ?? data.agent_orchestrator ?? data.agent_multi ?? data.hybrid_agent
         if (anyResult) {

@@ -4,9 +4,9 @@ Domain-spezifische Content-Variation mit Diversity-Mechanismus und Retry-Awarene
 """
 import time
 from typing import Dict, Any
-from difflib import SequenceMatcher
 
 from common.constants import DOMAIN_LANGUAGES, NON_REWRITABLE_TYPES
+from common.utils import calculate_similarity
 from common.llm_handler import get_llm_handler
 from common.logger import setup_logger
 from langgraph_prototype.state.workflow_state import WorkflowState
@@ -34,9 +34,6 @@ class RewritingNode:
     def __init__(self):
         self.llm = get_llm_handler()
     
-    def _calculate_similarity(self, text1: str, text2: str) -> float:
-        """Berechnet Text-Ähnlichkeit"""
-        return SequenceMatcher(None, text1.lower(), text2.lower()).ratio()
     
     def _generate_variant(
         self,
@@ -168,7 +165,7 @@ class RewritingNode:
                         
                         # Check Similarity
                         is_too_similar = any(
-                            self._calculate_similarity(variant_text, existing) >= similarity_threshold
+                            calculate_similarity(variant_text, existing) >= similarity_threshold
                             for existing in variant_texts
                         )
                         

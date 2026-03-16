@@ -45,6 +45,7 @@ export default function HistoryPage() {
   }
 
   const handleClearHistory = useCallback(() => {
+    if (typeof window === "undefined") return
     if (!window.confirm("Gesamte History löschen?")) return
     localStorage.removeItem("runs")
     setRuns([])
@@ -52,6 +53,7 @@ export default function HistoryPage() {
   }, [])
 
   const handleRerun = (run: RunResult) => {
+    if (typeof window === "undefined") return
     // Store rerun config in sessionStorage, navigate to home
     sessionStorage.setItem("rerun", JSON.stringify({
       domain: run.domain as Domain,

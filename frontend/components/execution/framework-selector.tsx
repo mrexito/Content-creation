@@ -1,6 +1,7 @@
 "use client"
 
 import type { Framework } from "@/lib/types"
+import { cn } from "@/lib/utils"
 import { GitBranch, Workflow, GitMerge, LayoutGrid, Bot, GitFork, Layers } from "lucide-react"
 
 const coreOptions: {
@@ -48,12 +49,10 @@ export function FrameworkSelector({ value, onChange }: FrameworkSelectorProps) {
           <button
             key={v}
             onClick={() => onChange(v)}
-            className={`flex flex-col items-center gap-1 py-3 px-2 rounded-lg
-              border text-sm transition-all ${
-                value === v
-                  ? activeColors[v]
-                  : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
-              }`}
+            className={cn(
+              "flex flex-col items-center gap-1 py-3 px-2 rounded-lg border text-sm transition-all",
+              value === v ? activeColors[v] : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+            )}
           >
             <Icon className="h-5 w-5" />
             <span className="font-semibold">{label}</span>
@@ -71,12 +70,10 @@ export function FrameworkSelector({ value, onChange }: FrameworkSelectorProps) {
             <button
               key={v}
               onClick={() => onChange(v)}
-              className={`flex flex-col items-center gap-1 py-3 px-2 rounded-lg
-                border text-sm transition-all ${
-                  value === v
-                    ? activeColors[v]
-                    : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
-                }`}
+              className={cn(
+                "flex flex-col items-center gap-1 py-3 px-2 rounded-lg border text-sm transition-all",
+                value === v ? activeColors[v] : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+              )}
             >
               <Icon className="h-5 w-5" />
               <span className="font-semibold">{label}</span>
