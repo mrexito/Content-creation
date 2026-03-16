@@ -27,6 +27,7 @@ data/parsed/*
 !data/parsed/.gitkeep
 data/input/*
 !data/input/.gitkeep
+docs/
 
 # Models
 *.bin
