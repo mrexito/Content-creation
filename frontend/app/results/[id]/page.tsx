@@ -38,17 +38,29 @@ export default function ResultPage({ params }: PageProps) {
     fetch(`/api/results/${id}`)
       .then((r) => r.json())
       .then((data) => {
-        if (data.langchain || data.langgraph) {
+        const anyResult = data.langchain ?? data.langgraph ?? data.hybrid ?? data.agent_orchestrator ?? data.agent_multi ?? data.hybrid_agent
+        if (anyResult) {
+          const fw =
+            data.hybrid || (data.langchain && data.langgraph) ? "all"
+            : data.hybrid_agent ? "hybrid_agent"
+            : data.agent_orchestrator ? "agent_orchestrator"
+            : data.agent_multi ? "agent_multi"
+            : data.langchain ? "langchain"
+            : "langgraph"
           setRun({
             id,
             timestamp: new Date().toISOString(),
-            pdf_name: data.langchain?.pdf_name ?? data.langgraph?.pdf_name ?? "unknown.pdf",
-            domain: data.langchain?.domain ?? data.langgraph?.domain ?? "auto",
-            framework: data.hybrid || (data.langchain && data.langgraph) ? "all" : data.langchain ? "langchain" : "langgraph",
+            pdf_name: anyResult.pdf_name ?? "unknown.pdf",
+            domain: anyResult.domain ?? "auto",
+            framework: fw,
             config: { numVariants: 2, maxRetries: 3 },
             status: "complete",
             langchain: data.langchain,
             langgraph: data.langgraph,
+            hybrid: data.hybrid,
+            agent_orchestrator: data.agent_orchestrator,
+            agent_multi: data.agent_multi,
+            hybrid_agent: data.hybrid_agent,
           })
         }
       })

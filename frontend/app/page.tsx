@@ -35,7 +35,7 @@ export default function HomePage() {
   const [files, setFiles] = useState<File[]>([])
   const [domain, setDomain] = useState<Domain>("auto")
   const [framework, setFramework] = useState<Framework>("all")
-  const [numVariants, setNumVariants] = useState(2)
+  const [numVariants, setNumVariants] = useState(1)
   const [maxRetries, setMaxRetries] = useState(3)
   const [ocrTool, setOcrTool] = useState<OcrTool>("auto")
   const [llmProvider, setLlmProvider] = useState<LlmProvider>("auto")
@@ -108,7 +108,7 @@ export default function HomePage() {
     setCurrentRun(null)
     setDomain("auto")
     setFramework("all")
-    setNumVariants(2)
+    setNumVariants(1)
     setMaxRetries(3)
     setOcrTool("auto")
     setLlmProvider("auto")
@@ -151,6 +151,9 @@ export default function HomePage() {
         langchain: results.langchain as RunResult["langchain"],
         langgraph: results.langgraph as RunResult["langgraph"],
         hybrid: results.hybrid as RunResult["hybrid"],
+        agent_orchestrator: results.agent_orchestrator as RunResult["agent_orchestrator"],
+        agent_multi: results.agent_multi as RunResult["agent_multi"],
+        hybrid_agent: results.hybrid_agent as RunResult["hybrid_agent"],
         duration: Date.now() - new Date(currentRun.timestamp).getTime(),
       }
       setCurrentRun(updatedRun)
@@ -278,7 +281,7 @@ export default function HomePage() {
             </Card>
           )}
 
-          {appState === "done" && currentRun && (currentRun.langchain || currentRun.langgraph || currentRun.hybrid) && (
+          {appState === "done" && currentRun && (currentRun.langchain || currentRun.langgraph || currentRun.hybrid || currentRun.agent_orchestrator || currentRun.agent_multi || currentRun.hybrid_agent) && (
             <>
               <Separator className="bg-gray-200" />
               <ComparisonView run={currentRun} />

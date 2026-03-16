@@ -9,7 +9,7 @@ const DATA_OUTPUT_DIR = path.join(PROJECT_ROOT, "data", "output")
 export interface RunOptions {
   pdfPath: string
   domain: string
-  framework: "langchain" | "langgraph" | "hybrid"
+  framework: "langchain" | "langgraph" | "hybrid" | "agent_orchestrator" | "agent_multi" | "hybrid_agent"
   numVariants: number
   maxRetries: number
   runId: string
@@ -21,17 +21,27 @@ export interface RunOptions {
 }
 
 export function runPipeline(opts: RunOptions): Promise<{ success: boolean; error?: string }> {
+  const isStandaloneAgent = opts.framework === "agent_orchestrator" || opts.framework === "agent_multi"
   const scriptName =
     opts.framework === "langchain"
       ? "run_langchain_pipeline.py"
       : opts.framework === "hybrid"
       ? "run_hybrid_pipeline.py"
+      : opts.framework === "hybrid_agent"
+      ? "run_hybrid_agent_pipeline.py"
+      : isStandaloneAgent
+      ? "run_agent_pipeline.py"
       : "run_langgraph_pipeline.py"
 
   const scriptPath = path.join(SCRIPTS_DIR, scriptName)
   const outputDir = path.join(DATA_OUTPUT_DIR, opts.framework, opts.runId)
 
   fs.mkdirSync(outputDir, { recursive: true })
+
+  const agentVariant =
+    opts.framework === "agent_orchestrator" ? "orchestrator"
+    : opts.framework === "agent_multi" ? "multi_agent"
+    : null  // hybrid_agent has no --agent-variant flag
 
   const args = [
     scriptPath,
@@ -46,6 +56,7 @@ export function runPipeline(opts: RunOptions): Promise<{ success: boolean; error
     ...(opts.llmProvider && opts.llmProvider !== "auto" ? ["--llm-provider", opts.llmProvider] : []),
     ...(opts.llmModel ? ["--llm-model", opts.llmModel] : []),
     ...(opts.preParsedTextPath ? ["--pre-parsed-text", opts.preParsedTextPath] : []),
+    ...(agentVariant ? ["--agent-variant", agentVariant] : []),
   ]
 
   return new Promise((resolve) => {

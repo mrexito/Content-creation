@@ -1,4 +1,4 @@
-export type Framework = "langchain" | "langgraph" | "hybrid" | "all"
+export type Framework = "langchain" | "langgraph" | "hybrid" | "all" | "agent_orchestrator" | "agent_multi" | "hybrid_agent"
 export type Domain = "math" | "languages" | "economics" | "auto"
 export type OcrTool = "tesseract" | "mistral" | "auto"
 export type LlmProvider = "openai" | "bfh" | "auto"
@@ -75,6 +75,12 @@ export interface PipelineMetrics {
   total_variants: number
   valid_variants: number
   validation_rate: number
+  // Agent-specific fields
+  agent_variant?: string
+  tool_calls_total?: number
+  tool_calls_per_segment?: number[]
+  total_attempts?: number
+  skipped_segments?: number
 }
 
 export interface PipelineResult {
@@ -109,5 +115,8 @@ export interface RunResult {
   langchain?: PipelineResult
   langgraph?: PipelineResult
   hybrid?: PipelineResult
+  agent_orchestrator?: PipelineResult
+  agent_multi?: PipelineResult
+  hybrid_agent?: PipelineResult
   duration?: number
 }

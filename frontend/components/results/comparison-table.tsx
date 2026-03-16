@@ -1,17 +1,10 @@
 "use client"
 
-import type { PipelineResult } from "@/lib/types"
+import type { ResultEntry } from "./comparison-view"
+import { FW_CONFIG } from "./comparison-view"
 
 interface ComparisonTableProps {
-  langchain?: PipelineResult
-  langgraph?: PipelineResult
-  hybrid?: PipelineResult
-}
-
-const FW_COLORS: Record<string, { header: string }> = {
-  langchain: { header: "text-blue-700 bg-blue-50" },
-  langgraph: { header: "text-emerald-700 bg-emerald-50" },
-  hybrid:    { header: "text-amber-700 bg-amber-50" },
+  results: ResultEntry[]
 }
 
 interface RowValue {
@@ -35,55 +28,47 @@ function getBestIdx(values: RowValue[], bestIsLow: boolean): number {
   return valid.reduce((a, b) => (a.raw! > b.raw! ? a : b)).i
 }
 
-export function ComparisonTable({ langchain, langgraph, hybrid }: ComparisonTableProps) {
-  const frameworks = [
-    { key: "langchain", label: "LangChain", result: langchain },
-    { key: "langgraph", label: "LangGraph", result: langgraph },
-    { key: "hybrid",    label: "Hybrid",    result: hybrid    },
-  ].filter((fw): fw is { key: string; label: string; result: PipelineResult } =>
-    fw.result !== undefined
-  )
-
-  if (frameworks.length < 2) return null
+export function ComparisonTable({ results }: ComparisonTableProps) {
+  if (results.length < 2) return null
 
   const rows: Row[] = [
     {
       label: "Laufzeit",
-      values: frameworks.map((fw) => ({
-        key: fw.key,
-        raw: fw.result.metrics?.total_time ?? null,
-        display: fw.result.metrics?.total_time != null
-          ? `${fw.result.metrics.total_time.toFixed(1)}s` : "–",
+      values: results.map((e) => ({
+        key: e.key,
+        raw: e.result.metrics?.total_time ?? null,
+        display: e.result.metrics?.total_time != null
+          ? `${e.result.metrics.total_time.toFixed(1)}s` : "–",
       })),
       bestIsLow: true,
     },
     {
       label: "Segmente",
-      values: frameworks.map((fw) => ({
-        key: fw.key,
-        raw: fw.result.metrics?.num_segments ?? null,
-        display: fw.result.metrics?.num_segments != null
-          ? String(fw.result.metrics.num_segments) : "–",
+      values: results.map((e) => ({
+        key: e.key,
+        raw: e.result.metrics?.num_segments ?? null,
+        display: e.result.metrics?.num_segments != null
+          ? String(e.result.metrics.num_segments) : "–",
       })),
       bestIsLow: false,
     },
     {
       label: "Valide / Total",
-      values: frameworks.map((fw) => ({
-        key: fw.key,
-        raw: fw.result.metrics?.valid_variants ?? null,
-        display: fw.result.metrics != null
-          ? `${fw.result.metrics.valid_variants}/${fw.result.metrics.total_variants}` : "–",
+      values: results.map((e) => ({
+        key: e.key,
+        raw: e.result.metrics?.valid_variants ?? null,
+        display: e.result.metrics != null
+          ? `${e.result.metrics.valid_variants}/${e.result.metrics.total_variants}` : "–",
       })),
       bestIsLow: false,
     },
     {
       label: "Validierungsrate",
-      values: frameworks.map((fw) => ({
-        key: fw.key,
-        raw: fw.result.metrics?.validation_rate ?? null,
-        display: fw.result.metrics?.validation_rate != null
-          ? `${(fw.result.metrics.validation_rate * 100).toFixed(1)}%` : "–",
+      values: results.map((e) => ({
+        key: e.key,
+        raw: e.result.metrics?.validation_rate ?? null,
+        display: e.result.metrics?.validation_rate != null
+          ? `${(e.result.metrics.validation_rate * 100).toFixed(1)}%` : "–",
       })),
       bestIsLow: false,
     },
@@ -100,16 +85,19 @@ export function ComparisonTable({ langchain, langgraph, hybrid }: ComparisonTabl
             <th className="text-left px-4 py-2.5 text-xs font-medium text-gray-500 w-40">
               Metrik
             </th>
-            {frameworks.map((fw) => (
-              <th
-                key={fw.key}
-                className={`text-center px-4 py-2.5 text-xs font-semibold ${
-                  FW_COLORS[fw.key]?.header ?? ""
-                }`}
-              >
-                {fw.label}
-              </th>
-            ))}
+            {results.map((e) => {
+              const cfg = FW_CONFIG[e.key]
+              return (
+                <th
+                  key={e.key}
+                  className={`text-center px-4 py-2.5 text-xs font-semibold ${
+                    cfg ? `${cfg.headerText} ${cfg.headerBg}` : "text-gray-700 bg-gray-50"
+                  }`}
+                >
+                  {cfg?.label ?? e.key}
+                </th>
+              )
+            })}
           </tr>
         </thead>
         <tbody>

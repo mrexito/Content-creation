@@ -1,6 +1,8 @@
 "use client"
 
 import type { PipelineResult } from "@/lib/types"
+import type { ResultEntry } from "./comparison-view"
+import { FW_CONFIG } from "./comparison-view"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -9,9 +11,7 @@ import {
 import { Clock, CheckCircle, Layers, Percent } from "lucide-react"
 
 interface MetricsDashboardProps {
-  langchain?: PipelineResult
-  langgraph?: PipelineResult
-  hybrid?: PipelineResult
+  results: ResultEntry[]
 }
 
 function StatCard({ icon: Icon, label, value, sub, color = "text-blue-600" }: {
@@ -70,90 +70,66 @@ function DonutChart({ result, label, color }: {
   )
 }
 
-/** Build "LC: x · LG: y · HY: z" sub-text safely (skips undefined values). */
-function fwSubText(
-  lc: string | undefined,
-  lg: string | undefined,
-  hy: string | undefined,
-): string | undefined {
-  const parts = [
-    lc != null ? `LC: ${lc}` : null,
-    lg != null ? `LG: ${lg}` : null,
-    hy != null ? `HY: ${hy}` : null,
-  ].filter((p): p is string => p !== null)
-  return parts.length > 1 ? parts.join(" · ") : undefined
-}
+export function MetricsDashboard({ results }: MetricsDashboardProps) {
+  if (!results.length) return null
 
-export function MetricsDashboard({ langchain, langgraph, hybrid }: MetricsDashboardProps) {
-  const available = [langchain, langgraph, hybrid].filter(
-    (r): r is PipelineResult => r !== undefined
-  )
-  if (!available.length) return null
+  const hasMultiple = results.length > 1
 
-  const hasMultiple = available.length > 1
-
-  // Gesamtzeit: maximum across all frameworks (parallel run – user cares about wall clock)
-  const times = available
-    .map((r) => r.metrics?.total_time)
+  const times = results
+    .map((e) => e.result.metrics?.total_time)
     .filter((t): t is number => t != null)
   const maxTime = times.length ? Math.max(...times) : 0
 
-  // Segmente: from first available (same PDF → same segments)
-  const numSegments = available[0].metrics?.num_segments ?? 0
+  const numSegments = results[0].result.metrics?.num_segments ?? 0
 
-  // Valide Varianten: sum across all frameworks
-  const totalValid = available.reduce((s, r) => s + (r.metrics?.valid_variants ?? 0), 0)
-  const totalVariants = available.reduce((s, r) => s + (r.metrics?.total_variants ?? 0), 0)
+  const totalValid = results.reduce((s, e) => s + (e.result.metrics?.valid_variants ?? 0), 0)
+  const totalVariants = results.reduce((s, e) => s + (e.result.metrics?.total_variants ?? 0), 0)
 
-  // Validierungsrate: average across all frameworks
-  const rates = available
-    .map((r) => r.metrics?.validation_rate)
+  const rates = results
+    .map((e) => e.result.metrics?.validation_rate)
     .filter((v): v is number => v != null)
   const avgRate = rates.length ? rates.reduce((a, b) => a + b, 0) / rates.length : 0
 
-  // Sub-texts (null-safe)
   const timeSub = hasMultiple
-    ? fwSubText(
-        langchain?.metrics?.total_time != null
-          ? `${langchain.metrics.total_time.toFixed(1)}s` : undefined,
-        langgraph?.metrics?.total_time != null
-          ? `${langgraph.metrics.total_time.toFixed(1)}s` : undefined,
-        hybrid?.metrics?.total_time != null
-          ? `${hybrid.metrics.total_time.toFixed(1)}s` : undefined,
-      )
+    ? results
+        .filter((e) => e.result.metrics?.total_time != null)
+        .map((e) => {
+          const cfg = FW_CONFIG[e.key]
+          const abbr = cfg?.label.replace(/[^A-Z+]/g, "") || e.key.slice(0, 2).toUpperCase()
+          return `${abbr}: ${e.result.metrics!.total_time!.toFixed(1)}s`
+        })
+        .join(" · ") || undefined
     : undefined
 
   const validSub = hasMultiple
-    ? fwSubText(
-        langchain?.metrics != null
-          ? `${langchain.metrics.valid_variants}/${langchain.metrics.total_variants}` : undefined,
-        langgraph?.metrics != null
-          ? `${langgraph.metrics.valid_variants}/${langgraph.metrics.total_variants}` : undefined,
-        hybrid?.metrics != null
-          ? `${hybrid.metrics.valid_variants}/${hybrid.metrics.total_variants}` : undefined,
-      )
+    ? results
+        .filter((e) => e.result.metrics != null)
+        .map((e) => {
+          const cfg = FW_CONFIG[e.key]
+          const abbr = cfg?.label.replace(/[^A-Z+]/g, "") || e.key.slice(0, 2).toUpperCase()
+          return `${abbr}: ${e.result.metrics!.valid_variants}/${e.result.metrics!.total_variants}`
+        })
+        .join(" · ") || undefined
     : undefined
 
   const rateSub = hasMultiple
-    ? fwSubText(
-        langchain?.metrics?.validation_rate != null
-          ? `${(langchain.metrics.validation_rate * 100).toFixed(1)}%` : undefined,
-        langgraph?.metrics?.validation_rate != null
-          ? `${(langgraph.metrics.validation_rate * 100).toFixed(1)}%` : undefined,
-        hybrid?.metrics?.validation_rate != null
-          ? `${(hybrid.metrics.validation_rate * 100).toFixed(1)}%` : undefined,
-      )
+    ? results
+        .filter((e) => e.result.metrics?.validation_rate != null)
+        .map((e) => {
+          const cfg = FW_CONFIG[e.key]
+          const abbr = cfg?.label.replace(/[^A-Z+]/g, "") || e.key.slice(0, 2).toUpperCase()
+          return `${abbr}: ${(e.result.metrics!.validation_rate! * 100).toFixed(1)}%`
+        })
+        .join(" · ") || undefined
     : undefined
 
-  // Chart data: only include frameworks with real timing data
-  const timeData = [
-    langchain?.metrics?.total_time != null &&
-      { name: "LangChain", time: +langchain.metrics.total_time.toFixed(2), fill: "#3b82f6" },
-    langgraph?.metrics?.total_time != null &&
-      { name: "LangGraph", time: +langgraph.metrics.total_time.toFixed(2), fill: "#10b981" },
-    hybrid?.metrics?.total_time != null &&
-      { name: "Hybrid",    time: +hybrid.metrics.total_time.toFixed(2),    fill: "#f59e0b" },
-  ].filter((d): d is { name: string; time: number; fill: string } => Boolean(d))
+  const timeData = results
+    .filter((e) => e.result.metrics?.total_time != null)
+    .map((e) => ({
+      name: FW_CONFIG[e.key]?.label ?? e.key,
+      time: +e.result.metrics!.total_time!.toFixed(2),
+      fill: FW_CONFIG[e.key]?.color ?? "#6b7280",
+    }))
 
   return (
     <div className="space-y-4">
@@ -235,10 +211,15 @@ export function MetricsDashboard({ langchain, langgraph, hybrid }: MetricsDashbo
             <CardTitle className="text-sm font-semibold text-gray-700">Valide vs. Ungültig</CardTitle>
           </CardHeader>
           <CardContent className="py-4">
-            <div className="flex justify-around items-center">
-              {langchain && <DonutChart result={langchain} label="LangChain" color="#3b82f6" />}
-              {langgraph && <DonutChart result={langgraph} label="LangGraph" color="#10b981" />}
-              {hybrid    && <DonutChart result={hybrid}    label="Hybrid"    color="#f59e0b" />}
+            <div className="flex justify-around items-center flex-wrap gap-2">
+              {results.map(({ key, result }) => (
+                <DonutChart
+                  key={key}
+                  result={result}
+                  label={FW_CONFIG[key]?.label ?? key}
+                  color={FW_CONFIG[key]?.color ?? "#6b7280"}
+                />
+              ))}
             </div>
           </CardContent>
         </Card>

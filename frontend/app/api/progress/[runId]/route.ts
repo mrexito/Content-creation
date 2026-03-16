@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: Promise<{ runId: string }> }
 ) {
   const { runId } = await params
-  const frameworks = ["langchain", "langgraph", "hybrid"]
+  const frameworks = ["langchain", "langgraph", "hybrid", "agent_orchestrator", "agent_multi", "hybrid_agent"]
   const result: Record<string, unknown> = {}
 
   for (const fw of frameworks) {

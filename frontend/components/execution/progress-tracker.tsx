@@ -22,23 +22,29 @@ const STATUS_STYLES = {
 }
 
 const FW_LABELS: Record<string, string> = {
-  langchain: "LangChain",
-  langgraph: "LangGraph",
-  hybrid: "Hybrid",
+  langchain:          "LangChain",
+  langgraph:          "LangGraph",
+  hybrid:             "Hybrid",
+  agent_orchestrator: "Agent A (Orchestrator)",
+  agent_multi:        "Agent B (Multi-Agent)",
+  hybrid_agent:       "Hybrid+Agent",
 }
 
-const ALL_SINGLE_FRAMEWORKS = ["langchain", "langgraph", "hybrid"] as const
-type SingleFramework = typeof ALL_SINGLE_FRAMEWORKS[number]
+const ALL_TRACKED_FRAMEWORKS = [
+  "langchain", "langgraph", "hybrid",
+  "agent_orchestrator", "agent_multi", "hybrid_agent",
+] as const
+type TrackedFramework = typeof ALL_TRACKED_FRAMEWORKS[number]
 
 export function ProgressTracker({ runId, framework, onComplete }: ProgressTrackerProps) {
   const [progress, setProgress] = useState<Record<string, ProgressState>>({})
   const [done, setDone] = useState(false)
 
-  const frameworks: SingleFramework[] = useMemo(() => {
+  const frameworks: TrackedFramework[] = useMemo(() => {
     if (framework === "all") return ["langchain", "langgraph", "hybrid"]
     if ((framework as string) === "both") return ["langchain", "langgraph"] // backwards compat
-    if (ALL_SINGLE_FRAMEWORKS.includes(framework as SingleFramework))
-      return [framework as SingleFramework]
+    if (ALL_TRACKED_FRAMEWORKS.includes(framework as TrackedFramework))
+      return [framework as TrackedFramework]
     return ["langchain"]
   }, [framework])
 
