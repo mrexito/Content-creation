@@ -48,6 +48,24 @@ DOMAIN_CONFIG: dict[str, dict] = {
     },
 }
 
+DOMAIN_PDFS: dict[str, list[str]] = {
+    "math": [
+        "math/equations_simple.pdf",
+        "math/equations_advanced.pdf",
+        "math/word_problems.pdf",
+    ],
+    "languages": [
+        "languages/grammar_exercise.pdf",
+        "languages/text_analysis.pdf",
+        "languages/sentence_construction.pdf",
+    ],
+    "economics": [
+        "economics/balance_sheet.pdf",
+        "economics/income_statement.pdf",
+        "economics/investment_calculation.pdf",
+    ],
+}
+
 ALL_FRAMEWORKS = ["langchain", "langgraph", "hybrid"]
 ALL_DOMAINS    = ["math", "languages", "economics"]
 
@@ -389,9 +407,10 @@ def _md_summary_table(results: list[dict]) -> str:
 
 
 def _md_domain_section(domain: str, domain_results: list[dict]) -> str:
-    cfg   = DOMAIN_CONFIG[domain]
+    cfg      = DOMAIN_CONFIG[domain]
+    pdf_used = domain_results[0]["pdf_name"] if domain_results else cfg["pdf"].split("/")[-1]
     lines = [f"---\n\n## Domäne: {cfg['label']} (`{domain}`)\n",
-             f"**PDF:** `{cfg['pdf']}` | **Validator:** {cfg['validator']}\n"]
+             f"**PDF:** `{pdf_used}` | **Validator:** {cfg['validator']}\n"]
 
     # Kurze Metrik-Tabelle pro Framework
     lines.append("\n### Metriken\n")
@@ -608,6 +627,9 @@ def main() -> None:
     parser.add_argument("--output-dir",  type=Path,
                         default=None,
                         help="Output-Verzeichnis (Standard: data/output/evaluation/<timestamp>/)")
+    parser.add_argument("--pdf",         type=str, default=None,
+                        help="Spezifischer PDF-Dateiname (z.B. equations_advanced.pdf) "
+                             "um Standard-PDF zu überschreiben")
     args = parser.parse_args()
 
     ts  = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -629,12 +651,20 @@ def main() -> None:
 
     for domain in args.domains:
         cfg_dom = DOMAIN_CONFIG[domain]
-        pdf_path = Config.DATA_INPUT_PATH / cfg_dom["pdf"]
+
+        # --pdf override: search in this domain's PDF list by filename
+        if args.pdf:
+            matches = [p for p in DOMAIN_PDFS[domain] if Path(p).name == args.pdf]
+            pdf_rel = matches[0] if matches else f"{domain}/{args.pdf}"
+        else:
+            pdf_rel = DOMAIN_PDFS[domain][0]
+
+        pdf_path = Config.DATA_INPUT_PATH / pdf_rel
 
         if not pdf_path.exists():
             print(f"\n⚠️  PDF nicht gefunden: {pdf_path} — überspringe Domain '{domain}'")
             for fw in args.frameworks:
-                results.append(_error_result(fw, domain, cfg_dom["pdf"].split("/")[-1],
+                results.append(_error_result(fw, domain, pdf_path.name,
                                              f"PDF not found: {pdf_path}"))
             continue
 
