@@ -36,9 +36,13 @@ const ALL_TRACKED_FRAMEWORKS = [
 ] as const
 type TrackedFramework = typeof ALL_TRACKED_FRAMEWORKS[number]
 
+const POLL_ERROR_THRESHOLD = 3 // consecutive failures before showing connection error
+
 export function ProgressTracker({ runId, framework, onComplete }: ProgressTrackerProps) {
   const [progress, setProgress] = useState<Record<string, ProgressState>>({})
   const [done, setDone] = useState(false)
+  const [consecutiveErrors, setConsecutiveErrors] = useState(0)
+  const [connectionError, setConnectionError] = useState(false)
 
   const frameworks: TrackedFramework[] = useMemo(() => {
     if (framework === "all") return ["langchain", "langgraph", "hybrid"]
@@ -51,8 +55,17 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
   const poll = useCallback(async () => {
     try {
       const res = await fetch(`/api/progress/${runId}`)
-      if (!res.ok) return
+      if (!res.ok) {
+        setConsecutiveErrors((n) => {
+          const next = n + 1
+          if (next >= POLL_ERROR_THRESHOLD) setConnectionError(true)
+          return next
+        })
+        return
+      }
       const data = await res.json()
+      setConsecutiveErrors(0)
+      setConnectionError(false)
       setProgress(data)
 
       const allDone = frameworks.every(
@@ -65,7 +78,13 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
         const results = rRes.ok ? await rRes.json() : {}
         onComplete?.(results)
       }
-    } catch {}
+    } catch {
+      setConsecutiveErrors((n) => {
+        const next = n + 1
+        if (next >= POLL_ERROR_THRESHOLD) setConnectionError(true)
+        return next
+      })
+    }
   }, [runId, frameworks, onComplete, done])
 
   useEffect(() => {
@@ -77,6 +96,11 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
 
   return (
     <div className="space-y-3">
+      {connectionError && (
+        <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
+          Verbindungsfehler — bitte Seite neu laden
+        </div>
+      )}
       {frameworks.map((fw) => {
         const p = progress[fw]
         const status = p?.status ?? "pending"
