@@ -7,6 +7,8 @@ import path from "path"
 
 const PROJECT_ROOT = path.resolve(process.cwd(), "..")
 
+const OCR_TIMEOUT_MS = 180_000 // 3 minutes
+
 /** Run OCR once and write result to outputPath. Returns true on success. */
 async function runOCR(opts: {
   pdfPath: string
@@ -15,7 +17,7 @@ async function runOCR(opts: {
   outputPath: string
 }): Promise<boolean> {
   const scriptPath = path.join(PROJECT_ROOT, "scripts", "run_ocr.py")
-  return new Promise((resolve) => {
+  const ocrPromise = new Promise<boolean>((resolve) => {
     const proc = spawn("python", [
       scriptPath,
       "--pdf", opts.pdfPath,
@@ -33,6 +35,10 @@ async function runOCR(opts: {
     proc.on("close", (code) => resolve(code === 0))
     proc.on("error", () => resolve(false))
   })
+  const timeoutPromise = new Promise<boolean>((resolve) =>
+    setTimeout(() => resolve(false), OCR_TIMEOUT_MS)
+  )
+  return Promise.race([ocrPromise, timeoutPromise])
 }
 
 export async function POST(req: NextRequest) {
@@ -103,7 +109,7 @@ export async function POST(req: NextRequest) {
               pdf_name: path.basename(pdfPath),
               framework: fw,
               domain: domain || "auto",
-              error: "OCR-Vorverarbeitung fehlgeschlagen. Prüfe OCR-Tool und PDF.",
+              error: `OCR-Vorverarbeitung fehlgeschlagen (Timeout nach ${OCR_TIMEOUT_MS / 1000}s oder Fehler). Prüfe OCR-Tool und PDF.`,
             },
           }, null, 2))
         }
