@@ -167,11 +167,10 @@ export function ComparisonView({ run }: ComparisonViewProps) {
   ] as const
 
   const resultEntries: ResultEntry[] = ALL_FW_KEYS
-    .map((key) => {
+    .flatMap((key) => {
       const result = run[key as keyof RunResult] as PipelineResult | undefined
-      return result ? { key, result } : null
+      return result ? [{ key, result } satisfies ResultEntry] : []
     })
-    .filter((x): x is ResultEntry => x !== null)
 
   if (!resultEntries.length) {
     return <p className="text-gray-500">Keine Ergebnisse verfügbar.</p>
