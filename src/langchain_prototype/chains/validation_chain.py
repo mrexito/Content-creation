@@ -16,6 +16,8 @@ from common.validators import (
     get_bert_validator,
     get_consistency_validator
 )
+from common.constants import BERT_THRESHOLD, EQUATION_COUNT_TOLERANCE, NUMBER_COUNT_TOLERANCE, LENGTH_RATIO_BOUNDS
+from common.utils import check_placeholder_preservation
 from common.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -54,35 +56,6 @@ class ValidationChain:
 
         logger.info("ValidationChain (LCEL-kompatibel) initialisiert")
     
-    def _check_placeholder_preservation(self, original: str, variant: str) -> dict:
-        """
-        Prüft ob Aufgaben-Platzhalter aus dem Original in der Variante erhalten sind.
-        Verhindert dass das LLM Lücken ausfüllt statt zu variieren.
-
-        Returns:
-            Dict mit is_valid, original_count, variant_count, missing
-        """
-        placeholders = ['□', '___', '→ ___', '→___', '________']
-
-        original_count = sum(original.count(p) for p in placeholders)
-        variant_count  = sum(variant.count(p)  for p in placeholders)
-
-        # Kein Placeholder im Original → Check nicht anwendbar
-        if original_count == 0:
-            return {'is_valid': True, 'original_count': 0, 'variant_count': 0, 'skipped': True}
-
-        # Mindestens 80% der Platzhalter müssen erhalten sein
-        ratio = variant_count / original_count
-        is_valid = ratio >= 0.8
-
-        return {
-            'is_valid': is_valid,
-            'original_count': original_count,
-            'variant_count': variant_count,
-            'ratio': ratio,
-            'skipped': False
-        }
-
     def validate_variant(
         self,
         original: str,
@@ -128,8 +101,9 @@ class ValidationChain:
                 'variant_solvable': variant_validation['solvable_equations']
             }
             
-            # Prüfe ob Anzahl gleich
-            if original_validation['equations_found'] != variant_validation['equations_found']:
+            # Prüfe ob Anzahl im Toleranzbereich
+            equation_diff = abs(original_validation['equations_found'] - variant_validation['equations_found'])
+            if equation_diff > EQUATION_COUNT_TOLERANCE:
                 issues.append(
                     f"Anzahl Gleichungen unterschiedlich: "
                     f"{original_validation['equations_found']} vs {variant_validation['equations_found']}"
@@ -142,7 +116,7 @@ class ValidationChain:
             bert_result = self.bert_validator.validate_paraphrase(
                 original=original,
                 paraphrased=variant,
-                min_threshold=0.7  # Etwas niedriger für Variationen
+                min_threshold=BERT_THRESHOLD,
             )
             
             validation_results['bert'] = {
@@ -155,7 +129,7 @@ class ValidationChain:
                 issues.append(bert_result.get('reason', 'Semantische Ähnlichkeit zu gering'))
 
             # Placeholder-Check: Lücken dürfen nicht ausgefüllt werden
-            placeholder_result = self._check_placeholder_preservation(original, variant)
+            placeholder_result = check_placeholder_preservation(original, variant)
             validation_results['placeholder'] = placeholder_result
 
             if not placeholder_result.get('skipped') and not placeholder_result['is_valid']:
@@ -182,7 +156,7 @@ class ValidationChain:
             }
             
             # Prüfe ob ähnliche Anzahl Zahlen
-            if abs(len(original_numbers) - len(variant_numbers)) > 2:
+            if abs(len(original_numbers) - len(variant_numbers)) > NUMBER_COUNT_TOLERANCE:
                 issues.append(
                     f"Anzahl Zahlen stark unterschiedlich: "
                     f"{len(original_numbers)} vs {len(variant_numbers)}"
@@ -193,12 +167,7 @@ class ValidationChain:
         length_ratio = len(variant) / len(original) if len(original) > 0 else 0
         
         # Domain-spezifische Längen-Toleranz
-        if domain == 'languages':
-            min_ratio, max_ratio = 0.6, 1.5
-        elif domain == 'economics':
-            min_ratio, max_ratio = 0.4, 2.5
-        else:
-            min_ratio, max_ratio = 0.5, 2.0
+        min_ratio, max_ratio = LENGTH_RATIO_BOUNDS.get(domain, LENGTH_RATIO_BOUNDS["default"])
 
         if length_ratio < min_ratio or length_ratio > max_ratio:
             issues.append(

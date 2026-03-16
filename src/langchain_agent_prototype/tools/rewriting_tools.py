@@ -14,7 +14,8 @@ from langchain_core.tools import tool
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-from common.constants import DOMAIN_LANGUAGES
+from common.constants import BERT_THRESHOLD, DOMAIN_LANGUAGES, LENGTH_RATIO_BOUNDS, EQUATION_COUNT_TOLERANCE, NUMBER_COUNT_TOLERANCE
+from common.utils import check_placeholder_preservation
 from common.logger import setup_logger
 from common.validators.sympy_validator import get_sympy_validator
 from common.validators.bert_validator import BERTValidator
@@ -63,9 +64,6 @@ def _get_consistency():
         _consistency_validator = ConsistencyValidator()
     return _consistency_validator
 
-
-# Placeholder-Zeichen für Languages-Validierung
-_PLACEHOLDERS = ["□", "___", "→ ___", "→___", "________"]
 
 # Domain → System-Prompt
 _REWRITING_PROMPTS = {
@@ -195,7 +193,7 @@ def validate_variant(original: str, variant: str, domain: str) -> str:
             var_v = sympy.validate_text(variant)
             validation_details["equations_original"] = orig_v["equations_found"]
             validation_details["equations_variant"] = var_v["equations_found"]
-            if orig_v["equations_found"] != var_v["equations_found"]:
+            if abs(orig_v["equations_found"] - var_v["equations_found"]) > EQUATION_COUNT_TOLERANCE:
                 issues.append(
                     f"Anzahl Gleichungen unterschiedlich: "
                     f"{orig_v['equations_found']} vs {var_v['equations_found']}"
@@ -204,21 +202,20 @@ def validate_variant(original: str, variant: str, domain: str) -> str:
         elif domain == "languages":
             bert = _get_bert()
             bert_result = bert.validate_paraphrase(
-                original=original, paraphrased=variant, min_threshold=0.7
+                original=original, paraphrased=variant, min_threshold=BERT_THRESHOLD,
             )
             validation_details["bert_score"] = bert_result.get("score", 0)
             if not bert_result["is_valid"]:
                 issues.append(bert_result.get("reason", "Semantische Ähnlichkeit zu gering"))
 
             # Placeholder-Erhalt prüfen
-            orig_count = sum(original.count(p) for p in _PLACEHOLDERS)
-            var_count = sum(variant.count(p) for p in _PLACEHOLDERS)
-            if orig_count > 0:
-                ratio = var_count / orig_count
-                validation_details["placeholder_ratio"] = ratio
-                if ratio < 0.8:
+            ph_result = check_placeholder_preservation(original, variant)
+            if not ph_result.get("skipped"):
+                validation_details["placeholder_ratio"] = ph_result.get("ratio", 0.0)
+                if not ph_result["is_valid"]:
                     issues.append(
-                        f"Platzhalter nicht erhalten: {var_count}/{orig_count} "
+                        f"Platzhalter nicht erhalten: "
+                        f"{ph_result['variant_count']}/{ph_result['original_count']} "
                         f"(min. 80% erforderlich)"
                     )
 
@@ -228,7 +225,7 @@ def validate_variant(original: str, variant: str, domain: str) -> str:
             var_nums = cons.extract_numbers(variant)
             validation_details["numbers_original"] = len(orig_nums)
             validation_details["numbers_variant"] = len(var_nums)
-            if abs(len(orig_nums) - len(var_nums)) > 2:
+            if abs(len(orig_nums) - len(var_nums)) > NUMBER_COUNT_TOLERANCE:
                 issues.append(
                     f"Anzahl Zahlen stark unterschiedlich: "
                     f"{len(orig_nums)} vs {len(var_nums)}"
@@ -238,12 +235,7 @@ def validate_variant(original: str, variant: str, domain: str) -> str:
         if len(original) > 0:
             ratio = len(variant) / len(original)
             validation_details["length_ratio"] = round(ratio, 2)
-            if domain == "languages":
-                min_r, max_r = 0.6, 1.5
-            elif domain == "economics":
-                min_r, max_r = 0.4, 2.5
-            else:
-                min_r, max_r = 0.5, 2.0
+            min_r, max_r = LENGTH_RATIO_BOUNDS.get(domain, LENGTH_RATIO_BOUNDS["default"])
             if ratio < min_r or ratio > max_r:
                 issues.append(
                     f"Länge weicht stark ab: {len(variant)} vs {len(original)} "

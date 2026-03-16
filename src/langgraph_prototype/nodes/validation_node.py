@@ -9,35 +9,12 @@ from common.validators import (
     get_bert_validator,
     get_consistency_validator
 )
+from common.constants import BERT_THRESHOLD, EQUATION_COUNT_TOLERANCE, NUMBER_COUNT_TOLERANCE, LENGTH_RATIO_BOUNDS
+from common.utils import check_placeholder_preservation
 from common.logger import setup_logger
 from langgraph_prototype.state.workflow_state import WorkflowState
 
 logger = setup_logger(__name__)
-
-
-def _check_placeholder_preservation(original: str, variant: str) -> dict:
-    """
-    Prüft ob Aufgaben-Platzhalter aus dem Original in der Variante erhalten sind.
-    Verhindert dass das LLM Lücken ausfüllt statt zu variieren.
-    """
-    placeholders = ['□', '___', '→ ___', '→___', '________']
-
-    original_count = sum(original.count(p) for p in placeholders)
-    variant_count  = sum(variant.count(p)  for p in placeholders)
-
-    if original_count == 0:
-        return {'is_valid': True, 'original_count': 0, 'variant_count': 0, 'skipped': True}
-
-    ratio = variant_count / original_count
-    is_valid = ratio >= 0.8
-
-    return {
-        'is_valid': is_valid,
-        'original_count': original_count,
-        'variant_count': variant_count,
-        'ratio': ratio,
-        'skipped': False
-    }
 
 
 def validation_node(state: WorkflowState) -> WorkflowState:
@@ -104,29 +81,27 @@ def validation_node(state: WorkflowState) -> WorkflowState:
                         'variant_equations': variant_val['equations_found']
                     }
                     
-                    # Toleranz: ±1 Gleichung
                     equation_diff = abs(original_val['equations_found'] - variant_val['equations_found'])
-                    if equation_diff > 1:
+                    if equation_diff > EQUATION_COUNT_TOLERANCE:
                         issues.append(
                             f"Anzahl Gleichungen unterschiedlich: "
                             f"{original_val['equations_found']} vs {variant_val['equations_found']}"
                         )
                 
                 elif domain == 'languages':
-                    # BERT mit niedrigerem Threshold
                     bert_result = bert_validator.validate_paraphrase(
                         original=original_text,
                         paraphrased=variant_text,
-                        min_threshold=0.70
+                        min_threshold=BERT_THRESHOLD,
                     )
-                    
+
                     validation_results['bert'] = bert_result
-                    
+
                     if not bert_result['is_valid']:
-                        issues.append(f"BERT-Score zu niedrig: {bert_result['score']:.2f} < 0.70")
+                        issues.append(f"BERT-Score zu niedrig: {bert_result['score']:.2f} < {BERT_THRESHOLD}")
 
                     # Placeholder-Check
-                    placeholder_result = _check_placeholder_preservation(original_text, variant_text)
+                    placeholder_result = check_placeholder_preservation(original_text, variant_text)
                     validation_results['placeholder'] = placeholder_result
 
                     if not placeholder_result.get('skipped') and not placeholder_result['is_valid']:
@@ -147,9 +122,8 @@ def validation_node(state: WorkflowState) -> WorkflowState:
                         'variant_numbers': len(variant_numbers)
                     }
                     
-                    # Toleranz: ±3 Zahlen
                     number_diff = abs(len(original_numbers) - len(variant_numbers))
-                    if number_diff > 3:
+                    if number_diff > NUMBER_COUNT_TOLERANCE:
                         issues.append(
                             f"Anzahl Zahlen stark unterschiedlich: "
                             f"{len(original_numbers)} vs {len(variant_numbers)}"
@@ -157,14 +131,7 @@ def validation_node(state: WorkflowState) -> WorkflowState:
                 
                 # Length check mit domain-spezifischer Toleranz
                 length_ratio = len(variant_text) / len(original_text) if len(original_text) > 0 else 0
-                
-                # Domain-spezifische Ranges
-                if domain == 'economics':
-                    min_ratio, max_ratio = 0.4, 2.5
-                elif domain == 'languages':
-                    min_ratio, max_ratio = 0.6, 1.5
-                else:
-                    min_ratio, max_ratio = 0.5, 2.0
+                min_ratio, max_ratio = LENGTH_RATIO_BOUNDS.get(domain, LENGTH_RATIO_BOUNDS["default"])
                 
                 if length_ratio < min_ratio or length_ratio > max_ratio:
                     issues.append(
