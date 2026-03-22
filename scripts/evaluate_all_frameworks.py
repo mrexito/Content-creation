@@ -38,17 +38,29 @@ from common.llm_handler import reset_llm_handler
 
 DOMAIN_CONFIG: dict[str, dict] = {
     "math": {
-        "pdf":       "math/equations_simple.pdf",
+        "pdfs": [
+            "math/equations_simple.pdf",
+            "math/equations_advanced.pdf",
+            "math/word_problems.pdf",
+        ],
         "label":     "Mathematik",
         "validator": "SymPy",
     },
     "languages": {
-        "pdf":       "languages/grammar_exercise.pdf",
+        "pdfs": [
+            "languages/grammar_exercise.pdf",
+            "languages/sentence_construction.pdf",
+            "languages/text_analysis.pdf",
+        ],
         "label":     "Sprachen",
         "validator": "BERTScore",
     },
     "economics": {
-        "pdf":       "economics/balance_sheet.pdf",
+        "pdfs": [
+            "economics/balance_sheet.pdf",
+            "economics/income_statement.pdf",
+            "economics/investment_calculation.pdf",
+        ],
         "label":     "Wirtschaft",
         "validator": "ConsistencyCheck",
     },
@@ -530,24 +542,29 @@ def _print_domain_table(domain: str, domain_results: list[dict]) -> None:
         f" {'Retries':>{col_ret}}"
         f" {'Tools':>{col_tools}}"
     )
-    print(header)
-    print(f"  {'─' * (col_fw + col_time + col_segs + col_valid + col_rate + col_ret + col_tools + 6)}")
+    sep_line = f"  {'─' * (col_fw + col_time + col_segs + col_valid + col_rate + col_ret + col_tools + 6)}"
 
-    for r in domain_results:
-        fw    = r["framework"]
-        icon  = EMOJI.get(fw, "  ")
-        label_fw = f"{icon} {FRAMEWORK_LABELS.get(fw, fw)}"
-        segs  = str(r["metrics"]["num_segments"]) if r["success"] else "–"
-        line = (
-            f"  {label_fw:<{col_fw}}"
-            f" {_fmt_time(r):>{col_time}}"
-            f" {segs:>{col_segs}}"
-            f" {_fmt_valid(r):>{col_valid}}"
-            f" {_fmt_rate(r):>{col_rate}}"
-            f" {_fmt_agent(r, 'retries_total'):>{col_ret}}"
-            f" {_fmt_agent(r, 'tool_calls_total'):>{col_tools}}"
-        )
-        print(line)
+    # Group by PDF
+    pdf_names = list(dict.fromkeys(r["pdf_name"] for r in domain_results))
+    for pdf_name in pdf_names:
+        print(f"\n  PDF: {pdf_name}")
+        print(header)
+        print(sep_line)
+        for r in [x for x in domain_results if x["pdf_name"] == pdf_name]:
+            fw    = r["framework"]
+            icon  = EMOJI.get(fw, "  ")
+            label_fw = f"{icon} {FRAMEWORK_LABELS.get(fw, fw)}"
+            segs  = str(r["metrics"]["num_segments"]) if r["success"] else "–"
+            line = (
+                f"  {label_fw:<{col_fw}}"
+                f" {_fmt_time(r):>{col_time}}"
+                f" {segs:>{col_segs}}"
+                f" {_fmt_valid(r):>{col_valid}}"
+                f" {_fmt_rate(r):>{col_rate}}"
+                f" {_fmt_agent(r, 'retries_total'):>{col_ret}}"
+                f" {_fmt_agent(r, 'tool_calls_total'):>{col_tools}}"
+            )
+            print(line)
 
 
 def _print_overall_summary(results: list[dict], frameworks: list[str]) -> None:
@@ -671,44 +688,55 @@ def _md_summary(results: list[dict], frameworks: list[str]) -> str:
 
 def _md_domain_section(domain: str, domain_results: list[dict]) -> str:
     cfg   = DOMAIN_CONFIG[domain]
+    pdf_list = " | ".join(f"`{p}`" for p in cfg["pdfs"])
     lines = [f"---\n\n## 3.{['math', 'languages', 'economics'].index(domain) + 1} Domäne: {cfg['label']} (`{domain}`)\n",
-             f"**PDF:** `{cfg['pdf']}` | **Validator:** {cfg['validator']}\n"]
+             f"**PDFs:** {pdf_list} | **Validator:** {cfg['validator']}\n"]
 
     lines.append("\n### Metriken\n")
-    lines.append(
-        "| Framework | Segmente | Valide / Total | Rate | Zeit (s) "
-        "| OCR | Tool-Calls | Retries | Halluziniert |"
-    )
-    lines.append(
-        "|-----------|----------|----------------|------|----------|"
-        "-----|------------|---------|--------------|"
-    )
-    for r in domain_results:
-        m  = r["metrics"]
-        fw = FRAMEWORK_LABELS.get(r["framework"], r["framework"])
-        if r["success"]:
-            tc   = str(m.get("tool_calls_total"))  if m.get("tool_calls_total")  is not None else "–"
-            ret  = str(m.get("retries_total"))      if m.get("retries_total")      is not None else "–"
-            hall = str(m.get("hallucinated_calls")) if m.get("hallucinated_calls") is not None else "–"
-            lines.append(
-                f"| {fw} | {m['num_segments']} "
-                f"| {m['valid_variants']} / {m['total_variants']} "
-                f"| {m['validation_rate'] * 100:.0f}% "
-                f"| {m['total_time']:.1f} "
-                f"| {m['ocr_tool']} "
-                f"| {tc} | {ret} | {hall} |"
-            )
-        else:
-            lines.append(f"| {fw} | – | – | – | – | – | – | – | – |")
-    lines.append("")
+    pdf_names = list(dict.fromkeys(r["pdf_name"] for r in domain_results))
+    for pdf_name in pdf_names:
+        pdf_results = [r for r in domain_results if r["pdf_name"] == pdf_name]
+        lines.append(f"**PDF:** `{pdf_name}`\n")
+        lines.append(
+            "| Framework | Segmente | Valide / Total | Rate | Zeit (s) "
+            "| OCR | Tool-Calls | Retries | Halluziniert |"
+        )
+        lines.append(
+            "|-----------|----------|----------------|------|----------|"
+            "-----|------------|---------|--------------|"
+        )
+        for r in pdf_results:
+            m  = r["metrics"]
+            fw = FRAMEWORK_LABELS.get(r["framework"], r["framework"])
+            if r["success"]:
+                tc   = str(m.get("tool_calls_total"))  if m.get("tool_calls_total")  is not None else "–"
+                ret  = str(m.get("retries_total"))      if m.get("retries_total")      is not None else "–"
+                hall = str(m.get("hallucinated_calls")) if m.get("hallucinated_calls") is not None else "–"
+                lines.append(
+                    f"| {fw} | {m['num_segments']} "
+                    f"| {m['valid_variants']} / {m['total_variants']} "
+                    f"| {m['validation_rate'] * 100:.0f}% "
+                    f"| {m['total_time']:.1f} "
+                    f"| {m['ocr_tool']} "
+                    f"| {tc} | {ret} | {hall} |"
+                )
+            else:
+                lines.append(f"| {fw} | – | – | – | – | – | – | – | – |")
+        lines.append("")
 
     lines.append("\n### Segment-Vergleich (Volltext)\n")
-    max_segs = max((len(r["segments"]) for r in domain_results if r["success"]), default=0)
+    # Use first PDF for segment comparison to keep report manageable
+    first_pdf = pdf_names[0] if pdf_names else None
+    first_pdf_results = [r for r in domain_results if r["pdf_name"] == first_pdf] if first_pdf else domain_results
+    max_segs = max((len(r["segments"]) for r in first_pdf_results if r["success"]), default=0)
+
+    if first_pdf:
+        lines.append(f"_Segmentvergleich für erstes PDF: `{first_pdf}`_\n")
 
     for seg_idx in range(max_segs):
         original_text = ""
         original_type = ""
-        for r in domain_results:
+        for r in first_pdf_results:
             if r["success"] and seg_idx < len(r["segments"]):
                 original_text = r["segments"][seg_idx]["original_segment"]["text"]
                 original_type = r["segments"][seg_idx]["original_segment"].get("type", "?")
@@ -724,7 +752,7 @@ def _md_domain_section(domain: str, domain_results: list[dict]) -> str:
         lines.append(original_text)
         lines.append("```\n")
 
-        for r in domain_results:
+        for r in first_pdf_results:
             fw   = r["framework"]
             icon = EMOJI.get(fw, "")
             label = FRAMEWORK_LABELS.get(fw, fw)
@@ -1087,7 +1115,7 @@ def main() -> None:
     )
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    total_runs = len(frameworks) * len(domains)
+    total_runs = len(frameworks) * sum(len(DOMAIN_CONFIG[d]["pdfs"]) for d in domains)
     has_agents = any(fw in IS_AGENT for fw in frameworks)
 
     # ── Laufzeit-Warnung ─────────────────────────────────────────────────────
@@ -1115,53 +1143,55 @@ def main() -> None:
     results: list[dict] = []
 
     for domain in domains:
-        cfg_dom  = DOMAIN_CONFIG[domain]
-        pdf_path = Config.DATA_INPUT_PATH / cfg_dom["pdf"]
+        cfg_dom = DOMAIN_CONFIG[domain]
 
-        if not pdf_path.exists():
-            print(f"\n⚠️  PDF nicht gefunden: {pdf_path} — überspringe Domain '{domain}'")
-            for fw in frameworks:
-                results.append(_error_result(
-                    fw, domain, cfg_dom["pdf"].split("/")[-1],
-                    f"PDF not found: {pdf_path}"
-                ))
-            continue
+        for pdf_rel in cfg_dom["pdfs"]:
+            pdf_path = Config.DATA_INPUT_PATH / pdf_rel
 
-        for framework in frameworks:
-            run_num += 1
-            icon  = EMOJI.get(framework, "")
-            label = FRAMEWORK_LABELS.get(framework, framework)
-            print(f"\n[{run_num}/{total_runs}] {icon} {label.upper()} — {cfg_dom['label'].upper()}")
-            print(f"  PDF: {pdf_path.name}")
+            if not pdf_path.exists():
+                print(f"\n⚠️  PDF nicht gefunden: {pdf_path} — überspringe '{pdf_rel}'")
+                for fw in frameworks:
+                    results.append(_error_result(
+                        fw, domain, pdf_rel.split("/")[-1],
+                        f"PDF not found: {pdf_path}"
+                    ))
+                continue
 
-            t0 = time.time()
-            try:
-                if args.no_multiprocessing:
-                    runner = _RUNNERS[framework]
-                    result = runner(pdf_path, domain, args.variants)
-                else:
-                    result = _run_with_timeout(
-                        framework, pdf_path, domain, args.variants,
-                        timeout=TIMEOUT_SECONDS,
+            for framework in frameworks:
+                run_num += 1
+                icon  = EMOJI.get(framework, "")
+                label = FRAMEWORK_LABELS.get(framework, framework)
+                print(f"\n[{run_num}/{total_runs}] {icon} {label.upper()} — {cfg_dom['label'].upper()}")
+                print(f"  PDF: {pdf_path.name}")
+
+                t0 = time.time()
+                try:
+                    if args.no_multiprocessing:
+                        runner = _RUNNERS[framework]
+                        result = runner(pdf_path, domain, args.variants)
+                    else:
+                        result = _run_with_timeout(
+                            framework, pdf_path, domain, args.variants,
+                            timeout=TIMEOUT_SECONDS,
+                        )
+                except Exception as exc:
+                    print(f"  ❌ Exception: {exc}")
+                    result = _error_result(framework, domain, pdf_path.name, str(exc))
+
+                elapsed = time.time() - t0
+                results.append(result)
+
+                if result["success"]:
+                    m = result["metrics"]
+                    tc_str   = f" | Tools: {m['tool_calls_total']}" if m.get("tool_calls_total") is not None else ""
+                    ret_str  = f" | Retries: {m['retries_total']}" if m.get("retries_total") is not None else ""
+                    print(
+                        f"  ✅ {m['valid_variants']}/{m['total_variants']} valide "
+                        f"({m['validation_rate'] * 100:.0f}%) | {elapsed:.1f}s | "
+                        f"OCR: {m['ocr_tool']}{tc_str}{ret_str}"
                     )
-            except Exception as exc:
-                print(f"  ❌ Exception: {exc}")
-                result = _error_result(framework, domain, pdf_path.name, str(exc))
-
-            elapsed = time.time() - t0
-            results.append(result)
-
-            if result["success"]:
-                m = result["metrics"]
-                tc_str   = f" | Tools: {m['tool_calls_total']}" if m.get("tool_calls_total") is not None else ""
-                ret_str  = f" | Retries: {m['retries_total']}" if m.get("retries_total") is not None else ""
-                print(
-                    f"  ✅ {m['valid_variants']}/{m['total_variants']} valide "
-                    f"({m['validation_rate'] * 100:.0f}%) | {elapsed:.1f}s | "
-                    f"OCR: {m['ocr_tool']}{tc_str}{ret_str}"
-                )
-            else:
-                print(f"  ❌ {result.get('error', '?')[:120]}")
+                else:
+                    print(f"  ❌ {result.get('error', '?')[:120]}")
 
     # ── Konsolen-Zusammenfassung ───────────────────────────────────────────────
     for domain in domains:

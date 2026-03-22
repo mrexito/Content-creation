@@ -9,7 +9,7 @@ Testmatrix:
 
 Phasen pro Kombination:
   Phase 1 – OCR / Parsing
-  Phase 2 – Rewriting mit Retry-Loop (max. 3 Versuche)
+  Phase 2 – Rewriting
   Phase 3 – Evaluierung
 
 Usage:
@@ -46,7 +46,6 @@ COMBINATIONS: List[Dict[str, Any]] = [
     {'id': 4, 'label': 'Tesseract    + GPT-4',    'ocr': 'tesseract', 'llm': 'openai'},
 ]
 
-MAX_RETRY_ATTEMPTS   = 3   # High-level Retries pro Segment (Phase 2)
 NUM_VARIANTS         = 2   # Varianten pro Segment
 MAX_SEGMENTS         = 3   # Maximale Segmente pro Kombination (für Laufzeit)
 NUMBER_CHANGE_TARGET = 0.30  # ≥30 % Zahlenänderung gefordert
@@ -83,7 +82,6 @@ class SegmentResult:
     domain: str
     rewriting_success: bool
     rewriting_time: float
-    high_level_retries: int   # Retry-Loop Versuche (Phase 2)
     variants: List[VariantResult] = field(default_factory=list)
     rewriting_error: str = ''
 
@@ -104,7 +102,6 @@ class CombinationResult:
     validation_rate: float = 0.0
     avg_diversity_score: float = 0.0
     avg_numbers_changed_pct: float = 0.0
-    avg_high_level_retries: float = 0.0
     meets_30pct_criterion: bool = False
     overall_success: bool = False
     error: str = ''
@@ -197,16 +194,15 @@ def phase1_ocr(pdf_path: Path, ocr_tool: str) -> OCRResult:
     return ocr
 
 
-# ── Phase 2: Rewriting mit Retry-Loop ─────────────────────────────────────────
+# ── Phase 2: Rewriting ────────────────────────────────────────────────────────
 def phase2_rewrite(
     text: str,
     llm_provider: str,
 ) -> Tuple[List[SegmentResult], float]:
     """
-    Phase 2 – Segmentierung → Klassifizierung → Rewriting mit Retry-Loop.
+    Phase 2 – Segmentierung → Klassifizierung → Rewriting.
 
-    Für jedes Segment werden bis zu MAX_RETRY_ATTEMPTS Versuche unternommen,
-    eine erfolgreiche Rewriting-Ausgabe zu erzeugen.
+    Pro Segment ein direkter Rewriting-Aufruf (keine Retry-Schleife).
 
     Returns:
         (segment_results, gesamt_rewriting_zeit_in_sekunden)
@@ -231,10 +227,7 @@ def phase2_rewrite(
 
     # ── Klassifizierung + Rewriting pro Segment ────────────────────────────────
     cls_chain      = get_classification_chain()
-    rewriting_chain = RewritingChain(
-        num_variants             = NUM_VARIANTS,
-        max_attempts_per_variant = MAX_RETRY_ATTEMPTS,   # low-level (pro Variante)
-    )
+    rewriting_chain = RewritingChain(num_variants=NUM_VARIANTS)
 
     segment_results: List[SegmentResult] = []
 
@@ -252,29 +245,22 @@ def phase2_rewrite(
         except Exception:
             domain = 'general'
 
-        # ── Retry-Loop (Phase-2-Ebene) ─────────────────────────────────────────
         seg_start         = time.time()
         rewriting_success = False
         rewriting_error   = ''
         rewrite_out       = None
-        high_level_retries = 0
 
-        for attempt in range(1, MAX_RETRY_ATTEMPTS + 1):
-            high_level_retries = attempt
-            try:
-                rewrite_out = rewriting_chain.rewrite_segment(segment, domain)
-                if rewrite_out['success']:
-                    rewriting_success = True
-                    break
-                else:
-                    rewriting_error = f"Kein Erfolg nach {attempt}. Versuch"
-                    print(f" [Retry {attempt}]", end='', flush=True)
-            except Exception as exc:
-                rewriting_error = str(exc)
-                print(f" [Err {attempt}]", end='', flush=True)
+        try:
+            rewrite_out = rewriting_chain.rewrite_segment(segment, domain)
+            if rewrite_out['success']:
+                rewriting_success = True
+            else:
+                rewriting_error = "Kein Erfolg beim Rewriting"
+        except Exception as exc:
+            rewriting_error = str(exc)
 
         seg_time = time.time() - seg_start
-        print(f"  domain={domain} | {seg_time:.1f}s | retries={high_level_retries}")
+        print(f"  domain={domain} | {seg_time:.1f}s")
 
         seg_obj = SegmentResult(
             segment_index      = idx,
@@ -282,7 +268,6 @@ def phase2_rewrite(
             domain             = domain,
             rewriting_success  = rewriting_success,
             rewriting_time     = seg_time,
-            high_level_retries = high_level_retries,
             rewriting_error    = rewriting_error,
         )
 
@@ -447,12 +432,6 @@ def run_combination(combo: Dict[str, Any], pdf_path: Path) -> CombinationResult:
         eval_metrics['avg_numbers_changed_pct'] >= NUMBER_CHANGE_TARGET
     )
 
-    successful_segs = [s for s in seg_results if s.rewriting_success]
-    result.avg_high_level_retries = (
-        sum(s.high_level_retries for s in successful_segs) / len(successful_segs)
-        if successful_segs else 0.0
-    )
-
     result.total_time     = time.time() - total_start
     result.overall_success = len(successful_segs) > 0
 
@@ -509,7 +488,6 @@ def print_comparison_table(results: List[CombinationResult]) -> None:
         ('LLM-Provider',         lambda r: r.llm_provider),
         ('Segmente verarbeitet', lambda r: str(r.segments_processed)),
         ('Varianten generiert',  lambda r: str(r.total_variants)),
-        ('Ø Retries/Segment',    lambda r: f"{r.avg_high_level_retries:.1f}"),
     ]:
         row(name, [fn] * len(results))
 
@@ -575,7 +553,6 @@ def save_report(results: List[CombinationResult], pdf_path: Path) -> Path:
         'timestamp'  : time.strftime('%Y-%m-%d %H:%M:%S'),
         'input_pdf'  : str(pdf_path),
         'config'     : {
-            'max_retry_attempts'   : MAX_RETRY_ATTEMPTS,
             'num_variants'         : NUM_VARIANTS,
             'max_segments'         : MAX_SEGMENTS,
             'number_change_target' : NUMBER_CHANGE_TARGET,
@@ -604,14 +581,12 @@ def save_report(results: List[CombinationResult], pdf_path: Path) -> Path:
             'phase2_rewriting': {
                 'segments_processed'   : r.segments_processed,
                 'total_variants'       : r.total_variants,
-                'avg_high_level_retries': round(r.avg_high_level_retries, 2),
                 'segments': [
                     {
                         'index'            : s.segment_index,
                         'domain'           : s.domain,
                         'success'          : s.rewriting_success,
                         'rewriting_time_s' : round(s.rewriting_time, 3),
-                        'high_level_retries': s.high_level_retries,
                         'num_variants'     : len(s.variants),
                         'variants': [
                             {
@@ -708,7 +683,6 @@ def main() -> None:
     print(f"  Input-PDF  : {pdf_path}")
     print(f"  Segmente   : max. {MAX_SEGMENTS} pro Kombination")
     print(f"  Varianten  : {NUM_VARIANTS} pro Segment")
-    print(f"  Retries    : max. {MAX_RETRY_ATTEMPTS} Versuche (Phase 2, high-level)")
     print(f"  Ziel       : ≥{int(NUMBER_CHANGE_TARGET * 100)} % Zahlenänderung")
     print("\n  Testmatrix:")
     for c in combos_to_run:

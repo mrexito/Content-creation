@@ -4,11 +4,9 @@ Rewriting Chain: Original → Varianten
 LCEL-Implementierung:
     ChatPromptTemplate | ChatOpenAI | StrOutputParser
 
-Der Diversity-Mechanismus (Similarity-Check, Retry-Schleife) und das
-Temperature-Paradox für Languages bleiben erhalten.  Für jeden Versuch
-wird eine neue LCEL-Chain mit der passenden Temperature aufgebaut, da
-die Temperature bei Languages konstant (0.7) bleibt, bei anderen Domains
-aber mit jedem Retry steigt.
+Strikte lineare Pipeline: Pro Variante genau ein LLM-Aufruf.
+Keine Retry-Schleife, kein Similarity-Check.
+Temperature: Languages = 0.7 (BERTScore), alle anderen Domains = 0.9.
 """
 from typing import Dict, Any, List
 
@@ -17,7 +15,6 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import Runnable
 
 from common.constants import DOMAIN_LANGUAGES
-from common.utils import calculate_similarity
 from common.logger import setup_logger
 from langchain_prototype.lcel_llm import get_lcel_llm
 from langchain_prototype.prompts.rewriting_prompts import (
@@ -51,13 +48,10 @@ def _build_rewriting_chain(temperature: float) -> Runnable:
 
 class RewritingChain:
     """
-    LCEL-Chain für Content-Variation mit Diversity-Mechanismus.
+    LCEL-Chain für Content-Variation.
 
-    Für jede Variante:
-    1. LCEL-Chain aufrufen (prompt | llm | parser)
-    2. Similarity gegen bestehende Varianten prüfen
-    3. Bei zu grosser Ähnlichkeit: Retry mit erhöhter Temperature
-       (ausgenommen Domain 'languages' — Temperature-Paradox)
+    Strikte lineare Pipeline: Pro Variante genau ein LLM-Aufruf.
+    Keine Retry-Schleife, kein Similarity-Check.
     """
 
     # Domain → System-Prompt
@@ -68,42 +62,13 @@ class RewritingChain:
         "general": REWRITING_GENERAL_SYSTEM_PROMPT,
     }
 
-    def __init__(
-        self,
-        num_variants: int = 3,
-        min_similarity_threshold: float = 0.7,
-        max_attempts_per_variant: int = 3,
-    ):
+    def __init__(self, num_variants: int = 3):
         """
         Args:
-            num_variants:             Anzahl zu generierender Varianten
-            min_similarity_threshold: Schwellwert für "zu ähnlich" (0–1)
-            max_attempts_per_variant: Max Versuche pro Variante
+            num_variants: Anzahl zu generierender Varianten
         """
         self.num_variants = num_variants
-        self.min_similarity_threshold = min_similarity_threshold
-        self.max_attempts_per_variant = max_attempts_per_variant
-
-        logger.info(
-            f"RewritingChain (LCEL) initialisiert "
-            f"(Varianten: {num_variants}, Similarity-Threshold: {min_similarity_threshold})"
-        )
-
-    # ------------------------------------------------------------------
-    # Hilfsmethoden (unverändert)
-    # ------------------------------------------------------------------
-
-    def _is_too_similar(self, new_variant: str, existing_variants: List[str]) -> bool:
-        """True wenn neue Variante zu ähnlich zu einer bestehenden ist."""
-        for existing in existing_variants:
-            similarity = calculate_similarity(new_variant, existing)
-            if similarity >= self.min_similarity_threshold:
-                logger.debug(
-                    f"Variante zu ähnlich: {similarity:.2f} >= "
-                    f"{self.min_similarity_threshold}"
-                )
-                return True
-        return False
+        logger.info(f"RewritingChain (LCEL) initialisiert (Varianten: {num_variants})")
 
     # ------------------------------------------------------------------
     # Haupt-Logik
@@ -115,7 +80,7 @@ class RewritingChain:
         domain: str = "general",
     ) -> Dict[str, Any]:
         """
-        Generiert diverse Varianten eines Segments.
+        Generiert Varianten eines Segments (ein LLM-Aufruf pro Variante).
 
         Args:
             segment: Dict mit 'text' und optional 'type'
@@ -125,108 +90,42 @@ class RewritingChain:
             Dict mit variants, metadata, success
         """
         text = segment.get("text", "")
-        logger.info(f"Generiere {self.num_variants} diverse Varianten für {domain}-Segment")
+        logger.info(f"Generiere {self.num_variants} Varianten für {domain}-Segment")
 
         system_prompt = self.DOMAIN_PROMPTS.get(domain, REWRITING_GENERAL_SYSTEM_PROMPT)
 
+        # Temperature: Languages = 0.7 (BERTScore), alle anderen = 0.9
+        temperature = 0.7 if domain == DOMAIN_LANGUAGES else 0.9
+        chain = _build_rewriting_chain(temperature)
+        user_prompt = REWRITING_USER_PROMPT_TEMPLATE.format(text=text)
+
         variants: List[Dict] = []
-        variant_texts: List[str] = []  # Für Similarity-Check
 
         for i in range(self.num_variants):
             logger.debug(f"  Generiere Variante {i + 1}/{self.num_variants}")
-
-            attempt = 0
-            success = False
-
-            while attempt < self.max_attempts_per_variant and not success:
-                attempt += 1
-
-                # User-Prompt mit Kontext bisheriger Varianten
-                if variant_texts:
-                    user_prompt = (
-                        f"{REWRITING_USER_PROMPT_TEMPLATE.format(text=text)}\n\n"
-                        f"WICHTIG: Du hast bereits folgende Varianten erstellt:\n"
-                    )
-                    for idx, prev in enumerate(variant_texts, 1):
-                        user_prompt += f"{idx}. {prev}\n"
-                    user_prompt += "\nErstelle eine DEUTLICH UNTERSCHIEDLICHE Variante!"
-                else:
-                    user_prompt = REWRITING_USER_PROMPT_TEMPLATE.format(text=text)
-
-                # Temperature-Paradox:
-                # Languages: konstant 0.7 (BERTScore erfordert semantische Nähe)
-                # Andere Domains: steigt mit jedem Retry für mehr Diversität
-                if domain == DOMAIN_LANGUAGES:
-                    temperature = 0.7
-                else:
-                    temperature = 0.9 + (attempt * 0.05)
-
-                # LCEL-Chain mit passender Temperature aufbauen
-                chain = _build_rewriting_chain(temperature)
-
-                try:
-                    new_variant = chain.invoke({
-                        "system_prompt": system_prompt,
-                        "user_prompt": user_prompt,
-                    }).strip()
-                except Exception as e:
-                    logger.warning(f"    Versuch {attempt} fehlgeschlagen: {e}")
-                    continue
-
-                if not new_variant:
-                    logger.warning(f"    Versuch {attempt}: Leere Antwort")
-                    continue
-
-                # Similarity-Check
-                if self._is_too_similar(new_variant, variant_texts):
-                    logger.debug(
-                        f"    Versuch {attempt}: Variante zu ähnlich, versuche erneut"
-                    )
-                    continue
-
-                # Variante akzeptiert
-                variant_texts.append(new_variant)
+            try:
+                new_variant = chain.invoke({
+                    "system_prompt": system_prompt,
+                    "user_prompt": user_prompt,
+                }).strip()
                 variants.append({
                     "variant_id": i + 1,
-                    "text": new_variant,
-                    "attempts": attempt,
+                    "text": new_variant if new_variant else None,
+                    "attempts": 1,
                 })
-                success = True
-                logger.debug(f"    ✓ Variante {i + 1} akzeptiert (Versuch {attempt})")
-
-            if not success:
-                logger.warning(
-                    f"  ✗ Variante {i + 1}: Keine diverse Variante nach "
-                    f"{self.max_attempts_per_variant} Versuchen"
-                )
+                logger.debug(f"    ✓ Variante {i + 1} generiert")
+            except Exception as e:
+                logger.warning(f"    Variante {i + 1} fehlgeschlagen: {e}")
                 variants.append({
                     "variant_id": i + 1,
                     "text": None,
-                    "error": f"Keine diverse Variante nach {self.max_attempts_per_variant} Versuchen",
-                    "attempts": self.max_attempts_per_variant,
+                    "error": str(e),
+                    "attempts": 1,
                 })
 
         successful_variants = [v for v in variants if v.get("text")]
 
-        # Diversity-Score
-        diversity_score = None
-        if len(successful_variants) >= 2:
-            similarities = [
-                calculate_similarity(
-                    successful_variants[a]["text"],
-                    successful_variants[b]["text"],
-                )
-                for a in range(len(successful_variants))
-                for b in range(a + 1, len(successful_variants))
-            ]
-            avg_similarity = sum(similarities) / len(similarities) if similarities else 0
-            diversity_score = 1.0 - avg_similarity
-
-        diversity_str = f"{diversity_score:.2f}" if diversity_score is not None else "N/A"
-        logger.info(
-            f"✓ {len(successful_variants)}/{self.num_variants} Varianten erfolgreich "
-            f"(Diversity-Score: {diversity_str})"
-        )
+        logger.info(f"✓ {len(successful_variants)}/{self.num_variants} Varianten erfolgreich")
 
         return {
             "original": text,
@@ -236,11 +135,8 @@ class RewritingChain:
                 "num_requested": self.num_variants,
                 "num_successful": len(successful_variants),
                 "segment_type": segment.get("type"),
-                "diversity_score": diversity_score,
-                "avg_attempts": (
-                    sum(v.get("attempts", 0) for v in variants) / len(variants)
-                    if variants else 0
-                ),
+                "diversity_score": None,
+                "avg_attempts": 1,
             },
             "success": len(successful_variants) > 0,
         }
@@ -260,12 +156,6 @@ class RewritingChain:
         return self.rewrite_segment(segment, domain)
 
 
-def get_rewriting_chain(
-    num_variants: int = 3,
-    min_similarity_threshold: float = 0.7,
-) -> RewritingChain:
+def get_rewriting_chain(num_variants: int = 3) -> RewritingChain:
     """Factory für RewritingChain"""
-    return RewritingChain(
-        num_variants=num_variants,
-        min_similarity_threshold=min_similarity_threshold,
-    )
+    return RewritingChain(num_variants=num_variants)
