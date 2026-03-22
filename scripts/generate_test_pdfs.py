@@ -193,7 +193,7 @@ def create_math_word_problems_pdf():
 
 def create_language_text_analysis_pdf():
     """Textanalyse: Hauptidee, Synonym, Passivtransformation"""
-    output_path = Config.DATA_INPUT_PATH / 'languages' / 'text_analysis.pdf'
+    output_path = Config.DATA_INPUT_PATH / 'languages' / 'tverb_conjugation.pdf'
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     c = canvas.Canvas(str(output_path), pagesize=A4)

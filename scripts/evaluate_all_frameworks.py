@@ -50,7 +50,7 @@ DOMAIN_CONFIG: dict[str, dict] = {
         "pdfs": [
             "languages/grammar_exercise.pdf",
             "languages/sentence_construction.pdf",
-            "languages/text_analysis.pdf",
+            "languages/tverb_conjugation.pdf",
         ],
         "label":     "Sprachen",
         "validator": "BERTScore",

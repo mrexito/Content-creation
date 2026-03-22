@@ -56,7 +56,7 @@ DOMAIN_PDFS: dict[str, list[str]] = {
     ],
     "languages": [
         "languages/grammar_exercise.pdf",
-        "languages/text_analysis.pdf",
+        "languages/tverb_conjugation.pdf",
         "languages/sentence_construction.pdf",
     ],
     "economics": [
