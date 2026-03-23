@@ -52,6 +52,15 @@ class OCRHandler:
             DOMAIN_ECONOMICS:  'tesseract'   # Tabellen/Text → Tesseract ausreichend
         }
 
+        # OCR_FORCE_MISTRAL=1 erzwingt Mistral für alle Domains (z.B. für Mistral-OCR-Evaluationen)
+        import os
+        if os.environ.get('OCR_FORCE_MISTRAL') == '1':
+            self.domain_preferences = {
+                DOMAIN_MATH:       'mistral',
+                DOMAIN_LANGUAGES:  'mistral',
+                DOMAIN_ECONOMICS:  'mistral',
+            }
+
         # Mistral API verfügbar?
         self.mistral_available = bool(Config.MISTRAL_API_KEY)
 
