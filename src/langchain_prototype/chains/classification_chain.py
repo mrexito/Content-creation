@@ -11,7 +11,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 from common.logger import setup_logger
-from langchain_prototype.lcel_llm import get_lcel_llm, _extract_json
+from common.utils import extract_json as _extract_json
+from langchain_prototype.lcel_llm import get_lcel_llm
 from langchain_prototype.prompts.classification_prompts import (
     CLASSIFICATION_SYSTEM_PROMPT,
     CLASSIFICATION_USER_PROMPT_TEMPLATE,
@@ -63,7 +64,7 @@ class ClassificationChain:
             })
             classification = _extract_json(raw)
         except Exception as e:
-            logger.error(f"Klassifizierung fehlgeschlagen: {e}")
+            logger.exception(f"Klassifizierung fehlgeschlagen: {e}")
             return {
                 "classification": None,
                 "success": False,

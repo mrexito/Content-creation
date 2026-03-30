@@ -22,7 +22,7 @@ def assembly_node(state: WorkflowState) -> WorkflowState:
         - final_document
         - current_phase
     """
-    logger.info("🔗 Assembly Node")
+    logger.info("Assembly Node")
     
     start_time = time.time()
     

@@ -214,7 +214,7 @@ def run_multi_agent_pipeline(
                 logger.warning("Classifier-Output kein valides JSON, nutze 'general'")
 
     except Exception as e:
-        logger.error(f"Classifier-Agent Fehler: {e}")
+        logger.exception(f"Classifier-Agent Fehler: {e}")
         steps_per_agent["classifier"] = []
 
     # ------------------------------------------------------------------
@@ -242,7 +242,7 @@ def run_multi_agent_pipeline(
             logger.warning(f"Rewriter: kein valider Output ({variant_raw!r})")
 
     except Exception as e:
-        logger.error(f"Rewriter-Agent Fehler: {e}")
+        logger.exception(f"Rewriter-Agent Fehler: {e}")
         steps_per_agent["rewriter"] = []
 
     # ------------------------------------------------------------------
@@ -276,7 +276,7 @@ def run_multi_agent_pipeline(
                     logger.warning("Validator-Output kein valides JSON")
 
         except Exception as e:
-            logger.error(f"Validator-Agent Fehler: {e}")
+            logger.exception(f"Validator-Agent Fehler: {e}")
             steps_per_agent["validator"] = []
     else:
         steps_per_agent["validator"] = []

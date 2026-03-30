@@ -30,11 +30,11 @@ def should_retry_after_validation(state: WorkflowState) -> str:
 
     if phase == 'validation_failed':
         n = len(state.get('validation_stats', {}).get('segments_needing_retry', []))
-        logger.info(f"🔄 {n} Segment(e) benötigen Retry → zurück zu Rewriting")
+        logger.info(f"[RETRY] {n} Segment(e) benötigen Retry → zurück zu Rewriting")
         return 'retry'
 
     if phase == 'validation_complete':
-        logger.info("✓ Alle Segmente validiert → weiter zu Assembly")
+        logger.info("[OK] Alle Segmente validiert → weiter zu Assembly")
         return 'assemble'
 
     logger.error(f"Unbekannte Phase nach Validation: '{phase}'")

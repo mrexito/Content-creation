@@ -2,6 +2,10 @@
 Multi-Provider LLM Handler
 Unterstützt: OpenAI (Entwicklung) und BFH-LLM (Production)
 Einfach austauschbar via Config
+
+Scope: Wird von LangGraph-Nodes und Hybrid-Nodes direkt verwendet (raw OpenAI SDK).
+Nicht für LangChain-LCEL-Chains — die nutzen langchain_prototype.lcel_llm.get_lcel_llm(),
+das ChatOpenAI zurückgibt und LCEL-Kompatibilität sicherstellt.
 """
 from openai import OpenAI
 from typing import Dict, List, Any, Optional, Literal
@@ -60,7 +64,7 @@ class LLMHandler:
             
             self.model = model or Config.OPENAI_MODEL or 'gpt-4o-mini'
             self._client = OpenAI(api_key=Config.OPENAI_API_KEY)
-            logger.info(f"🟢 OpenAI LLM aktiviert (Model: {self.model})")
+            logger.info(f"[INIT] OpenAI LLM aktiviert (Model: {self.model})")
         
         elif provider == 'bfh':
             if not Config.BFH_LLM_API_KEY:
@@ -74,7 +78,7 @@ class LLMHandler:
                 base_url=Config.BFH_LLM_ENDPOINT,
                 api_key=Config.BFH_LLM_API_KEY
             )
-            logger.info(f"🔵 BFH-LLM aktiviert (Model: {self.model})")
+            logger.info(f"[INIT] BFH-LLM aktiviert (Model: {self.model})")
         
         else:
             raise ValueError(f"Unbekannter Provider: {provider}. Nutze 'openai' oder 'bfh'.")
@@ -233,7 +237,7 @@ class LLMHandler:
             }
             
         except json.JSONDecodeError as e:
-            logger.error(f"JSON parse error: {e}")
+            logger.exception(f"JSON parse error: {e}")
             logger.debug(f"Raw text: {result['text']}")
             
             # Versuche JSON zu reparieren

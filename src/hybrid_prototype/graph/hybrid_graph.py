@@ -54,7 +54,7 @@ def create_hybrid_graph():
 
     app = workflow.compile()
 
-    logger.info("✓ Hybrid LangGraph erstellt (rewrite → validate → [retry|done|error])")
+    logger.info("[OK] Hybrid LangGraph erstellt (rewrite → validate → [retry|done|error])")
     return app
 
 

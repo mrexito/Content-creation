@@ -121,7 +121,7 @@ class HybridPreprocessingPipeline:
             return state
 
         state["segments"] = seg_result["segments"]
-        logger.info(f"  ✓ Segmentierung: {len(state['segments'])} Segmente")
+        logger.info(f"  [OK] Segmentierung: {len(state['segments'])} Segmente")
 
         # ── Step 3: Klassifizierung ───────────────────────────────────────────
         logger.info("Step 3/3: Klassifizierung...")

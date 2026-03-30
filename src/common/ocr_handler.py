@@ -136,7 +136,7 @@ class OCRHandler:
             logger.debug(f"PDF hat {len(images)} Seite(n)")
             return images
         except Exception as e:
-            logger.error(f"Fehler beim PDF-Konvertieren: {e}")
+            logger.exception(f"Fehler beim PDF-Konvertieren: {e}")
             return []
 
     def _ocr_tesseract(self, image: Image.Image) -> str:
@@ -149,7 +149,7 @@ class OCRHandler:
             )
             return text
         except Exception as e:
-            logger.error(f"Tesseract OCR Fehler: {e}")
+            logger.exception(f"Tesseract OCR Fehler: {e}")
             return ""
 
     def _ocr_mistral(self, image: Image.Image) -> str:
@@ -195,7 +195,7 @@ class OCRHandler:
             return content
 
         except Exception as e:
-            logger.error(f"Mistral OCR Fehler: {type(e).__name__}: {e}")
+            logger.exception(f"Mistral OCR Fehler: {type(e).__name__}: {e}")
             return ""
 
     def pdf_to_text(
@@ -274,7 +274,7 @@ class OCRHandler:
             processing_time = time.time() - start_time
             full_text = '\n\n'.join(all_text)
 
-            logger.info(f"  ✓ Erfolgreich in {processing_time:.2f}s mit {tool}")
+            logger.info(f"  [OK] Erfolgreich in {processing_time:.2f}s mit {tool}")
             logger.info(f"  Extrahiert: {len(full_text)} Zeichen")
 
             return {
@@ -359,7 +359,7 @@ class OCRHandler:
 
             processing_time = time.time() - start_time
 
-            logger.info(f"  ✓ Erfolgreich in {processing_time:.2f}s")
+            logger.info(f"  [OK] Erfolgreich in {processing_time:.2f}s")
 
             return {
                 'pages': page_texts,

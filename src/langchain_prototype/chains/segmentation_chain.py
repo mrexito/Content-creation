@@ -11,7 +11,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 from common.logger import setup_logger
-from langchain_prototype.lcel_llm import get_lcel_llm, _extract_json
+from common.utils import extract_json as _extract_json
+from langchain_prototype.lcel_llm import get_lcel_llm
 from langchain_prototype.prompts.segmentation_prompts import (
     SEGMENTATION_SYSTEM_PROMPT,
     SEGMENTATION_USER_PROMPT_TEMPLATE,
@@ -63,7 +64,7 @@ class SegmentationChain:
             parsed = _extract_json(raw)
             segments = parsed.get("segments", [])
         except Exception as e:
-            logger.error(f"Segmentierung fehlgeschlagen: {e}")
+            logger.exception(f"Segmentierung fehlgeschlagen: {e}")
             return {
                 "segments": [],
                 "metadata": {"success": False, "error": str(e)},

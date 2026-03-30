@@ -248,7 +248,7 @@ class HybridPostprocessingPipeline:
             return {"saved_files": saved_files, "success": True}
 
         except Exception as e:
-            logger.error(f"Fehler beim Speichern: {e}")
+            logger.exception(f"Fehler beim Speichern: {e}")
             return {"saved_files": saved_files, "success": False, "error": str(e)}
 
     def run(

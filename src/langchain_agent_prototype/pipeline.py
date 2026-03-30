@@ -302,7 +302,7 @@ class LangChainAgentPipeline:
 
         except Exception as e:
             total_time = time.time() - start_time
-            logger.error(f"AgentPipeline fehlgeschlagen: {e}")
+            logger.exception(f"AgentPipeline fehlgeschlagen: {e}")
             return {
                 "success": False,
                 "error": str(e),

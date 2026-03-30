@@ -184,7 +184,7 @@ def run_orchestrator(
         executor = create_orchestrator_agent(max_retries=max_retries)
         result = executor.invoke({"input": segment_input})
     except Exception as e:
-        logger.error(f"OrchestratorAgent Fehler: {e}")
+        logger.exception(f"OrchestratorAgent Fehler: {e}")
         return {
             "original": text,
             "variant": None,

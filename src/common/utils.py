@@ -1,8 +1,53 @@
 """
 Gemeinsame Hilfsfunktionen für alle Prototypen.
 """
+import ast
+import json
+import re
 from difflib import SequenceMatcher
 from typing import Dict
+
+
+def extract_json(text: str) -> dict:
+    """
+    Extrahiert ein JSON-Objekt aus einem LLM-Output.
+
+    Behandelt:
+    - Markdown-Fences (```json ... ``` oder ``` ... ```)
+    - Nicht korrekt escapte Backslashes (häufig bei LaTeX-Inhalten)
+    - Letzter Fallback: ast.literal_eval
+    """
+    text = text.strip()
+
+    # Markdown-Fences entfernen
+    if text.startswith("```json"):
+        text = text[7:]
+    elif text.startswith("```"):
+        text = text[3:]
+    if text.endswith("```"):
+        text = text[:-3]
+    text = text.strip()
+
+    # Normales JSON-Parsing
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    # Fallback 1: Unescapte Backslashes korrigieren (LaTeX-Strings)
+    try:
+        text_escaped = re.sub(r"\\(?![\"\\\/bfnrtu])", r"\\\\", text)
+        return json.loads(text_escaped)
+    except json.JSONDecodeError:
+        pass
+
+    # Fallback 2: ast.literal_eval (Python-Dict-Notation)
+    text_py = (
+        text.replace("null", "None")
+        .replace("true", "True")
+        .replace("false", "False")
+    )
+    return ast.literal_eval(text_py)
 
 
 def calculate_similarity(text1: str, text2: str) -> float:

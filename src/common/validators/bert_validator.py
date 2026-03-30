@@ -67,7 +67,7 @@ class BERTValidator:
             }
             
         except Exception as e:
-            logger.error(f"Fehler bei BERTScore-Berechnung: {e}")
+            logger.exception(f"Fehler bei BERTScore-Berechnung: {e}")
             return {
                 'precision': 0.0,
                 'recall': 0.0,
@@ -112,7 +112,7 @@ class BERTValidator:
             return results
             
         except Exception as e:
-            logger.error(f"Fehler bei Batch-BERTScore: {e}")
+            logger.exception(f"Fehler bei Batch-BERTScore: {e}")
             return [{'error': str(e)} for _ in candidates]
     
     def validate_paraphrase(

@@ -11,51 +11,24 @@ from typing import Dict, Any, List
 
 from langchain_core.runnables import RunnableLambda
 
-from common.validators import (
-    get_sympy_validator,
-    get_bert_validator,
-    get_consistency_validator
-)
-from common.constants import BERT_THRESHOLD, EQUATION_COUNT_TOLERANCE, NUMBER_COUNT_TOLERANCE, LENGTH_RATIO_BOUNDS
-from common.utils import check_placeholder_preservation
+from common.validators import validate_segment
 from common.logger import setup_logger
 
 logger = setup_logger(__name__)
-
-# Marker-Strings die auf einen Prompt-Leak im LLM-Output hinweisen
-_PROMPT_LEAK_MARKERS = [
-    "Erstelle eine inhaltlich äquivalente",
-    "Erstelle ein inhaltlich",
-    "DEUTLICH anders formulierte Variante",
-    "inhaltlich äquivalente, aber DEUTLICH",
-    "anders formulierte Variante",
-]
-
-def _has_prompt_leak(text: str) -> bool:
-    """
-    Prüft ob der LLM-Output versehentlich den Prompt-Text enthält.
-    Dies passiert wenn das Modell den User-Prompt als Teil des Outputs ausgibt.
-    """
-    return any(marker in text for marker in _PROMPT_LEAK_MARKERS)
 
 
 class ValidationChain:
     """
     Chain für Varianten-Validierung mit domain-spezifischen Validators
     """
-    
-    def __init__(self):
-        """Initialisiert alle Validators"""
-        self.sympy_validator = get_sympy_validator()
-        self.bert_validator = get_bert_validator()
-        self.consistency_validator = get_consistency_validator()
 
+    def __init__(self):
+        """Initialisiert den LCEL-Runnable-Wrapper"""
         # RunnableLambda-Wrapper: macht ValidationChain formal LCEL-kompatibel.
         # Kein LLM-Aufruf — Validierung erfolgt durch SymPy / BERTScore / Zahlen-Check.
         self._runnable = RunnableLambda(self.invoke)
-
         logger.info("ValidationChain (LCEL-kompatibel) initialisiert")
-    
+
     def validate_variant(
         self,
         original: str,
@@ -63,134 +36,18 @@ class ValidationChain:
         domain: str = 'general'
     ) -> Dict[str, Any]:
         """
-        Validiert eine Variante
-        
+        Validiert eine Variante.
+
         Args:
             original: Original-Text
             variant: Variante
             domain: Domain (mathematics, languages, economics, general)
-        
+
         Returns:
             Dict mit validation_results, is_valid, issues
         """
-        validation_results = {}
-        issues = []
+        return validate_segment(original, variant, domain)
 
-        # Prompt-Leak-Check: LLM-Output darf keinen Prompt-Text enthalten
-        if _has_prompt_leak(variant):
-            return {
-                'is_valid': False,
-                'validation_results': {'prompt_leak': True},
-                'issues': ['Prompt-Text im Output erkannt — LLM hat den Eingabe-Prompt ausgegeben'],
-                'domain': domain
-            }
-
-        # Domain-spezifische Validierung
-        if domain == 'mathematics':
-            # SymPy Validierung
-            logger.debug("Validiere Mathematik-Inhalt mit SymPy")
-            
-            # Extrahiere Gleichungen
-            original_validation = self.sympy_validator.validate_text(original)
-            variant_validation = self.sympy_validator.validate_text(variant)
-            
-            validation_results['sympy'] = {
-                'original_equations': original_validation['equations_found'],
-                'variant_equations': variant_validation['equations_found'],
-                'original_solvable': original_validation['solvable_equations'],
-                'variant_solvable': variant_validation['solvable_equations']
-            }
-            
-            # Prüfe ob Anzahl im Toleranzbereich
-            equation_diff = abs(original_validation['equations_found'] - variant_validation['equations_found'])
-            if equation_diff > EQUATION_COUNT_TOLERANCE:
-                issues.append(
-                    f"Anzahl Gleichungen unterschiedlich: "
-                    f"{original_validation['equations_found']} vs {variant_validation['equations_found']}"
-                )
-        
-        elif domain == 'languages':
-            # BERT Validierung (semantische Ähnlichkeit)
-            logger.debug("Validiere Sprachwissenschaft-Inhalt mit BERT")
-            
-            bert_result = self.bert_validator.validate_paraphrase(
-                original=original,
-                paraphrased=variant,
-                min_threshold=BERT_THRESHOLD,
-            )
-            
-            validation_results['bert'] = {
-                'score': bert_result['score'],
-                'is_valid': bert_result['is_valid'],
-                'details': bert_result.get('details', {})
-            }
-            
-            if not bert_result['is_valid']:
-                issues.append(bert_result.get('reason', 'Semantische Ähnlichkeit zu gering'))
-
-            # Placeholder-Check: Lücken dürfen nicht ausgefüllt werden
-            placeholder_result = check_placeholder_preservation(original, variant)
-            validation_results['placeholder'] = placeholder_result
-
-            if not placeholder_result.get('skipped') and not placeholder_result['is_valid']:
-                issues.append(
-                    f"Platzhalter nicht erhalten: "
-                    f"{placeholder_result['variant_count']} von "
-                    f"{placeholder_result['original_count']} Platzhaltern vorhanden "
-                    f"(min. 80% erforderlich)"
-                )
-
-        elif domain == 'economics':
-            # Consistency Validierung (Zahlen)
-            logger.debug("Validiere Wirtschaft-Inhalt mit Consistency Validator")
-            
-            # Extrahiere Zahlen
-            original_numbers = self.consistency_validator.extract_numbers(original)
-            variant_numbers = self.consistency_validator.extract_numbers(variant)
-            
-            validation_results['consistency'] = {
-                'original_numbers': original_numbers,
-                'variant_numbers': variant_numbers,
-                'num_original': len(original_numbers),
-                'num_variant': len(variant_numbers)
-            }
-            
-            # Prüfe ob ähnliche Anzahl Zahlen
-            if abs(len(original_numbers) - len(variant_numbers)) > NUMBER_COUNT_TOLERANCE:
-                issues.append(
-                    f"Anzahl Zahlen stark unterschiedlich: "
-                    f"{len(original_numbers)} vs {len(variant_numbers)}"
-                )
-        
-        # Generelle Validierung (für alle Domains)
-        # Längen-Check (sollte nicht zu stark abweichen)
-        length_ratio = len(variant) / len(original) if len(original) > 0 else 0
-        
-        # Domain-spezifische Längen-Toleranz
-        min_ratio, max_ratio = LENGTH_RATIO_BOUNDS.get(domain, LENGTH_RATIO_BOUNDS["default"])
-
-        if length_ratio < min_ratio or length_ratio > max_ratio:
-            issues.append(
-                f"Länge weicht stark ab: {len(variant)} vs {len(original)} Zeichen "
-                f"(Ratio: {length_ratio:.2f}, erlaubt: {min_ratio:.1f}–{max_ratio:.1f})"
-            )
-        
-        validation_results['length_check'] = {
-            'original_length': len(original),
-            'variant_length': len(variant),
-            'ratio': length_ratio
-        }
-        
-        # Gesamt-Validierung
-        is_valid = len(issues) == 0
-        
-        return {
-            'is_valid': is_valid,
-            'validation_results': validation_results,
-            'issues': issues,
-            'domain': domain
-        }
-    
     def validate_variants(
         self,
         original: str,
@@ -199,24 +56,23 @@ class ValidationChain:
     ) -> Dict[str, Any]:
         """
         Validiert alle Varianten
-        
+
         Args:
             original: Original-Text
             variants: Liste von Varianten-Dicts
             domain: Domain
-        
+
         Returns:
             Dict mit validated_variants, statistics
         """
         logger.info(f"Validiere {len(variants)} Varianten für {domain}")
-        
+
         validated_variants = []
-        
+
         for variant_dict in variants:
             variant_text = variant_dict.get('text')
-            
+
             if not variant_text:
-                # Überspringe fehlerhafte Varianten
                 validated_variants.append({
                     **variant_dict,
                     'validation': {
@@ -225,20 +81,21 @@ class ValidationChain:
                     }
                 })
                 continue
-            
-            # Validiere
-            validation = self.validate_variant(original, variant_text, domain)
-            
+
+            validation = validate_segment(original, variant_text, domain)
+
             validated_variants.append({
                 **variant_dict,
                 'validation': validation
             })
-        
-        # Statistik
-        valid_count = sum(1 for v in validated_variants if v.get('validation', {}).get('is_valid'))
-        
-        logger.info(f"✓ {valid_count}/{len(variants)} Varianten bestanden Validierung")
-        
+
+        valid_count = sum(
+            1 for v in validated_variants
+            if v.get('validation', {}).get('is_valid')
+        )
+
+        logger.info(f"[OK] {valid_count}/{len(variants)} Varianten bestanden Validierung")
+
         return {
             'validated_variants': validated_variants,
             'statistics': {
@@ -250,21 +107,21 @@ class ValidationChain:
             'domain': domain,
             'success': True
         }
-    
+
     def invoke(self, input_data: Dict) -> Dict[str, Any]:
         """
         LangChain-kompatible invoke Methode
-        
+
         Args:
             input_data: Dict mit 'original', 'variants', 'domain'
-        
+
         Returns:
             Dict mit validation results
         """
         original = input_data.get('original', '')
         variants = input_data.get('variants', [])
         domain = input_data.get('domain', 'general')
-        
+
         return self.validate_variants(original, variants, domain)
 
 

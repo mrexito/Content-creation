@@ -61,6 +61,6 @@ def create_workflow_graph() -> StateGraph:
     # Kompiliere
     app = workflow.compile()
     
-    logger.info("✓ LangGraph Workflow mit Retry-Loops erstellt")
+    logger.info("[OK] LangGraph Workflow mit Retry-Loops erstellt")
     
     return app

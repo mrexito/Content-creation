@@ -2,18 +2,20 @@
 LCEL LLM Factory für LangChain-Prototyp
 
 Erzeugt ChatOpenAI korrekt für OpenAI- oder BFH-Provider.
-Enthält ausserdem _extract_json() als gemeinsame JSON-Parse-Hilfsfunktion
-für alle LCEL-Chains.
+
+Scope: Nur für LangChain-LCEL-Chains (langchain_prototype/).
+Nicht verwenden in LangGraph-Nodes oder Hybrid-Nodes — die nutzen
+common.llm_handler.get_llm_handler() direkt.
+
+_extract_json ist ein Rückwärts-Kompatibilitäts-Alias für common.utils.extract_json.
 """
-import ast
-import json
-import re
 from typing import Optional
 
 from langchain_openai import ChatOpenAI
 
 from common.config import Config
 from common.logger import setup_logger
+from common.utils import extract_json as _extract_json  # backward-compat re-export
 
 logger = setup_logger(__name__)
 
@@ -94,46 +96,3 @@ def get_lcel_llm(
     )
 
 
-def _extract_json(text: str) -> dict:
-    """
-    Extrahiert ein JSON-Objekt aus einem LLM-Output.
-
-    Behandelt:
-    - Markdown-Fences (```json ... ``` oder ``` ... ```)
-    - Nicht korrekt escapte Backslashes (häufig bei LaTeX-Inhalten)
-    - Letzter Fallback: ast.literal_eval
-
-    Entspricht der _parse_json_response-Logik in common/llm_handler.py,
-    damit alle LCEL-Chains konsistentes JSON-Parsing verwenden.
-    """
-    text = text.strip()
-
-    # Markdown-Fences entfernen
-    if text.startswith("```json"):
-        text = text[7:]
-    elif text.startswith("```"):
-        text = text[3:]
-    if text.endswith("```"):
-        text = text[:-3]
-    text = text.strip()
-
-    # Normales JSON-Parsing
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        pass
-
-    # Fallback 1: Unescapte Backslashes korrigieren (LaTeX-Strings)
-    try:
-        text_escaped = re.sub(r"\\(?![\"\\\/bfnrtu])", r"\\\\", text)
-        return json.loads(text_escaped)
-    except json.JSONDecodeError:
-        pass
-
-    # Fallback 2: ast.literal_eval (Python-Dict-Notation)
-    text_py = (
-        text.replace("null", "None")
-        .replace("true", "True")
-        .replace("false", "False")
-    )
-    return ast.literal_eval(text_py)

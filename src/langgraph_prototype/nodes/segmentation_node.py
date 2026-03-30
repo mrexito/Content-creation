@@ -25,7 +25,7 @@ def segmentation_node(state: WorkflowState) -> WorkflowState:
         - segments
         - current_phase
     """
-    logger.info("🔗 Segmentation Node")
+    logger.info("Segmentation Node")
     
     start_time = time.time()
     
@@ -67,7 +67,7 @@ def segmentation_node(state: WorkflowState) -> WorkflowState:
         # Identische Prompts (langchain_prototype.prompts.segmentation_prompts) werden
         # von LangChain und LangGraph geteilt – methodisch erforderlich für fairen Vergleich.
         text = state.get('raw_text', '')
-        logger.info(f"  ✓ Segmented into {len(segments)} segments")
+        logger.info(f"  [OK] Segmented into {len(segments)} segments")
         logger.debug(f"  Segmentierung: {len(segments)} Segmente aus {len(text)} Zeichen")
         
         return state

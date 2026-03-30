@@ -207,7 +207,7 @@ class AssemblyChain:
             }
             
         except Exception as e:
-            logger.error(f"Fehler beim Speichern: {e}")
+            logger.exception(f"Fehler beim Speichern: {e}")
             return {
                 'saved_files': saved_files,
                 'success': False,

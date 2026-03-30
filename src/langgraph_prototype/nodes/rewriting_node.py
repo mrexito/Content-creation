@@ -81,13 +81,13 @@ class RewritingNode:
             - segments_with_variants
             - current_phase
         """
-        logger.info("🔗 Rewriting Node")
+        logger.info("Rewriting Node")
         
         # Check if this is a retry
         is_retry = state.get('current_phase') == 'validation_failed'
         
         if is_retry:
-            logger.info("  🔄 RETRY MODE: Generiere neue Varianten mit höherer Temperature")
+            logger.info("  [RETRY] RETRY MODE: Generiere neue Varianten mit höherer Temperature")
         
         start_time = time.time()
         
@@ -182,7 +182,7 @@ class RewritingNode:
                             'temperature_used': temperature,
                             'retry_iteration': retry_count
                         })
-                        logger.debug(f"    ✓ Variante {v_idx+1} (T={temperature:.2f}, Retry={retry_count})")
+                        logger.debug(f"    [OK] Variante {v_idx+1} (T={temperature:.2f}, Retry={retry_count})")
                         break
                 
                 segments_with_variants.append({
@@ -198,7 +198,7 @@ class RewritingNode:
             state['total_processing_time'] += time.time() - start_time
             
             total_variants = sum(len(s['variants']) for s in segments_with_variants)
-            logger.info(f"  ✓ Generated {total_variants} variants")
+            logger.info(f"  [OK] Generated {total_variants} variants")
             
             return state
             

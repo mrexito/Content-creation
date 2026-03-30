@@ -25,7 +25,7 @@ def classification_node(state: WorkflowState) -> WorkflowState:
         - classified_segments (segments + classification)
         - current_phase
     """
-    logger.info("🔗 Classification Node")
+    logger.info("Classification Node")
     
     start_time = time.time()
     
@@ -81,7 +81,7 @@ def classification_node(state: WorkflowState) -> WorkflowState:
         state['current_phase'] = 'classification_complete'
         state['total_processing_time'] += time.time() - start_time
         
-        logger.info(f"  ✓ Classified {len(classified_segments)} segments")
+        logger.info(f"  [OK] Classified {len(classified_segments)} segments")
         
         return state
         

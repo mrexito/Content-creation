@@ -66,7 +66,7 @@ def hybrid_rewriting_node(state: HybridWorkflowState) -> HybridWorkflowState:
         - segments_with_variants
         - current_phase → 'rewriting_complete'
     """
-    logger.info("🔗 [LangGraph] Hybrid Rewriting Node")
+    logger.info("[LangGraph] Hybrid Rewriting Node")
 
     start_time = time.time()
 
@@ -233,7 +233,7 @@ def hybrid_rewriting_node(state: HybridWorkflowState) -> HybridWorkflowState:
         state["total_processing_time"] += time.time() - start_time
 
         total_generated = sum(len(s["variants"]) for s in result_segments)
-        logger.info(f"  ✓ Rewriting: {total_generated} Varianten generiert")
+        logger.info(f"  [OK] Rewriting: {total_generated} Varianten generiert")
 
         return state
 

@@ -414,7 +414,7 @@ def _build_pdf(
         logger.info(f"PDF gespeichert: {output_path}")
         return True
     except Exception as e:
-        logger.error(f"PDF build fehlgeschlagen: {e}")
+        logger.exception(f"PDF build fehlgeschlagen: {e}")
         return False
     finally:
         # Clean up temporary PNG files
@@ -450,7 +450,7 @@ class PdfGenerator:
                               f"Aufgaben – {pdf_name}",
                               include_solutions=False)
         except Exception as e:
-            logger.error(f"Aufgaben-PDF fehlgeschlagen: {e}")
+            logger.exception(f"Aufgaben-PDF fehlgeschlagen: {e}")
             return False
 
     def generate_solutions_pdf(
@@ -471,5 +471,5 @@ class PdfGenerator:
                               f"Aufgaben & Lösungen – {pdf_name}",
                               include_solutions=True)
         except Exception as e:
-            logger.error(f"Lösungs-PDF fehlgeschlagen: {e}")
+            logger.exception(f"Lösungs-PDF fehlgeschlagen: {e}")
             return False

@@ -26,10 +26,10 @@ def parsing_node(state: WorkflowState) -> WorkflowState:
     """
     # Skip if raw_text already set by shared pre-parsed OCR result
     if state.get('raw_text') and state.get('current_phase') == 'parsing_complete':
-        logger.info("🔗 Parsing Node: Übersprungen (geteiltes OCR-Ergebnis)")
+        logger.info("Parsing Node: Übersprungen (geteiltes OCR-Ergebnis)")
         return state
 
-    logger.info(f"🔗 Parsing Node: {state['pdf_path']}")
+    logger.info(f"Parsing Node: {state['pdf_path']}")
     
     start_time = time.time()
     
@@ -75,7 +75,7 @@ def parsing_node(state: WorkflowState) -> WorkflowState:
         state['current_phase'] = 'parsing_complete'
         state['total_processing_time'] += time.time() - start_time
         
-        logger.info(f"  ✓ Parsed {result['pages']} pages, {len(result['text'])} chars")
+        logger.info(f"  [OK] Parsed {result['pages']} pages, {len(result['text'])} chars")
         
         return state
         

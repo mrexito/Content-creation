@@ -10,12 +10,7 @@ Markiert Segmente mit zu wenigen validen Varianten für Retry-Schleifen.
 """
 import time
 
-from common.validators import (
-    get_sympy_validator,
-    get_bert_validator,
-    get_consistency_validator,
-)
-from common.utils import check_placeholder_preservation
+from common.validators import validate_segment
 from common.logger import setup_logger
 from hybrid_prototype.state.hybrid_state import HybridWorkflowState
 
@@ -44,7 +39,7 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
         - validation_stats (inkl. segments_needing_retry)
         - current_phase → 'validation_complete'
     """
-    logger.info("🔗 [LangGraph] Hybrid Validation Node")
+    logger.info("[OK] [LangGraph] Hybrid Validation Node")
 
     start_time = time.time()
 
@@ -57,10 +52,6 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
             state["errors"].append(error_msg)
             state["current_phase"] = "error"
             return state
-
-        sympy_validator = get_sympy_validator()
-        bert_validator = get_bert_validator()
-        consistency_validator = get_consistency_validator()
 
         total_valid = 0
         total_invalid = 0
@@ -89,58 +80,15 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
                     total_invalid += 1
                     continue
 
-                issues = []
-                score = 1.0
-                placeholder_result = None
+                result = validate_segment(original_text, variant_text, domain)
 
-                # ── Domain-spezifische Validierung ───────────────────────────
-                if domain == "mathematics":
-                    math_result = sympy_validator.validate_text(variant_text)
-                    text_issues = [
-                        str(i.get("error", i)) for i in math_result.get("issues", [])
-                    ]
-                    if text_issues:
-                        issues.extend(text_issues)
-                        score = min(score, 0.5)
-
-                elif domain == "languages":
-                    bert_result = bert_validator.validate_paraphrase(
-                        original=original_text,
-                        paraphrased=variant_text,
-                    )
-                    if not bert_result.get("is_valid", True):
-                        reason = bert_result.get("reason", "BERTScore zu niedrig")
-                        issues.append(reason)
-                        score = min(score, bert_result.get("score", 0.5))
-
-                    # Placeholder-Check: Lücken dürfen nicht ausgefüllt werden
-                    placeholder_result = check_placeholder_preservation(original_text, variant_text)
-                    if not placeholder_result.get('skipped') and not placeholder_result['is_valid']:
-                        issues.append(
-                            f"Platzhalter nicht erhalten: "
-                            f"{placeholder_result['variant_count']} von "
-                            f"{placeholder_result['original_count']} Platzhaltern vorhanden "
-                            f"(min. 80% erforderlich)"
-                        )
-
-                elif domain == "economics":
-                    original_numbers = consistency_validator.extract_numbers(original_text)
-                    econ_result = consistency_validator.check_number_consistency(
-                        variant_text, original_numbers
-                    )
-                    if not econ_result.get("is_consistent", True):
-                        missing = econ_result.get("missing_numbers", [])
-                        issues.append(f"Fehlende Zahlen in Variante: {missing}")
-                        score = min(score, 0.5)
-
-                is_valid = len(issues) == 0
+                is_valid = result["is_valid"]
                 variant["validation"] = {
                     "is_valid": is_valid,
-                    "issues": issues,
-                    "score": score,
+                    "issues": result["issues"],
+                    "score": 1.0 if is_valid else 0.5,
+                    "validation_results": result["validation_results"],
                 }
-                if placeholder_result is not None:
-                    variant["validation"]["placeholder"] = placeholder_result
 
                 if is_valid:
                     total_valid += 1
@@ -163,7 +111,7 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
                     variant['solution'] = None
                     logger.debug(
                         f"  Segment {seg_idx} Variante {variant.get('variant_id')}: "
-                        f"ungültig – {issues}"
+                        f"ungültig – {result['issues']}"
                     )
 
             # Segment für Retry vormerken wenn zu wenige valide Varianten
@@ -175,7 +123,7 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
                 segments_needing_retry.append(seg_idx)
                 logger.info(
                     f"  Segment {seg_idx}: {seg_valid_count} valide Varianten "
-                    f"→ Retry {retry_count + 1}/{max_retries}"
+                    f"-> Retry {retry_count + 1}/{max_retries}"
                 )
 
         validation_rate = total_valid / max(total_valid + total_invalid, 1)
@@ -196,17 +144,17 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
         state["total_processing_time"] += time.time() - start_time
 
         logger.info(
-            f"  ✓ Validation: {total_valid} valide, {total_invalid} ungültige Varianten "
+            f"  [OK] Validation: {total_valid} valide, {total_invalid} ungültige Varianten "
             f"(Rate: {validation_rate * 100:.1f}%)"
         )
         if segments_needing_retry:
-            logger.info(f"  ↩  {len(segments_needing_retry)} Segmente brauchen Retry")
+            logger.info(f"  [RETRY] {len(segments_needing_retry)} Segmente brauchen Retry")
 
         return state
 
     except Exception as e:
         error_msg = f"Validierungs-Fehler: {str(e)}"
-        logger.error(error_msg)
+        logger.exception(error_msg)
         state["errors"].append(error_msg)
         state["current_phase"] = "error"
         return state

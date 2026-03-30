@@ -59,5 +59,8 @@ class Config:
         
         return True
 
-# Validiere Config beim Import
+# Validiere Config beim Import.
+# HINWEIS: Config.validate() hat einen Filesystem-Seiteneffekt — es legt die
+# Verzeichnisse DATA_INPUT_PATH, DATA_OUTPUT_PATH und DATA_PARSED_PATH an (mkdir).
+# Dies ist absichtlich: alle Prototypen setzen diese Pfade als vorhanden voraus.
 Config.validate()

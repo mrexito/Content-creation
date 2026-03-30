@@ -113,7 +113,7 @@ class RewritingChain:
                     "text": new_variant if new_variant else None,
                     "attempts": 1,
                 })
-                logger.debug(f"    ✓ Variante {i + 1} generiert")
+                logger.debug(f"    [OK] Variante {i + 1} generiert")
             except Exception as e:
                 logger.warning(f"    Variante {i + 1} fehlgeschlagen: {e}")
                 variants.append({
@@ -125,7 +125,7 @@ class RewritingChain:
 
         successful_variants = [v for v in variants if v.get("text")]
 
-        logger.info(f"✓ {len(successful_variants)}/{self.num_variants} Varianten erfolgreich")
+        logger.info(f"[OK] {len(successful_variants)}/{self.num_variants} Varianten erfolgreich")
 
         return {
             "original": text,
