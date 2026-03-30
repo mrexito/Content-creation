@@ -385,6 +385,22 @@ def _build_pdf(
         else:
             story.append(Paragraph('<i>Kein Inhalt verfügbar.</i>', styles['body']))
 
+        # Musterantwort der besten Variante ausgeben (nur im Lösungs-PDF)
+        if include_solutions and seg_type != 'solution':
+            variants = segment.get('variants', [])
+            if variants:
+                best_variant = max(variants, key=lambda v: v.get('validation_score', 0.0))
+                solution_text = best_variant.get('solution')
+                if solution_text and solution_text.strip() and solution_text.strip() != '–':
+                    story.append(Paragraph(
+                        _xml_escape('Musterantwort:'),
+                        styles['solution_section']
+                    ))
+                    story.extend(
+                        _text_to_flowables(solution_text.strip(), styles['body'], tmpfiles,
+                                           body_fontsize=11.0)
+                    )
+
         story.append(Spacer(1, 4))
 
     if len(story) <= 2:

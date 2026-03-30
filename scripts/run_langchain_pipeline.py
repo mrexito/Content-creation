@@ -276,6 +276,23 @@ def main():
                             'variants': rw_result['variants'],
                             'domain': seg_domain,
                         })
+
+                        # Lösungsgenerierung für valide Varianten
+                        if self.solution_chain is not None:
+                            for variant in val_result['validated_variants']:
+                                if variant.get('validation', {}).get('is_valid'):
+                                    try:
+                                        sol = self.solution_chain.invoke({
+                                            'variant_text': variant.get('text', ''),
+                                            'domain': seg_domain,
+                                        })
+                                        variant['solution'] = sol.get('solution')
+                                    except Exception as _sol_e:
+                                        _logger.warning(f"Solution-Generierung fehlgeschlagen: {_sol_e}")
+                                        variant['solution'] = None
+                                else:
+                                    variant['solution'] = None
+
                         segments_with_variants.append({
                             'original_segment': segment,
                             'classification': classification,

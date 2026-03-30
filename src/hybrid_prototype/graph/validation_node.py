@@ -19,6 +19,12 @@ from common.utils import check_placeholder_preservation
 from common.logger import setup_logger
 from hybrid_prototype.state.hybrid_state import HybridWorkflowState
 
+try:
+    from langchain_prototype.chains.solution_chain import get_solution_chain as _get_solution_chain
+    _solution_chain = _get_solution_chain()
+except Exception:
+    _solution_chain = None
+
 logger = setup_logger(__name__)
 
 # Mindestanzahl valider Varianten pro Segment bevor Retry
@@ -139,8 +145,22 @@ def hybrid_validation_node(state: HybridWorkflowState) -> HybridWorkflowState:
                 if is_valid:
                     total_valid += 1
                     seg_valid_count += 1
+                    # Musterantwort für valide Variante generieren
+                    if _solution_chain is not None:
+                        try:
+                            sol = _solution_chain.invoke({
+                                'variant_text': variant_text,
+                                'domain': domain,
+                            })
+                            variant['solution'] = sol.get('solution')
+                        except Exception as _e:
+                            logger.warning(f"Solution-Generierung fehlgeschlagen: {_e}")
+                            variant['solution'] = None
+                    else:
+                        variant['solution'] = None
                 else:
                     total_invalid += 1
+                    variant['solution'] = None
                     logger.debug(
                         f"  Segment {seg_idx} Variante {variant.get('variant_id')}: "
                         f"ungültig – {issues}"

@@ -142,6 +142,7 @@ class HybridPostprocessingPipeline:
                             "text": v.get("text"),
                             "smoothed": v.get("smoothed", False),
                             "validation_score": v.get("validation", {}).get("score", 1.0),
+                            "solution": v.get("solution"),  # Musterantwort (kann None sein)
                         }
                         for v in smoothed_variants
                     ],

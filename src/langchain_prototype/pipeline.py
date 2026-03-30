@@ -16,6 +16,12 @@ from langchain_prototype.chains.rewriting_chain import get_rewriting_chain
 from langchain_prototype.chains.validation_chain import get_validation_chain
 from langchain_prototype.chains.assembly_chain import get_assembly_chain
 
+try:
+    from langchain_prototype.chains.solution_chain import get_solution_chain as _get_solution_chain
+    _SOLUTION_CHAIN_AVAILABLE = True
+except Exception:
+    _SOLUTION_CHAIN_AVAILABLE = False
+
 logger = setup_logger(__name__)
 
 
@@ -44,6 +50,14 @@ class LangChainPipeline:
         self.rewriting_chain = get_rewriting_chain(num_variants=num_variants)
         self.validation_chain = get_validation_chain()
         self.assembly_chain = get_assembly_chain()
+
+        # SolutionChain: graceful degradation wenn nicht verfügbar
+        self.solution_chain = None
+        if _SOLUTION_CHAIN_AVAILABLE:
+            try:
+                self.solution_chain = _get_solution_chain()
+            except Exception as e:
+                logger.warning(f"SolutionChain nicht initialisierbar: {e}")
         
         logger.info(f"LangChain Pipeline initialisiert (Domain: {domain or 'auto'}, Varianten: {num_variants})")
     
@@ -141,6 +155,24 @@ class LangChainPipeline:
                     'domain': domain
                 })
                 
+                # 5b. Lösungsgenerierung für valide Varianten
+                # Integriert hier (nach Validation, vor Assembly) da RewritingChain
+                # und ValidationChain getrennte Schritte sind.
+                if self.solution_chain is not None:
+                    for variant in validation_result['validated_variants']:
+                        if variant.get('validation', {}).get('is_valid'):
+                            try:
+                                sol = self.solution_chain.invoke({
+                                    'variant_text': variant.get('text', ''),
+                                    'domain': domain,
+                                })
+                                variant['solution'] = sol.get('solution')
+                            except Exception as e:
+                                logger.warning(f"    Solution-Generierung fehlgeschlagen: {e}")
+                                variant['solution'] = None
+                        else:
+                            variant['solution'] = None
+
                 segments_with_variants.append({
                     'original_segment': segment,
                     'classification': classification,

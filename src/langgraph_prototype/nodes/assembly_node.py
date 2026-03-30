@@ -64,7 +64,8 @@ def assembly_node(state: WorkflowState) -> WorkflowState:
                     {
                         'variant_id': v.get('variant_id'),
                         'text': v.get('text'),
-                        'validation_score': 1.0 if v.get('validation', {}).get('is_valid') else 0.0
+                        'validation_score': 1.0 if v.get('validation', {}).get('is_valid') else 0.0,
+                        'solution': v.get('solution'),  # Musterantwort (kann None sein)
                     }
                     for v in valid_vars
                 ]

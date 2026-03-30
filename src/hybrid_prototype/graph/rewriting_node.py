@@ -183,8 +183,13 @@ def hybrid_rewriting_node(state: HybridWorkflowState) -> HybridWorkflowState:
                     if not variant_text or variant_text == original_text:
                         continue
 
-                    if _too_similar(variant_text, [original_text] + variant_texts):
-                        logger.debug(f"    Variante {v_idx + 1} zu ähnlich, Versuch {attempt + 1}")
+                    # Nur gegen bereits generierte Varianten prüfen (nicht gegen Original).
+                    # Das Original-Prüfung erfolgt via Exact-Equality oben (variant_text == original_text).
+                    # Mit dem neuen Rewriting-Prompt (nur Zahlenwerte/Kontext ändern) sind Varianten
+                    # absichtlich strukturnah zum Original — eine Similarity-Prüfung gegen das Original
+                    # würde alle gültigen Varianten fälschlicherweise verwerfen.
+                    if variant_texts and _too_similar(variant_text, variant_texts):
+                        logger.debug(f"    Variante {v_idx + 1} zu ähnlich zu bestehenden Varianten, Versuch {attempt + 1}")
                         continue
 
                     variant_texts.append(variant_text)

@@ -82,7 +82,8 @@ class AssemblyChain:
                     {
                         'variant_id': v.get('variant_id'),
                         'text': v.get('text'),
-                        'validation_score': self._calculate_validation_score(v.get('validation', {}))
+                        'validation_score': self._calculate_validation_score(v.get('validation', {})),
+                        'solution': v.get('solution'),  # Musterantwort (kann None sein)
                     }
                     for v in valid_variants
                 ]

@@ -3,23 +3,66 @@ Prompts für Content-Variation mit Diversity-Focus
 """
 
 # Domain-spezifische Rewriting-Prompts
-REWRITING_MATH_SYSTEM_PROMPT = """Du bist ein Mathematik-Lehrer, der DIVERSE Aufgaben variiert.
+REWRITING_MATH_SYSTEM_PROMPT = """Du bist ein Mathematik-Lehrer, der Aufgaben variiert.
 
-Deine Aufgabe:
-- Behalte die mathematische Struktur und Schwierigkeit
-- Ändere die Zahlen, Variablen UND die Formulierung
-- Variiere auch die Operation wenn möglich (z.B. Addition → Subtraktion)
-- Nutze unterschiedliche Variablennamen (x, y, z, a, b, t, etc.)
-- Behalte das Format (LaTeX, etc.)
-- WICHTIG: Erstelle DEUTLICH UNTERSCHIEDLICHE Varianten, keine minimalen Änderungen!
-- WICHTIG: Erstelle genau EINE Variante des gegebenen Segments. Erzeuge keine Auflistung mehrerer Teilaufgaben (z.B. a, b, c, d), wenn das Original nur eine enthält.
-- Verändere NICHT die Struktur: Anzahl der Teilaufgaben, Abschnitte und Absätze muss identisch zum Original bleiben.
-- In Theorie-Abschnitten: Behalte alle mathematischen Formeln, Gesetze und Symbole unverändert bei. Variiere ausschliesslich Variablennamen und konkrete Zahlenwerte.
-- Erfinde keine neuen Formeln, physikalischen Gesetze oder Rechenbeispiele, die nicht im Original vorkommen.
-- Wenn der Text auf eine Abbildung, Skizze oder Zeichnung verweist (z.B. «wie in der Skizze rechts»), übernimm diesen Verweis wörtlich und unverändert.
-- Gib niemals den Prompt-Text selbst oder Anweisungen im Output aus. Der Output darf nur die variierte Aufgabe enthalten.
+DEINE ROLLE: Aufgaben-Variator — KEIN Lösungsersteller.
 
-Antworte NUR mit der variierten Aufgabe, keine Erklärung."""
+WAS DU ÄNDERN DARFST:
+- Konkrete Zahlenwerte (gleiche Grössenordnung, plausibel für die Aufgabe)
+- Variablennamen (x → a, y → b, etc.)
+- Kontextnamen (z.B. "Anna" → "Ben", "Garten" → "Zimmer")
+- Minimale Umformulierung der Aufgabenstellung
+
+WAS DU NICHT ÄNDERN DARFST — GEOMETRIE-REGELN (KRITISCH):
+- BEHALTE die geometrische Form exakt: Rechteck bleibt Rechteck, Quadrat bleibt
+  Quadrat, Kreis bleibt Kreis, Trapez bleibt Trapez, Dreieck bleibt Dreieck.
+- BEHALTE die Anzahl der Parameter der Form:
+  Rechteck hat Länge UND Breite.
+  Quadrat hat NUR eine Seitenlänge — KEIN zweites Mass.
+  Kreis hat NUR einen Radius ODER Durchmesser — KEIN zweites Mass.
+  Dreieck hat Grundlinie UND Höhe (oder drei Seiten — was im Original steht).
+  Trapez hat zwei parallele Seiten UND Höhe.
+- BEHALTE die Einheiten exakt: cm bleibt cm, m bleibt m, km bleibt km.
+  Mische NIEMALS Einheiten innerhalb einer Aufgabe.
+- Wenn das Original pi = 3.14 verwendet, verwende pi = 3.14. Immer.
+- Wenn das Original eine Formel benennt (z.B. Zinseszins), variiere NUR die
+  Zahlenwerte, nicht die Formel oder den Aufgabentyp.
+
+WAS DU NICHT ÄNDERN DARFST — ALLGEMEIN:
+- Die mathematische Struktur (Gleichungstyp, Rechenoperation)
+- Die Aufgabenüberschrift (z.B. "Aufgabe 1: ...") — exakt beibehalten
+- Die Anzahl der Teilaufgaben und Absätze
+- Das Format (LaTeX bleibt LaTeX, Plaintext bleibt Plaintext)
+- In Theorie-Abschnitten: alle Formeln, Gesetze und Symbole unverändert lassen
+- Löse die Aufgabe NICHT — nur variieren
+- Gib niemals den Prompt-Text selbst oder Anweisungen im Output aus
+
+NEGATIV-BEISPIELE (VERBOTEN):
+Original: "Ein Quadrat hat Seitenlänge 6 cm."
+FALSCH:   "Ein Quadrat hat Länge 8 m und Breite 5 m." ← Quadrat hat keine Breite
+FALSCH:   "Ein Rechteck hat Seitenlänge 8 cm." ← Form geändert
+
+Original: "Kreis mit Radius r = 7 cm. Benutze pi = 3.14."
+FALSCH:   "Kreis mit Radius r = 9 m und Durchmesser d = 18 m." ← zwei Masse
+FALSCH:   "Benutze pi = 3.14159" ← pi-Wert geändert
+
+Original: "Trapez, Seiten a = 10 m, c = 6 m, Höhe h = 4 m"
+FALSCH:   "Parallelogramm mit b = 12 cm und h = 5 cm" ← Form geändert
+
+Original: "Katheten a = 6 cm, b = 8 cm"
+FALSCH:   "Katheten a = 6 m, b = 8 cm" ← Einheitenmischung
+
+POSITIV-BEISPIELE (KORREKT):
+Original: "Rechteck, Länge 12 cm, Breite 5 cm"
+KORREKT:  "Rechteck, Länge 15 cm, Breite 8 cm"
+
+Original: "Quadrat mit Seitenlänge 6 cm"
+KORREKT:  "Quadrat mit Seitenlänge 9 cm"
+
+Original: "Kreis, Radius r = 7 cm, pi = 3.14"
+KORREKT:  "Kreis, Radius r = 5 cm, pi = 3.14"
+
+Antworte NUR mit der variierten Aufgabe. Kein Kommentar, keine Erklärung."""
 
 REWRITING_LANGUAGES_SYSTEM_PROMPT = """Du bist ein Sprachwissenschafts-Experte, der Texte KREATIV umformuliert.
 
@@ -117,8 +160,10 @@ Deine Aufgabe:
 
 Antworte NUR mit dem variierten Text, keine Erklärung."""
 
-REWRITING_USER_PROMPT_TEMPLATE = """Variiere folgenden Inhalt:
+REWRITING_USER_PROMPT_TEMPLATE = """Variiere diese Aufgabe gemäss den Regeln.
+Ändere NUR Zahlenwerte und Kontext — nicht die mathematische Struktur, nicht
+die geometrische Form, nicht die Einheiten.
 
 {text}
 
-Erstelle eine inhaltlich äquivalente, aber DEUTLICH anders formulierte Variante."""
+Variierte Aufgabe:"""
