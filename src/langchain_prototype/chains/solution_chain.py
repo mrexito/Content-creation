@@ -20,6 +20,7 @@ from typing import Dict, Any, Optional
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
+from common.constants import DOMAIN_MATH
 from common.logger import setup_logger
 from langchain_prototype.lcel_llm import get_lcel_llm
 
@@ -70,14 +71,15 @@ def _clean_solution(text: str) -> Optional[str]:
 # Domain-spezifische System-Prompts
 # ---------------------------------------------------------------------------
 
-SOLUTION_MATH_SYSTEM_PROMPT = """Du löst eine Mathematik-Aufgabe und gibst NUR das Ergebnis aus.
+SOLUTION_MATH_SYSTEM_PROMPT = """Du löst eine Mathematik-Aufgabe und gibst die Lösung mit Berechnungsweg aus.
 
 AUSGABE-REGELN (alle zwingend):
-- Nur der nackte Zahlenwert mit Einheit, z.B.: 60 cm²
-- Mehrere Resultate: eine Zeile pro Resultat, kein Nummerierungsprefix
+- Strukturierter Berechnungsweg in nummerierten Schritten:
+    Schritt 1: [Ansatz / Formel aufstellen]
+    Schritt 2: [Umformung / Zwischenrechnung]
+    Schritt 3: [Ergebnis mit Einheit]
 - KEIN "Musterantwort:", KEIN "MUSTERANTWORT:", KEIN "Lösung:", KEIN Prefix
 - KEIN Markdown: keine Sterne (*), keine Backticks (`), keine Unterstriche
-- KEIN Rechenweg, KEINE Erklärung, KEINE Formel im Output
 - Einheit exakt so wie in der Aufgabe (cm² bleibt cm², m bleibt m)
 - Wenn die Aufgabe unlösbar oder widersprüchlich ist: gib nur "–" aus
 
@@ -177,9 +179,13 @@ class SolutionChain:
             if not raw:
                 return None
 
-            # Bei mehrzeiligem Output (CoT-Fallback): letzte nicht-leere Zeile
+            # Bei Mathematik: Berechnungsweg (mehrzeilig, Absicht) vollständig behalten.
+            # Sonst CoT-Fallback: letzte nicht-leere Zeile verwenden.
             lines = [l.strip() for l in raw.splitlines() if l.strip()]
-            candidate = lines[-1] if lines else raw
+            if domain == DOMAIN_MATH and len(lines) > 1:
+                candidate = '\n'.join(lines)
+            else:
+                candidate = lines[-1] if lines else raw
 
             # Post-Processing: Artefakte entfernen
             answer = _clean_solution(candidate)

@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from common.config import Config
 from common.constants import NON_REWRITABLE_TYPES
+from common.constants import normalize_domain
 from common.logger import setup_logger
 from langchain_prototype.pipeline import get_pipeline
 
@@ -110,7 +111,7 @@ def main():
     args = parser.parse_args()
 
     pdf_path = args.pdf
-    domain = None if args.domain == "auto" else args.domain
+    domain = None if args.domain == "auto" else normalize_domain(args.domain)
     output_dir = args.output_dir
     progress_path = args.progress
 
@@ -278,13 +279,17 @@ def main():
                         })
 
                         # Lösungsgenerierung für valide Varianten
+                        # Dokument-Domain hat Vorrang vor per-Segment-Klassifizierung,
+                        # damit z.B. Prozentrechnung-Aufgaben stets als "mathematics"
+                        # behandelt werden und den Berechnungsweg erhalten.
+                        solution_domain = domain if domain is not None else seg_domain
                         if self.solution_chain is not None:
                             for variant in val_result['validated_variants']:
                                 if variant.get('validation', {}).get('is_valid'):
                                     try:
                                         sol = self.solution_chain.invoke({
                                             'variant_text': variant.get('text', ''),
-                                            'domain': seg_domain,
+                                            'domain': solution_domain,
                                         })
                                         variant['solution'] = sol.get('solution')
                                     except Exception as _sol_e:

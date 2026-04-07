@@ -7,7 +7,7 @@ from typing import Dict, Any
 import time
 
 from common.config import Config
-from common.constants import NON_REWRITABLE_TYPES
+from common.constants import NON_REWRITABLE_TYPES, normalize_domain
 from common.logger import setup_logger
 from langchain_prototype.chains.parsing_chain import get_parsing_chain
 from langchain_prototype.chains.segmentation_chain import get_segmentation_chain
@@ -40,7 +40,7 @@ class LangChainPipeline:
             domain: Optional domain (math, languages, economics)
             num_variants: Anzahl Varianten pro Segment
         """
-        self.domain = domain
+        self.domain = normalize_domain(domain) if domain else None
         self.num_variants = num_variants
         
         # Initialisiere alle Chains
@@ -158,13 +158,15 @@ class LangChainPipeline:
                 # 5b. Lösungsgenerierung für valide Varianten
                 # Integriert hier (nach Validation, vor Assembly) da RewritingChain
                 # und ValidationChain getrennte Schritte sind.
+                # Dokument-Domain hat Vorrang vor per-Segment-Klassifizierung
+                solution_domain = self.domain if self.domain is not None else domain
                 if self.solution_chain is not None:
                     for variant in validation_result['validated_variants']:
                         if variant.get('validation', {}).get('is_valid'):
                             try:
                                 sol = self.solution_chain.invoke({
                                     'variant_text': variant.get('text', ''),
-                                    'domain': domain,
+                                    'domain': solution_domain,
                                 })
                                 variant['solution'] = sol.get('solution')
                             except Exception as e:

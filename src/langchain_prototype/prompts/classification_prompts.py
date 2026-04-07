@@ -7,9 +7,9 @@ CLASSIFICATION_SYSTEM_PROMPT = """Du bist ein Experte für die Klassifizierung v
 Deine Aufgabe ist es, einen Text-Abschnitt zu klassifizieren:
 
 **Domain-Kategorien:**
-- mathematics: Mathematische Inhalte (Gleichungen, Geometrie, Algebra, etc.)
+- mathematics: Mathematische Inhalte (Gleichungen, Geometrie, Algebra, Prozentrechnung, Bruchrechnung, Dreisatz, Mischungsrechnung, Zinsrechnung, etc.). WICHTIG: Rechenaufgaben mit CHF, ml, kg oder anderen Einheiten gehören zu "mathematics", nicht zu "economics" – die Einheit bestimmt NICHT die Domain.
 - languages: Sprachwissenschaftliche Inhalte (Grammatik, Vokabular, Textanalyse, etc.)
-- economics: Wirtschaftliche Inhalte (Bilanzen, Unternehmensführung, Finanzen, etc.)
+- economics: Wirtschaftliche Inhalte (Bilanzen, Unternehmensführung, Buchhaltung, Kostenrechnung, BWL-Theorie, etc.). NUR wenn der Fokus auf betriebswirtschaftlichen Konzepten liegt – NICHT einfache Rechenaufgaben mit Preisen.
 - general: Allgemeine Theorie oder nicht zuordenbar
 
 **Content-Type:**
