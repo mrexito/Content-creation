@@ -11,7 +11,7 @@ Code-Bereinigung vor der Thesis-Abgabe (22.05.2026) vorgenommen wurden.
 Kanonische Konstanten für das gesamte Projekt:
 - `DOMAIN_MATH = "mathematics"`, `DOMAIN_LANGUAGES`, `DOMAIN_ECONOMICS`, `DOMAIN_GENERAL`
 - `VALID_DOMAINS` Set
-- `BERT_THRESHOLD = 0.70` (gemeinsamer Schwellwert für alle drei Prototypen)
+- `BERT_THRESHOLD = 0.92` (gemeinsamer Schwellwert für alle drei Prototypen)
 - `normalize_domain(domain: str) -> str` — normalisiert `'math'` → `'mathematics'` etc.
 
 ---
@@ -99,7 +99,7 @@ LangChain/LangGraph rufen explizit mit `0.7` auf. Hybrid-Prototype rief ohne
 Argument auf — nutzte damit den strengeren 0.92-Schwellwert (Bug!).
 
 **Fix:**
-- Default auf `BERT_THRESHOLD = 0.70` geändert (aus constants.py)
+- Default auf `BERT_THRESHOLD = 0.92` geändert (aus constants.py)
 - Verwirrende `threshold_passed: float(F1[0]) >= 0.92` in `calculate_similarity()`
   entfernt (war inkonsistent mit tatsächlicher Validierungslogik)
 

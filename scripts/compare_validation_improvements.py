@@ -20,7 +20,7 @@ def main():
     print("   - Numbers (Economics): ±2")
     print("   - Length Ratio: 0.5-2.0 (all)")
     print("\n🔧 New Thresholds:")
-    print("   - BERT (Languages): 0.70")
+    print("   - BERT (Languages): 0.92")
     print("   - Numbers (Economics): ±3")
     print("   - Length Ratio:")
     print("     • Math: 0.5-2.0")

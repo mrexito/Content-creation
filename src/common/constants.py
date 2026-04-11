@@ -69,6 +69,9 @@ EQUATION_COUNT_TOLERANCE: int = 1
 # Toleranz für Zahlen-Anzahlabweichung (Wirtschaft-Domain)
 NUMBER_COUNT_TOLERANCE: int = 3
 
+# Mindest-Zahlenänderung für Mathematik-Varianten (Vorstudie Tabelle 1)
+MIN_NUMBER_CHANGE_MATH: float = 0.30
+
 # Domain-spezifische Längen-Toleranzen für Varianten (min_ratio, max_ratio)
 LENGTH_RATIO_BOUNDS: dict = {
     DOMAIN_LANGUAGES: (0.6, 1.5),
