@@ -137,9 +137,10 @@ Kommentar: Beide Implementierungen teilen identische Prompts aus
 
 ## Open Questions (dokumentiert, nicht gefixt)
 
-1. **LangChain Math-Validierung — Tolerance:** `validation_chain.py` prüft auf
-   `equations_found == variant_equations_found` (Toleranz 0), `validation_node.py`
-   toleriert `±1`. Unterschied bleibt bewusst erhalten (beeinflusst Vergleichs-Metriken).
+1. ~~**LangChain Math-Validierung — Tolerance:**~~ **GELÖST** — `ValidationChain` ruft
+   jetzt `validate_segment()` aus `src/common/validators/segment_validator.py` auf.
+   Alle Prototypen (LangChain, LangGraph, Hybrid, Agent) nutzen identische
+   Validierungslogik mit `EQUATION_COUNT_TOLERANCE = 1` aus `constants.py`.
 
 2. **Tesseract für Math:** OCR-Handler bevorzugt Mistral für `DOMAIN_MATH`.
    Falls kein API-Key → Tesseract-Fallback, LaTeX-Erkennung dann eingeschränkt.
