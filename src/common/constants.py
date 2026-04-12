@@ -67,11 +67,21 @@ REWRITABLE_TYPES: frozenset = frozenset({"task", "theory", "example"})
 # deutsche Paraphrasen mit gewollter lexikalischer Variation.
 BERT_THRESHOLD: float = 0.81
 
+# Separater BERTScore-Threshold für die Wirtschaftsdomäne.
+# In der Wirtschaftsdomäne ergänzt das LLM Kontext (Firmennamen,
+# konkrete Zahlenwerte), was die lexikalische Distanz zum Original
+# systematisch erhöht. Ein tieferer Threshold verhindert, dass
+# inhaltlich korrekte Varianten fälschlich abgelehnt werden.
+BERT_THRESHOLD_ECONOMICS: float = 0.72
+
 # Toleranz für Gleichungs-Anzahlabweichung (Mathematik-Domain)
 EQUATION_COUNT_TOLERANCE: int = 1
 
-# Toleranz für Zahlen-Anzahlabweichung (Wirtschaft-Domain)
-NUMBER_COUNT_TOLERANCE: int = 3
+# Toleranz für Zahlen-Anzahlabweichung (Wirtschaft-Domain).
+# Höherer Wert als ursprünglich (3), weil das LLM bei kurzen
+# Aufgabenstellungen (z.B. «Berechne die Eigenkapitalquote.»)
+# sinnvollerweise konkrete Zahlenwerte ergänzt.
+NUMBER_COUNT_TOLERANCE: int = 5
 
 # Mindest-Zahlenänderung für Mathematik-Varianten (Vorstudie Tabelle 1)
 MIN_NUMBER_CHANGE_MATH: float = 0.30
@@ -79,6 +89,6 @@ MIN_NUMBER_CHANGE_MATH: float = 0.30
 # Domain-spezifische Längen-Toleranzen für Varianten (min_ratio, max_ratio)
 LENGTH_RATIO_BOUNDS: dict = {
     DOMAIN_LANGUAGES: (0.6, 1.5),
-    DOMAIN_ECONOMICS: (0.4, 2.5),
+    DOMAIN_ECONOMICS: (0.3, 3.5),
     "default":        (0.5, 2.0),
 }

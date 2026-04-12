@@ -3,6 +3,29 @@
 Dieses Dokument beschreibt alle Änderungen, die im Rahmen der systematischen
 Code-Bereinigung vor der Thesis-Abgabe (22.05.2026) vorgenommen wurden.
 
+## Wirtschaftsdomäne: Validierungstoleranzen (2026-04-12)
+
+**Dateien:** `src/common/constants.py`, `src/common/validators/segment_validator.py`
+
+**Problem:** Die Validierungsrate in der Wirtschaftsdomäne lag bei 28.6%
+(Pipeline), obwohl die Mehrheit der abgelehnten Varianten inhaltlich
+korrekt war. Diagnose mit `diagnose_economics_validation.py` ergab:
+BERTScore (12 Treffer), Zahlen-Anzahl (10), Längen-Check (6),
+LLM-Plausibilität (5) — Ø 2.2 Issues pro invalidem Segment.
+
+**Ursache:** Das LLM ergänzt bei kurzen Wirtschaftsaufgaben sinnvoll
+konkrete Zahlenwerte und Firmennamen. Die Validierung bestrafte dieses
+Verhalten mit drei gleichzeitig zu strengen Checks.
+
+**Fix:**
+- `BERT_THRESHOLD_ECONOMICS = 0.72` (separater Threshold, tiefer als
+  0.81 für Sprache, weil gewollte Variation grösser)
+- `NUMBER_COUNT_TOLERANCE = 5` (vorher 3; erlaubt grössere Abweichung
+  wenn Original wenige Zahlen enthält)
+- `LENGTH_RATIO_BOUNDS[DOMAIN_ECONOMICS] = (0.3, 3.5)` (vorher 0.4–2.5)
+
+---
+
 ## BERTScore Threshold-Kalibrierung (2026-04-12)
 
 ### BERT_THRESHOLD: 0.92 → 0.81

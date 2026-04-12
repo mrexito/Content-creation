@@ -10,6 +10,7 @@ from typing import Any, Dict, List
 
 from common.constants import (
     BERT_THRESHOLD,
+    BERT_THRESHOLD_ECONOMICS,
     DOMAIN_ECONOMICS,
     DOMAIN_LANGUAGES,
     DOMAIN_MATH,
@@ -288,7 +289,7 @@ def validate_segment(
         bert_econ = bert_validator_econ.validate_paraphrase(
             original=original,
             paraphrased=variant,
-            min_threshold=BERT_THRESHOLD,
+            min_threshold=BERT_THRESHOLD_ECONOMICS,
         )
         validation_results["bert_economics"] = {
             "score": bert_econ["score"],
@@ -297,7 +298,7 @@ def validate_segment(
         if not bert_econ["is_valid"]:
             issues.append(
                 f"Semantische Ähnlichkeit zu gering (Wirtschaft): "
-                f"BERTScore {bert_econ['score']:.3f} < {BERT_THRESHOLD}"
+                f"BERTScore {bert_econ['score']:.3f} < {BERT_THRESHOLD_ECONOMICS}"
             )
 
         # ── LLM-Plausibilitäts-Check (Vorstudie S. 12, Tabelle 1) ───────────

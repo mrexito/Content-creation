@@ -94,7 +94,7 @@ All three implement the same 6-step pipeline but with different orchestration pa
 
 ### Shared Components (`src/common/`)
 
-- `constants.py`: **Kanonische Domain-Konstanten** (`DOMAIN_MATH = "mathematics"`, etc.) und `BERT_THRESHOLD = 0.81`. Enthält `normalize_domain()` Funktion die `'math'` → `'mathematics'` normalisiert. Muss für alle Domain-Vergleiche im Code verwendet werden.
+- `constants.py`: **Kanonische Domain-Konstanten** (`DOMAIN_MATH = "mathematics"`, etc.), `BERT_THRESHOLD = 0.81` (Sprache) und `BERT_THRESHOLD_ECONOMICS = 0.72` (Wirtschaft). Enthält `normalize_domain()` Funktion die `'math'` → `'mathematics'` normalisiert. Muss für alle Domain-Vergleiche im Code verwendet werden.
 - `llm_handler.py`: Singleton `LLMHandler` wrapping OpenAI SDK for both OpenAI and BFH (OpenAI-compatible). Use `get_llm_handler()` / `reset_llm_handler()` to manage the singleton. Call `reset_llm_handler()` before switching providers.
 - `ocr_handler.py`: Wraps Tesseract and Mistral OCR (`mistral-ocr-latest` via `client.ocr.process()`). Domain-Präferenzen nutzen kanonische Konstanten.
 - `config.py`: Loads `.env.dev` at import time. Exposes `Config` class with all settings as class attributes.
