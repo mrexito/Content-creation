@@ -3,6 +3,27 @@
 Dieses Dokument beschreibt alle Änderungen, die im Rahmen der systematischen
 Code-Bereinigung vor der Thesis-Abgabe (22.05.2026) vorgenommen wurden.
 
+## BERTScore Threshold-Kalibrierung (2026-04-12)
+
+### BERT_THRESHOLD: 0.92 → 0.81
+**Dateien:** `src/common/constants.py`, `CLAUDE.md`, `CHANGES.md`,
+`scripts/compare_validation_improvements.py`
+
+**Problem:** Der BERTScore-Threshold 0.92 (Vorstudie Anhang c, Tabelle 3)
+war zu restriktiv für `bert-base-multilingual-cased` mit deutschen
+Paraphrasen. Gute Varianten mit korrekter lexikalischer Variation
+(z.B. Synonym-Austausch) wurden fälschlich abgelehnt.
+
+**Methodik:** 24 Original-Variante-Paare aus dem LangChain-Vergleich
+(11.04.2026) wurden manuell als GUT/SCHLECHT/GRENZFALL bewertet.
+Für jeden Threshold von 0.70 bis 0.95 wurde der F1-Score der
+binären Klassifikation (GUT vs. SCHLECHT) berechnet.
+
+**Ergebnis:** Optimaler Threshold = 0.81 (maximaler F1-Score).
+
+**Fix:** `BERT_THRESHOLD` in `constants.py` auf 0.81 gesetzt.
+Alle Dokumentationsdateien aktualisiert.
+
 ---
 
 ## Neue Dateien
@@ -11,7 +32,7 @@ Code-Bereinigung vor der Thesis-Abgabe (22.05.2026) vorgenommen wurden.
 Kanonische Konstanten für das gesamte Projekt:
 - `DOMAIN_MATH = "mathematics"`, `DOMAIN_LANGUAGES`, `DOMAIN_ECONOMICS`, `DOMAIN_GENERAL`
 - `VALID_DOMAINS` Set
-- `BERT_THRESHOLD = 0.92` (gemeinsamer Schwellwert für alle drei Prototypen)
+- `BERT_THRESHOLD = 0.81` (empirisch kalibriert, gemeinsamer Schwellwert für alle drei Prototypen)
 - `normalize_domain(domain: str) -> str` — normalisiert `'math'` → `'mathematics'` etc.
 
 ---
@@ -99,7 +120,7 @@ LangChain/LangGraph rufen explizit mit `0.7` auf. Hybrid-Prototype rief ohne
 Argument auf — nutzte damit den strengeren 0.92-Schwellwert (Bug!).
 
 **Fix:**
-- Default auf `BERT_THRESHOLD = 0.92` geändert (aus constants.py)
+- Default auf `BERT_THRESHOLD = 0.81` geändert (aus constants.py, empirisch kalibriert)
 - Verwirrende `threshold_passed: float(F1[0]) >= 0.92` in `calculate_similarity()`
   entfernt (war inkonsistent mit tatsächlicher Validierungslogik)
 
@@ -153,3 +174,63 @@ Kommentar: Beide Implementierungen teilen identische Prompts aus
 python scripts/generate_test_pdfs.py  # ✅ Alle 3 PDFs erstellt
 python scripts/test_validators.py      # ✅ Alle Tests grün
 ```
+
+---
+
+## Prompt-Update: 30%-Zahlenvariation (Vorstudie Tabelle 1)
+
+**Datum:** 2026-04-11
+
+### Problem
+Der Validator (`segment_validator.py`) prüft `MIN_NUMBER_CHANGE_MATH = 0.30` als
+hartes Gate, aber die Rewriting-Prompts informierten das LLM nicht über diese
+Mindestabweichung. Das LLM änderte Zahlen konservativ (~15%) und scheiterte
+systematisch an der Validierung (LangChain: 25% statt erwartet ~80%+).
+
+### Geänderte Dateien
+1. `src/langchain_prototype/prompts/rewriting_prompts.py`
+   - `REWRITING_MATH_SYSTEM_PROMPT`: "mindestens 30% Abweichung" ergänzt
+   - `REWRITING_USER_PROMPT_TEMPLATE`: 30%-Hinweis für Mathematik ergänzt
+   - `REWRITING_ECONOMICS_SYSTEM_PROMPT`: "mindestens 30%" statt "±50%"
+
+2. `src/langchain_agent_prototype/orchestrator/agent.py`
+   - Validierungskriterien (30%, BERTScore, Konsistenz) im System-Prompt
+   - Hinweis: FINALE_VARIANTE muss vollständigen Text enthalten
+
+3. `src/hybrid_agent_prototype/agent_phase.py`
+   - Validierungskriterien im System-Prompt
+   - Hinweis: RESULT muss vollständigen Text enthalten
+
+4. `src/langchain_agent_prototype/multi_agent/pipeline.py`
+   - Rewriter-Agent: Domain-spezifische Hinweise ergänzt
+
+### Auswirkung
+Alle bisherigen Evaluationsdaten müssen neu erhoben werden, da die Prompts
+direkt die generierten Varianten beeinflussen. Betrifft alle 6 Prototypen
+(alle nutzen `rewriting_prompts.py`; Agent-Varianten zusätzlich eigene Prompts).
+
+---
+
+## Fix: Zahlenänderungs-Check — Aufgabennummern-Filter
+
+**Datum:** 2026-04-11
+
+### Problem
+Der 30%-Zahlenänderungs-Check in `segment_validator.py` extrahierte ALLE Zahlen
+aus dem Text, inklusive Aufgabennummern ("Aufgabe 1:", "Aufgabe 3:"). Da
+Aufgabennummern in Original und Variante identisch bleiben (0% Änderung),
+drückten sie den Durchschnitt systematisch unter die 30%-Schwelle.
+
+Konkretes Beispiel:
+- "Aufgabe 1: 2x + 5 = 13" → "Aufgabe 1: 3a + 7 = 17"
+- Ohne Filter: [1,2,5,13] vs [1,3,7,17] → avg 24% → INVALID
+- Mit Filter:  [2,5,13] vs [3,7,17] → avg 40% → VALID
+
+### Fix
+Neue Hilfsfunktion `_extract_math_numbers()` in `segment_validator.py`:
+- Entfernt Aufgabennummern-Patterns via Regex vor der Zahlenextraktion
+- Fügt Debug-Daten (`numbers_original`, `numbers_variant`) zum Result hinzu
+- Kernlogik (Durchschnitt ≥ 30%) bleibt unverändert
+
+### Auswirkung
+Alle Evaluationsdaten müssen neu erhoben werden.

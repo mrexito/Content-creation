@@ -60,8 +60,12 @@ REWRITABLE_TYPES: frozenset = frozenset({"task", "theory", "example"})
 
 # ── Validierungs-Schwellwerte ──────────────────────────────────────────────────
 # Gemeinsamer BERTScore-Threshold für LangChain, LangGraph und Hybrid.
-# Wert 0.92 gemäss Vorstudie (Anhang c, Tabelle 3).
-BERT_THRESHOLD: float = 0.92
+# Wert 0.81 empirisch kalibriert mit 24 manuell bewerteten Paaren
+# (Domänen Sprache + Wirtschaft, Modell bert-base-multilingual-cased).
+# Vorstudie (Anhang c, Tabelle 3) schlug 0.92 vor — empirische
+# Kalibrierung zeigt, dass dieser Wert zu restriktiv ist für
+# deutsche Paraphrasen mit gewollter lexikalischer Variation.
+BERT_THRESHOLD: float = 0.81
 
 # Toleranz für Gleichungs-Anzahlabweichung (Mathematik-Domain)
 EQUATION_COUNT_TOLERANCE: int = 1

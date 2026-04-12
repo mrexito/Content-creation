@@ -83,9 +83,11 @@ def _create_rewriter_agent() -> AgentExecutor:
     prompt = ChatPromptTemplate.from_messages([
         (
             "system",
-            "Du bist ein Rewriting-Spezialist. "
+            "Du bist ein Rewriting-Spezialist für Bildungsmaterialien. "
             "Dein Auftrag: Generiere eine Variante des gegebenen Segments "
             "mit rewrite_segment. Verwende die angegebene Domain. "
+            "Für Mathematik: Ändere Zahlenwerte um mindestens 30%. "
+            "Für Sprachen: Behalte die Bedeutung bei. "
             "Rufe das Tool genau einmal auf.",
         ),
         ("human", "{input}"),

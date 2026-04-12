@@ -178,18 +178,43 @@ def validate_segment(
             )
 
         # ── Zahlenänderungs-Check (Vorstudie Tabelle 1: ≥ 30 %) ──────────────
-        _num_pattern = re.compile(r'\b\d+(?:[.,]\d+)?\b')
-        orig_nums = [
-            float(n.replace(',', '.'))
-            for n in _num_pattern.findall(original)
-            if float(n.replace(',', '.')) >= 1.0
-        ]
-        var_nums = [
-            float(n.replace(',', '.'))
-            for n in _num_pattern.findall(variant)
-            if float(n.replace(',', '.')) >= 1.0
-        ]
+        # Extrahiert inhaltlich relevante Zahlenwerte und ignoriert:
+        # - Aufgabennummern (z.B. "Aufgabe 1:", "Aufgabe 12:")
+        # - Einzelne Ziffern die Teil von Variablennamen sind (z.B. "x1", "a2")
+
+        def _extract_math_numbers(text: str) -> list[float]:
+            """Extrahiert mathematisch relevante Zahlenwerte aus einem Segment.
+
+            Filtert strukturelle Zahlen (Aufgabennummern) heraus, behält aber
+            alle inhaltlich relevanten Parameter (Koeffizienten, Konstanten,
+            Massangaben, Prozentwerte, Geldbeträge, Zeitangaben).
+            """
+            # Schritt 1: Aufgabennummern entfernen bevor Zahlen extrahiert werden
+            # Patterns: "Aufgabe 1:", "Aufgabe 12:", "Teilaufgabe a)", etc.
+            cleaned = re.sub(
+                r'(?i)\b(?:teil)?aufgabe\s+\d+\s*[:.)]',
+                'AUFGABE_ENTFERNT',
+                text,
+            )
+
+            # Schritt 2: Zahlen extrahieren
+            num_pattern = re.compile(r'\b\d+(?:[.,]\d+)?\b')
+            numbers = []
+            for match in num_pattern.finditer(cleaned):
+                raw = match.group()
+                val = float(raw.replace(',', '.'))
+                # Ignoriere Werte < 1 (Dezimalfragmente) und exakt 0
+                if val < 1.0:
+                    continue
+                numbers.append(val)
+
+            return numbers
+
+        orig_nums = _extract_math_numbers(original)
+        var_nums = _extract_math_numbers(variant)
+
         if len(orig_nums) >= 2 and len(var_nums) >= 2:
+            # Positionsbasiertes Matching: zip schneidet auf kürzere Liste ab
             pairs = list(zip(orig_nums, var_nums))
             changes = [
                 abs(o - v) / max(abs(o), 1.0)
@@ -197,6 +222,8 @@ def validate_segment(
             ]
             avg_change = sum(changes) / len(changes)
             validation_results["sympy"]["avg_number_change"] = round(avg_change, 4)
+            validation_results["sympy"]["numbers_original"] = orig_nums
+            validation_results["sympy"]["numbers_variant"] = var_nums
             if avg_change < MIN_NUMBER_CHANGE_MATH:
                 issues.append(
                     f"Zahlenvariation zu gering: Ø {avg_change:.0%} "

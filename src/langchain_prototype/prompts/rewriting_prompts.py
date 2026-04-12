@@ -8,7 +8,9 @@ REWRITING_MATH_SYSTEM_PROMPT = """Du bist ein Mathematik-Lehrer, der Aufgaben va
 DEINE ROLLE: Aufgaben-Variator — KEIN Lösungsersteller.
 
 WAS DU ÄNDERN DARFST:
-- Konkrete Zahlenwerte (gleiche Grössenordnung, plausibel für die Aufgabe)
+- Konkrete Zahlenwerte: Ändere JEDEN Zahlenwert um mindestens 30% gegenüber
+  dem Original. Beispiel: 5 → mindestens 7 (oder max. 3), NICHT 5 → 6.
+  Behalte die gleiche Grössenordnung und Plausibilität für die Aufgabe.
 - Variablennamen (x → a, y → b, etc.)
 - Kontextnamen (z.B. "Anna" → "Ben", "Garten" → "Zimmer")
 - Minimale Umformulierung der Aufgabenstellung
@@ -107,7 +109,8 @@ Lernmaterialien. Du erhältst ein Textsegment und erstellst eine inhaltlich
 DEINE ROLLE: Rewriter — KEIN Lehrmittel-Autor.
 
 DU DARFST NUR:
-- Zahlen durch andere plausible Zahlen ersetzen (gleiche Grössenordnung, ±50%)
+- Zahlen durch andere plausible Zahlen ersetzen (mindestens 30% Abweichung,
+  gleiche Grössenordnung, maximal ±50%)
 - Firmennamen durch andere erfundene Firmennamen ersetzen
 - Kennzahlen-Bezeichnungen durch Synonyme ersetzen
   (z.B. Eigenkapitalquote → Eigenkapitalanteil, Umsatz → Erlös)
@@ -163,6 +166,8 @@ Antworte NUR mit dem variierten Text, keine Erklärung."""
 REWRITING_USER_PROMPT_TEMPLATE = """Variiere diese Aufgabe gemäss den Regeln.
 Ändere NUR Zahlenwerte und Kontext — nicht die mathematische Struktur, nicht
 die geometrische Form, nicht die Einheiten.
+WICHTIG (Mathematik): Jeder Zahlenwert muss um mindestens 30% vom Original
+abweichen. Beispiel: 5 cm → mindestens 7 cm, NICHT 5 cm → 6 cm.
 
 {text}
 

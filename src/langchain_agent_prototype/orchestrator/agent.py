@@ -40,15 +40,27 @@ _SYSTEM_PROMPT_TEMPLATE = """Du bist ein Rewriting-Agent für Bildungsmaterialie
 
 Dein Auftrag: Erstelle eine valide Variante des gegebenen Textsegments.
 
+Validierungskriterien (damit deine Variante die automatische Prüfung besteht):
+- Mathematik: Zahlenwerte müssen um mindestens 30% vom Original abweichen.
+  Gleichungen müssen lösbar bleiben. Struktur und Form beibehalten.
+- Sprachen: Semantische Ähnlichkeit zum Original (BERTScore ≥ 0.81).
+  Lückenzeichen und Aufgabenstruktur exakt beibehalten.
+- Wirtschaft: Zahlen und Text müssen konsistent bleiben. Plausible Werte.
+
 Vorgehensweise:
 1. Klassifiziere das Segment mit classify_segment um die Domain zu bestimmen.
 2. Generiere eine Variante mit rewrite_segment (verwende die ermittelte Domain).
 3. Validiere die Variante mit validate_variant.
-4. Falls die Validierung fehlschlägt: Rufe rewrite_segment erneut auf.
-   Setze dabei den hint-Parameter mit einer kurzen Beschreibung des Problems.
+4. Falls die Validierung fehlschlägt: Lies die issues aus dem Ergebnis und
+   rufe rewrite_segment erneut auf. Setze den hint-Parameter mit der konkreten
+   Problembeschreibung aus den issues (z.B. "Zahlenvariation zu gering, ändere
+   stärker" oder "Gleichung nicht lösbar").
    Maximal {max_retries} Rewriting-Versuche insgesamt.
 5. Am Ende antworte mit dem Marker:
    FINALE_VARIANTE: <text der besten Variante>
+
+WICHTIG: Gib immer den VOLLSTÄNDIGEN Text der Variante nach FINALE_VARIANTE: aus,
+nicht nur ein Fragment. Der Text muss die komplette umgeschriebene Aufgabe enthalten.
 
 Falls keine Validierung erfolgreich war, gib trotzdem die beste verfügbare
 Variante aus.

@@ -1,0 +1,242 @@
+[
+  {
+    "id": "economics_investment_calculation.pdf_12",
+    "domain": "economics",
+    "pdf": "investment_calculation.pdf",
+    "segment_index": 12,
+    "original": "Investitionsprojekt: Neue Produktionsanlage\n\nInvestitionsdaten:\n\nAnschaffungskosten: 100.000 CHF\n\nJährliche Einzahlungen: 30.000 CHF\n\nNutzungsdauer: 5 Jahre\n\nKalkulationszinssatz: 8%",
+    "variant": "Investitionsprojekt: Erweiterte Fertigungsstrecke  \n\nInvestitionsdaten:\n\nAnschaffungskosten: 130 000 CHF  \n\nJährliche Einzahlungen: 42 000 CHF  \n\nNutzungsdauer: 7 Jahre  \n\nKalkulationszinssatz: 12%",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "economics_market_analysis.pdf_18",
+    "domain": "economics",
+    "pdf": "market_analysis.pdf",
+    "segment_index": 18,
+    "original": "Aufgabe 2: Berechne die Wachstumsrate.\nUm wie viel Prozent ist der Umsatz der Firma AlphaCode AG\n\ngegenueber dem Vorjahr gewachsen?",
+    "variant": "Aufgabe 2: Berechne die Wachstumsrate.\nUm wie viel Prozent ist der Umsatz der Firma AlphaCode AG gegenüber dem Vorjahr gewachsen?",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "economics_balance_sheet.pdf_0",
+    "domain": "economics",
+    "pdf": "balance_sheet.pdf",
+    "segment_index": 0,
+    "original": "Unternehmen: TechStart GmbH\nBilanz zum 31.12.2024:\nAKTIVA:\n\nAnlagevermögen: 150.000 €\nUmlaufvermögen: 80.000 €\n\nGesamt: 230.000 €\nPASSIVA:\n\nEigenkapital: 120.000 €\nFremdkapital: 110.000 €\nGesamt: 230.000 €",
+    "variant": "Unternehmen: InnovaTech AG  \nBilanz zum 31.12.2024:\n\n**AKTIVA**\n\n- Anlagevermögen: 210.000 CHF  \n- Umlaufvermögen: 108.000 CHF  \n\nGesamt: 318.000 CHF  \n\n**PASSIVA**\n\n- Eigenkapital: 160.000 CHF  \n- Fremdkapital: 158.000 CHF  \n\nGesamt: 318.000 CHF",
+    "was_valid_at_092": false,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "economics_balance_sheet.pdf_1",
+    "domain": "economics",
+    "pdf": "balance_sheet.pdf",
+    "segment_index": 1,
+    "original": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+    "variant": "Die AlphaTech AG weist ein Eigenkapital von 420 000 CHF und ein Gesamtkapital von 1 350 000 CHF aus. Ermitteln Sie den Eigenkapitalanteil am Gesamtkapital.",
+    "was_valid_at_092": false,
+    "manual_label": "SCHLECHT"
+  },
+  {
+    "id": "economics_balance_sheet.pdf_2",
+    "domain": "economics",
+    "pdf": "balance_sheet.pdf",
+    "segment_index": 2,
+    "original": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 €\nWie hoch ist der Gewinn?",
+    "variant": "Der Jahreserlös der Nordsee GmbH betrug 720 000 CHF, die Betriebsausgaben 540 000 CHF. Wie hoch ist der Jahresüberschuss?",
+    "was_valid_at_092": false,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "economics_cost_analysis.pdf_3",
+    "domain": "economics",
+    "pdf": "cost_analysis.pdf",
+    "segment_index": 3,
+    "original": "Unternehmen: Muster Produktions AG\n\nDas Unternehmen produziert einen Artikel mit folgenden Kenndaten:\n\nFixkosten pro Monat: 15.000 CHF\nVariable Kosten pro Stueck: 25 CHF\nVerkaufspreis pro Stueck: 45 CHF",
+    "variant": "Die Firma NovaTech GmbH stellt ein Produkt her mit den nachfolgenden Kennzahlen:\n\nFixkosten pro Monat: 22.000 SEK  \nVariable Kosten je Stück: 38 SEK  \nVerkaufspreis je Stück: 68 SEK  \n\nFormuliere die Aufgabe analog zur Ausgangsaufgabe, jedoch mit den oben genannten veränderten Werten.",
+    "was_valid_at_092": false,
+    "manual_label": "SCHLECHT"
+  },
+  {
+    "id": "economics_cost_analysis.pdf_4",
+    "domain": "economics",
+    "pdf": "cost_analysis.pdf",
+    "segment_index": 4,
+    "original": "Aufgabe 1: Berechne den Deckungsbeitrag pro Stueck.\nDer Deckungsbeitrag ist die Differenz zwischen Verkaufspreis\n\nund variablen Kosten pro Stueck.",
+    "variant": "Aufgabe 1: Ermittele den Deckungsbeitrag je Stück.  \nDer Deckungsbeitrag ergibt sich aus der Differenz zwischen dem Verkaufspreis und den variablen Kosten je Einheit.  \n\nBeispiel: Der Listenpreis für ein Produkt der Firma NovaTech beträgt 1 200 CHF, während die variablen Kosten pro Stück bei 780 CHF liegen. Wie hoch ist der Deckungsbeitrag je Stück?",
+    "was_valid_at_092": false,
+    "manual_label": "SCHLECHT"
+  },
+  {
+    "id": "languages_grammar_exercise.pdf_0",
+    "domain": "languages",
+    "pdf": "grammar_exercise.pdf",
+    "segment_index": 0,
+    "original": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+    "variant": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Schloss thront auf __ Anhöhe.\n__ Schüler lesen in __ Bibliothek.",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "languages_grammar_exercise.pdf_1",
+    "domain": "languages",
+    "pdf": "grammar_exercise.pdf",
+    "segment_index": 1,
+    "original": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. —\nEr liest ein Buch. —",
+    "variant": "Aufgabe 2: Bilde das Perfekt:\n\nIch bewege mich zur Schule. —\nEr studiert ein Werk. —",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "languages_sentence_construction.pdf_5",
+    "domain": "languages",
+    "pdf": "sentence_construction.pdf",
+    "segment_index": 5,
+    "original": "Aufgabe 3: Korrigiere den Grammatikfehler im folgenden Satz:\nGestern hat er in die Bibliothek gegangen.",
+    "variant": "Aufgabe 3: Korrigiere den Grammatikfehler im folgenden Satz:\nGestern hat sie ins Museum gehen.",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "languages_sentence_construction.pdf_6",
+    "domain": "languages",
+    "pdf": "sentence_construction.pdf",
+    "segment_index": 6,
+    "original": "Aufgabe 4: Schreibe den Satz im Passiv:\nDer Lehrer erklärt die Aufgabe.",
+    "variant": "Aufgabe 4: Schreibe den Satz im Passiv:\nDer Professor erläutert das Problem.",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "languages_sentence_construction.pdf_7",
+    "domain": "languages",
+    "pdf": "sentence_construction.pdf",
+    "segment_index": 7,
+    "original": "Aufgabe 5: Bilde einen sinnvollen Satz aus diesen Wörtern:\nmorgen / wir / ins / fahren / Kino",
+    "variant": "Aufgabe 5: Bilde einen sinnvollen Satz aus diesen Wörtern:\nmorgen / wir / ins / Kino / fahren",
+    "was_valid_at_092": true,
+    "manual_label": "GRENZFALL"
+  },
+  {
+    "id": "languages_grammar_exercise.pdf_2",
+    "domain": "languages",
+    "pdf": "grammar_exercise.pdf",
+    "segment_index": 2,
+    "original": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nschnell - rasch - langsam - zügig",
+    "variant": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nflink – hurtig – träge – eilig",
+    "was_valid_at_092": false,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "languages_sentence_construction.pdf_3",
+    "domain": "languages",
+    "pdf": "sentence_construction.pdf",
+    "segment_index": 3,
+    "original": "Aufgabe 1: Setze das Verb in der richtigen Form ein (Präteritum):\nDie Schüler fleissig. (lernen)",
+    "variant": "Aufgabe 1: Setze das Verb in der richtigen Form ein (Präteritum):\nDie Lernenden ___ eifrig. (studieren)",
+    "was_valid_at_092": false,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "languages_sentence_construction.pdf_4",
+    "domain": "languages",
+    "pdf": "sentence_construction.pdf",
+    "segment_index": 4,
+    "original": "Aufgabe 2: Verbinde die beiden Sätze mit einer passenden Konjunktion:\nEs regnete. Wir blieben zu Hause.",
+    "variant": "Aufgabe 2: Verbinde die beiden Sätze mit einer passenden Konjunktion:\nDer Himmel war wolkig. Wir verbrachten den Tag im Haus.",
+    "was_valid_at_092": false,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "languages_text_transformation.pdf_8",
+    "domain": "languages",
+    "pdf": "text_transformation.pdf",
+    "segment_index": 8,
+    "original": "Aufgabe 1: Schreibe die Saetze im Passiv.\n\nForme die folgenden Aktivsaetze ins Passiv um.\nDie Koechin bereitet das Mittagessen vor. —\nDer Architekt entwirft das neue Gebaeude. —\n\nDie Lehrerin korrigiert die Pruefungen. —",
+    "variant": "Aufgabe 1: Schreibe die Saetze im Passiv.\n\nForme die folgenden Aktivsaetze ins Passiv um.\nDer Bibliothekar sortiert die Bücher neu. —\nDie Ingenieurin plant das nächste Brückenprojekt. —\n\nDer Trainer bewertet die Wettkampfresultate. —",
+    "was_valid_at_092": false,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "languages_text_transformation.pdf_10",
+    "domain": "languages",
+    "pdf": "text_transformation.pdf",
+    "segment_index": 10,
+    "original": "Aufgabe 3: Verbinde die Saetze mit einer Konjunktion.\nVerbinde je zwei Saetze sinnvoll mit einer passenden Konjunktion\n(weil, obwohl, nachdem, damit, waehrend).\n\nEs schneite. Die Kinder gingen trotzdem nach draussen. —\n\nSie uebte taeglich Klavier. Sie wollte beim Konzert gut spielen. —",
+    "variant": "Aufgabe 3: Verbinde die Saetze mit einer Konjunktion.\nVerbinde je zwei Saetze sinnvoll mit einer passenden Konjunktion\n(weil, obwohl, nachdem, damit, waehrend).\n\nEs hagelte leicht. Die Jugendlichen machten trotzdem einen Spaziergang. —\n\nEr trainierte täglich am Saxophon. Er strebte danach, beim Auftritt überzeugend zu klingen. —",
+    "was_valid_at_092": false,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "mathematics_equations_advanced.pdf_1",
+    "domain": "mathematics",
+    "pdf": "equations_advanced.pdf",
+    "segment_index": 1,
+    "original": "Aufgabe 2: Löse das Gleichungssystem:\n$$\n\\begin{array}{l}\n2x + y = 8 \\\\\nx - y = 1\n\\end{array}\n$$",
+    "variant": "Aufgabe 2: Löse das Gleichungssystem:\n$$\n\\begin{array}{l}\n3a + 2b = 11 \\\\\n2a - 2b = 3\n\\end{array}\n$$",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "mathematics_equations_advanced.pdf_2",
+    "domain": "mathematics",
+    "pdf": "equations_advanced.pdf",
+    "segment_index": 2,
+    "original": "Aufgabe 3: Ein Produkt kostet nach 20% Rabatt 240 CHF.\nWie hoch war der ursprüngliche Preis?",
+    "variant": "Aufgabe 3: Ein Produkt kostet nach 26 % Rabatt 320 CHF.  \nWie hoch war der ursprüngliche Preis?",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "mathematics_equations_advanced.pdf_3",
+    "domain": "mathematics",
+    "pdf": "equations_advanced.pdf",
+    "segment_index": 3,
+    "original": "Aufgabe 4: Ein rechtwinkliges Dreieck hat die Katheten $a = 6$ cm und $b = 8$ cm.\nBerechne die Hypotenuse c.",
+    "variant": "Aufgabe 4: Ein rechtwinkliges Dreieck hat die Katheten $a = 9\\ \\text{cm}$ und $b = 12\\ \\text{cm}$. Berechne die Hypotenuse $c\\,. $",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "mathematics_equations_simple.pdf_4",
+    "domain": "mathematics",
+    "pdf": "equations_simple.pdf",
+    "segment_index": 4,
+    "original": "Aufgabe 1: Löse die Gleichung: $2x + 5 = 13$",
+    "variant": "Aufgabe 1: Löse die Gleichung: $3a + 8 = 18$",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "mathematics_equations_simple.pdf_5",
+    "domain": "mathematics",
+    "pdf": "equations_simple.pdf",
+    "segment_index": 5,
+    "original": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+    "variant": "Aufgabe 2: Vereinfache: $5\\bigl(x + 3\\bigr) - 4\\bigl(x - 2\\bigr)$",
+    "was_valid_at_092": true,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "mathematics_equations_advanced.pdf_0",
+    "domain": "mathematics",
+    "pdf": "equations_advanced.pdf",
+    "segment_index": 0,
+    "original": "Aufgabe 1: Löse die quadratische Gleichung: $x^2 - 5x + 6 = 0$",
+    "variant": "Aufgabe 1: Löse die quadratische Gleichung: $2x^{2}-7x+9=0$",
+    "was_valid_at_092": false,
+    "manual_label": "GUT"
+  },
+  {
+    "id": "mathematics_geometry_area.pdf_9",
+    "domain": "mathematics",
+    "pdf": "geometry_area.pdf",
+    "segment_index": 9,
+    "original": "Aufgabe 2: Berechne den Flaecheninhalt des Kreises.\nEin Kreis hat den Radius r = 7 cm. Benutze pi = 3.14.\nWie gross ist der Flaecheninhalt in cm² (auf zwei Dezimalstellen)?",
+    "variant": "Aufgabe 2: Berechne den Flaecheninhalt des Kreises.  \nEin Kreis hat den Radius r = 10 cm. Benutze pi = 3.14.  \nWie gross ist der Flaecheninhalt in cm² (auf zwei Dezimalstellen)?",
+    "was_valid_at_092": false,
+    "manual_label": "GUT"
+  }
+]

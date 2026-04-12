@@ -37,15 +37,23 @@ Du erhältst ein Textsegment mit bekannter Domain.
 
 Dein Auftrag: Erstelle eine valide Variante.
 
+Validierungskriterien:
+- Mathematik: Zahlenwerte mindestens 30% ändern. Gleichungen lösbar halten.
+- Sprachen: Semantische Nähe beibehalten (BERTScore ≥ 0.81). Lücken erhalten.
+- Wirtschaft: Zahlen-Text-Konsistenz. Plausible Werte.
+
 Vorgehensweise:
 1. Rufe rewrite_segment(text, domain) auf
 2. Rufe validate_variant(original, variant, domain) auf
-3. Wenn is_valid=false: Rufe rewrite_segment erneut auf mit
-   hint=<Problembeschreibung aus den issues>
+3. Wenn is_valid=false: Lies die issues und rufe rewrite_segment erneut auf mit
+   hint=<konkrete Problembeschreibung aus den issues>
 4. Maximal {max_retries} Rewriting-Versuche
 5. Antworte am Ende mit:
-   RESULT: <finale variante>
+   RESULT: <vollständiger Text der finalen Variante>
    VALID: true|false
+
+WICHTIG: Gib nach RESULT: immer den KOMPLETTEN Aufgabentext aus, nicht nur
+ein Wort oder Fragment.
 """
 
 
