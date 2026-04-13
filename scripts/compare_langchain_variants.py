@@ -217,12 +217,16 @@ def _process_pipeline_segment(
     is_valid = best.get("validation", {}).get("is_valid", False) if best else False
     variant_text = best.get("text") if best else None
 
+    validation_data = best.get("validation", {}) if best else {}
+
     return {
         "variant_text": variant_text,
         "is_valid": is_valid,
         "attempts": 1,
         "tool_calls_count": 1,  # 1 LLM call: rewrite (validation ist regelbasiert)
         "success": variant_text is not None,
+        "issues": validation_data.get("issues", []),
+        "validation_results": validation_data.get("validation_results", {}),
     }
 
 
@@ -234,6 +238,8 @@ def _normalize_agent_result(raw: Dict) -> Dict[str, Any]:
         "attempts": raw.get("attempts", 1),
         "tool_calls_count": len(raw.get("tool_calls", [])),
         "success": raw.get("success", False),
+        "issues": raw.get("issues", []),
+        "validation_results": raw.get("validation_results", {}),
     }
 
 
@@ -303,6 +309,8 @@ def run_variant(
                 "tool_calls_count": 0,
                 "success": False,
                 "error": str(exc),
+                "issues": [],
+                "validation_results": {},
             }
             error_count += 1
         except Exception as exc:
@@ -314,6 +322,8 @@ def run_variant(
                 "tool_calls_count": 0,
                 "success": False,
                 "error": str(exc),
+                "issues": [],
+                "validation_results": {},
             }
             error_count += 1
 
@@ -512,6 +522,8 @@ def save_json(
                         "tool_calls_count": r.get("tool_calls_count"),
                         "elapsed_seconds": round(r.get("elapsed_seconds", 0), 3),
                         "error": r.get("error"),
+                        "issues": r.get("issues", []),
+                        "validation_results": r.get("validation_results", {}),
                     }
             segments_data.append(seg_entry)
 

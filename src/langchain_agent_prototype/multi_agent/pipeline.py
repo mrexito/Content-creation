@@ -195,6 +195,8 @@ def run_multi_agent_pipeline(
     domain = "general"
     variant = None
     is_valid = False
+    issues = []
+    validation_results = {}
 
     # ------------------------------------------------------------------
     # Schritt 1: Classifier-Agent
@@ -270,9 +272,11 @@ def run_multi_agent_pipeline(
                 try:
                     val_data = json.loads(val_output)
                     is_valid = val_data.get("is_valid", False)
+                    issues = val_data.get("issues", [])
+                    validation_results = val_data.get("details", {})
                     logger.info(
                         f"MultiAgent Validator → valid={is_valid}, "
-                        f"issues={val_data.get('issues', [])}"
+                        f"issues={issues}"
                     )
                 except json.JSONDecodeError:
                     logger.warning("Validator-Output kein valides JSON")
@@ -300,4 +304,6 @@ def run_multi_agent_pipeline(
         "tool_calls": tool_calls,
         "attempts": 1,  # Immer genau 1 Rewriting-Versuch (kein Retry)
         "success": variant is not None,
+        "issues": issues,
+        "validation_results": validation_results,
     }

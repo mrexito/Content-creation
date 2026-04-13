@@ -206,6 +206,8 @@ def run_orchestrator(
             "attempts": 0,
             "success": False,
             "error": str(e),
+            "issues": [],
+            "validation_results": {},
         }
 
     # --- Output parsen ---
@@ -241,11 +243,15 @@ def run_orchestrator(
 
     # Validierungsstatus aus letztem validate_variant-Ergebnis
     is_valid = False
+    issues = []
+    validation_results = {}
     for call_action, call_obs in reversed(intermediate_steps):
         if getattr(call_action, "tool", "") == "validate_variant":
             try:
                 val_result = json.loads(str(call_obs))
                 is_valid = val_result.get("is_valid", False)
+                issues = val_result.get("issues", [])
+                validation_results = val_result.get("details", {})
             except (json.JSONDecodeError, TypeError):
                 pass
             break
@@ -264,4 +270,6 @@ def run_orchestrator(
         "tool_calls": tool_calls,
         "attempts": attempts,
         "success": variant is not None,
+        "issues": issues,
+        "validation_results": validation_results,
     }
