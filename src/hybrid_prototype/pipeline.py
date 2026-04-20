@@ -165,6 +165,7 @@ class HybridPipeline:
                 "statistics": {
                     "preprocessing": {
                         "ocr_tool": (state.get("ocr_metadata") or {}).get("tool_used"),
+                        "ocr_time": (state.get("ocr_metadata") or {}).get("processing_time", 0),
                         "segments": len(state.get("segments") or []),
                     },
                     "graph": {

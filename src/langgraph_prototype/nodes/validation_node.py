@@ -137,6 +137,8 @@ def validation_node(state: WorkflowState) -> WorkflowState:
         # 'validation_complete' → Edge leitet weiter zu Assembly
         if segments_needing_retry:
             state['current_phase'] = 'validation_failed'
+            # Skalaren Retry-Zähler erhöhen (1 pro ausgelöstem Retry-Zyklus)
+            state['retry_count'] = state.get('retry_count', 0) + 1
         else:
             state['current_phase'] = 'validation_complete'
 

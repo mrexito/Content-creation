@@ -25,6 +25,7 @@ import json
 import multiprocessing
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -42,6 +43,8 @@ DOMAIN_CONFIG: dict[str, dict] = {
             "math/equations_simple.pdf",
             "math/equations_advanced.pdf",
             "math/word_problems.pdf",
+            "math/geometry_area.pdf",
+            "math/percentage_ratio.pdf",
         ],
         "label":     "Mathematik",
         "validator": "SymPy",
@@ -51,6 +54,8 @@ DOMAIN_CONFIG: dict[str, dict] = {
             "languages/grammar_exercise.pdf",
             "languages/sentence_construction.pdf",
             "languages/verb_conjugation.pdf",
+            "languages/text_transformation.pdf",
+            "languages/word_forms.pdf",
         ],
         "label":     "Sprachen",
         "validator": "BERTScore",
@@ -60,6 +65,8 @@ DOMAIN_CONFIG: dict[str, dict] = {
             "economics/balance_sheet.pdf",
             "economics/income_statement.pdf",
             "economics/investment_calculation.pdf",
+            "economics/cost_analysis.pdf",
+            "economics/market_analysis.pdf",
         ],
         "label":     "Wirtschaft",
         "validator": "ConsistencyCheck",
@@ -77,6 +84,7 @@ ALL_FRAMEWORKS = [
 ALL_DOMAINS = ["math", "languages", "economics"]
 
 TIMEOUT_SECONDS = 600  # 10 Minuten pro Run
+MAX_WORKERS = 3  # Parallele PDF×Framework-Jobs innerhalb einer Domäne (API-Rate-Limit)
 
 EMOJI: dict[str, str] = {
     "langchain":          "🔗",
@@ -309,19 +317,22 @@ def _normalise_langgraph(final: dict, elapsed: float, domain: str, pdf_name: str
     valid_v = sum(s["validation_statistics"]["valid"] for s in segments)
     ocr_meta = final.get("ocr_metadata", {}) or {}
 
+    metrics = {
+        "total_time":      round(elapsed, 2),
+        "ocr_time":        round(ocr_meta.get("processing_time", 0), 2),
+        "ocr_tool":        ocr_meta.get("tool_used", "?"),
+        "num_segments":    len(segments),
+        "total_variants":  total_v,
+        "valid_variants":  valid_v,
+        "validation_rate": round(valid_v / total_v, 4) if total_v else 0.0,
+        **_base_agent_metrics(),
+    }
+    metrics["retries_total"] = final.get("retry_count", 0)
+
     return {
         "success": True, "framework": "langgraph", "domain": domain,
         "pdf_name": pdf_name, "error": None,
-        "metrics": {
-            "total_time":      round(elapsed, 2),
-            "ocr_time":        round(ocr_meta.get("processing_time", 0), 2),
-            "ocr_tool":        ocr_meta.get("tool_used", "?"),
-            "num_segments":    len(segments),
-            "total_variants":  total_v,
-            "valid_variants":  valid_v,
-            "validation_rate": round(valid_v / total_v, 4) if total_v else 0.0,
-            **_base_agent_metrics(),
-        },
+        "metrics": metrics,
         "segments": segments,
     }
 
@@ -781,7 +792,7 @@ def _md_domain_section(domain: str, domain_results: list[dict]) -> str:
             else:
                 for v in variants:
                     ok_str   = "✅ VALIDE" if v["is_valid"] else "❌ INVALID"
-                    issues   = v.get("validation_issues", [])
+                    issues   = v.get("validation_issues") or v.get("validation", {}).get("issues", [])
                     issue_md = "\n> **Issues:** " + " | ".join(str(i) for i in issues) if issues else ""
                     lines.append("<details>")
                     lines.append(f"<summary>Variante {v['variant_id']} — {ok_str}</summary>\n")
@@ -1028,9 +1039,10 @@ def _md_quality_flags(results: list[dict]) -> str:
 
 # ─── JSON-Report ──────────────────────────────────────────────────────────────
 
-def _build_json_report(results: list[dict], ts: str, cfg: dict) -> dict:
+def _build_json_report(results: list[dict], ts: str, cfg: dict, run_id: int = 1) -> dict:
     return {
         "timestamp": ts,
+        "run_id": run_id,
         "config": {
             "variants":   cfg["num_variants"],
             "domains":    cfg["domains"],
@@ -1039,6 +1051,7 @@ def _build_json_report(results: list[dict], ts: str, cfg: dict) -> dict:
         },
         "summary": [
             {
+                "run_id":          run_id,
                 "framework":       r["framework"],
                 "domain":          r["domain"],
                 "success":         r["success"],
@@ -1093,6 +1106,8 @@ def main() -> None:
                         help="Kein Markdown-Report (nur Konsolen-Output + JSON)")
     parser.add_argument("--no-multiprocessing", action="store_true",
                         help="Kein Timeout-Isolation (einfacher, aber kein Timeout möglich)")
+    parser.add_argument("--run-id", type=int, default=1,
+                        help="Run-Nummer (1, 2, 3) zur Unterscheidung bei mehreren Runs")
     args = parser.parse_args()
 
     # ── Framework/Domain-Auswahl ──────────────────────────────────────────────
@@ -1139,15 +1154,27 @@ def main() -> None:
     print("=" * 70)
 
     # ── Runs ──────────────────────────────────────────────────────────────────
-    run_num  = 0
+    completed = 0
     results: list[dict] = []
+
+    def _fmt_done(fw: str, pdf_name: str, result: dict, idx: int) -> str:
+        label = FRAMEWORK_LABELS.get(fw, fw)
+        if result["success"]:
+            m = result["metrics"]
+            rate = f"{m['validation_rate'] * 100:.0f}%"
+            t    = f"{m['total_time']:.1f}s"
+        else:
+            rate = "FEHLER"
+            t    = f"{result['metrics']['total_time']:.1f}s"
+        return f"[DONE] [{idx}/{total_runs}] {label} — {pdf_name} — {rate} — {t}"
 
     for domain in domains:
         cfg_dom = DOMAIN_CONFIG[domain]
 
+        # Vorab-Check: existierende PDFs sammeln, fehlende als Error-Results registrieren
+        pdf_paths: list[Path] = []
         for pdf_rel in cfg_dom["pdfs"]:
             pdf_path = Config.DATA_INPUT_PATH / pdf_rel
-
             if not pdf_path.exists():
                 print(f"\n⚠️  PDF nicht gefunden: {pdf_path} — überspringe '{pdf_rel}'")
                 for fw in frameworks:
@@ -1156,42 +1183,69 @@ def main() -> None:
                         f"PDF not found: {pdf_path}"
                     ))
                 continue
+            pdf_paths.append(pdf_path)
 
-            for framework in frameworks:
-                run_num += 1
-                icon  = EMOJI.get(framework, "")
-                label = FRAMEWORK_LABELS.get(framework, framework)
-                print(f"\n[{run_num}/{total_runs}] {icon} {label.upper()} — {cfg_dom['label'].upper()}")
-                print(f"  PDF: {pdf_path.name}")
+        if not pdf_paths:
+            continue
 
-                t0 = time.time()
-                try:
-                    if args.no_multiprocessing:
+        n_jobs = len(pdf_paths) * len(frameworks)
+        print(
+            f"\n═══ DOMAIN: {cfg_dom['label'].upper()}  "
+            f"({len(pdf_paths)} PDFs × {len(frameworks)} Frameworks = {n_jobs} Jobs, "
+            f"max {MAX_WORKERS} parallel) ═══"
+        )
+
+        if args.no_multiprocessing:
+            # Sequenzieller Fallback ohne Timeout-Isolation
+            for pdf_path in pdf_paths:
+                for framework in frameworks:
+                    label = FRAMEWORK_LABELS.get(framework, framework)
+                    print(f"[START] {label} — {pdf_path.name}")
+                    try:
                         runner = _RUNNERS[framework]
                         result = runner(pdf_path, domain, args.variants)
-                    else:
-                        result = _run_with_timeout(
+                    except Exception as exc:
+                        result = _error_result(framework, domain, pdf_path.name, str(exc))
+                    results.append(result)
+                    completed += 1
+                    print(_fmt_done(framework, pdf_path.name, result, completed))
+        else:
+            with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+                futures: dict = {}
+                for pdf_path in pdf_paths:
+                    for framework in frameworks:
+                        label = FRAMEWORK_LABELS.get(framework, framework)
+                        print(f"[START] {label} — {pdf_path.name}")
+                        fut = executor.submit(
+                            _run_with_timeout,
                             framework, pdf_path, domain, args.variants,
-                            timeout=TIMEOUT_SECONDS,
+                            TIMEOUT_SECONDS,
                         )
-                except Exception as exc:
-                    print(f"  ❌ Exception: {exc}")
-                    result = _error_result(framework, domain, pdf_path.name, str(exc))
+                        futures[fut] = (framework, pdf_path)
 
-                elapsed = time.time() - t0
-                results.append(result)
+                for future in as_completed(futures):
+                    framework, pdf_path = futures[future]
+                    try:
+                        result = future.result()
+                    except Exception as exc:
+                        result = _error_result(framework, domain, pdf_path.name, str(exc))
+                    results.append(result)
+                    completed += 1
+                    print(_fmt_done(framework, pdf_path.name, result, completed))
 
-                if result["success"]:
-                    m = result["metrics"]
-                    tc_str   = f" | Tools: {m['tool_calls_total']}" if m.get("tool_calls_total") is not None else ""
-                    ret_str  = f" | Retries: {m['retries_total']}" if m.get("retries_total") is not None else ""
-                    print(
-                        f"  ✅ {m['valid_variants']}/{m['total_variants']} valide "
-                        f"({m['validation_rate'] * 100:.0f}%) | {elapsed:.1f}s | "
-                        f"OCR: {m['ocr_tool']}{tc_str}{ret_str}"
-                    )
-                else:
-                    print(f"  ❌ {result.get('error', '?')[:120]}")
+    # ── Deterministische Sortierung: Domain → PDF → Framework ────────────────
+    domain_order = {d: i for i, d in enumerate(domains)}
+    fw_order     = {fw: i for i, fw in enumerate(frameworks)}
+    pdf_order: dict[tuple[str, str], int] = {}
+    for d in domains:
+        for i, p in enumerate(DOMAIN_CONFIG[d]["pdfs"]):
+            pdf_order[(d, p.split("/")[-1])] = i
+
+    results.sort(key=lambda r: (
+        domain_order.get(r["domain"], 999),
+        pdf_order.get((r["domain"], r["pdf_name"]), 999),
+        fw_order.get(r["framework"], 999),
+    ))
 
     # ── Konsolen-Zusammenfassung ───────────────────────────────────────────────
     for domain in domains:
@@ -1204,8 +1258,12 @@ def main() -> None:
     # ── Reports schreiben ─────────────────────────────────────────────────────
     run_cfg = {"num_variants": args.variants, "domains": domains, "frameworks": frameworks}
 
+    # run_id in jedes Ergebnis-Dict injizieren, damit merged JSONs unterscheidbar bleiben
+    for r in results:
+        r["run_id"] = args.run_id
+
     # JSON
-    json_report = _build_json_report(results, ts, run_cfg)
+    json_report = _build_json_report(results, ts, run_cfg, args.run_id)
     json_path   = out_dir / "full_comparison_raw.json"
     json_path.write_text(
         json.dumps(json_report, indent=2, ensure_ascii=False), encoding="utf-8"

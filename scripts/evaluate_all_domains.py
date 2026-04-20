@@ -327,7 +327,7 @@ def _normalise_segments_frontend(segments: list) -> list:
                 "variant_id":        v.get("variant_id", 0),
                 "text":              v.get("text", ""),
                 "is_valid":          v.get("is_valid", False),
-                "validation_issues": v.get("validation_issues", []),
+                "validation_issues": v.get("validation_issues") or v.get("validation", {}).get("issues", []),
             })
         stats = seg.get("validation_statistics", {})
         valid_count = stats.get("valid", sum(1 for v in variants if v["is_valid"]))
@@ -485,7 +485,7 @@ def _md_domain_section(domain: str, domain_results: list[dict]) -> str:
             else:
                 for v in variants:
                     ok_str   = "✅ VALIDE" if v["is_valid"] else "❌ INVALID"
-                    issues   = v.get("validation_issues", [])
+                    issues   = v.get("validation_issues") or v.get("validation", {}).get("issues", [])
                     issue_md = ""
                     if issues:
                         issue_md = "\n> **Issues:** " + " | ".join(str(i) for i in issues)

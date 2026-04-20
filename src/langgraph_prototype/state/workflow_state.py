@@ -31,6 +31,7 @@ class WorkflowState(TypedDict):
     # Phase 4: Validation (mit Retry-Logik)
     segments_with_variants: Optional[List[Dict[str, Any]]]
     retry_counts: Optional[Dict[int, int]]  # segment_idx -> retry_count
+    retry_count: int  # Gesamt-Anzahl ausgelöster Retry-Zyklen (skalar)
     max_retries: int
     
     # Phase 5: Assembly
@@ -79,6 +80,7 @@ def create_initial_state(
         classified_segments=None,
         segments_with_variants=None,
         retry_counts={},
+        retry_count=0,
         max_retries=max_retries,
         final_document=None,
         
