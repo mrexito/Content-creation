@@ -45,7 +45,6 @@ def test_hybrid_pipeline():
         domain="math",
         num_variants=2,
         max_retries=1,
-        apply_smoothing=True,
     )
 
     # Ausführen
@@ -57,7 +56,6 @@ def test_hybrid_pipeline():
         stats = result["statistics"]
         graph_stats = stats.get("graph", {})
         pre_stats = stats.get("preprocessing", {})
-        post_stats = stats.get("postprocessing", {})
 
         print("✅ HYBRID PIPELINE ERFOLGREICH")
         print("=" * 70)
@@ -71,9 +69,6 @@ def test_hybrid_pipeline():
         print(f"     Invalide Varianten: {graph_stats.get('total_invalid', 0)}")
         print(f"     Validation-Rate:    {graph_stats.get('validation_rate', 0) * 100:.1f}%")
         print(f"     Retry-Counts:       {graph_stats.get('retry_counts', {})}")
-        print(f"\n   Phase 3 (LangChain Postprocessing):")
-        print(f"     Geglättet:          {post_stats.get('smoothed_variants', 0)} Varianten")
-
         print(f"\n📁 Output-Dateien:")
         for f in result.get("output_files", []):
             print(f"   → {f}")

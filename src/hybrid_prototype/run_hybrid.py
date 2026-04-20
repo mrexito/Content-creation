@@ -49,11 +49,6 @@ def main():
         default=2,
         help="Maximale Retry-Iterationen im LangGraph-Loop (default: 2)",
     )
-    parser.add_argument(
-        "--no-smoothing",
-        action="store_true",
-        help="Sprachliche Glättung deaktivieren",
-    )
     args = parser.parse_args()
 
     # Test-PDF auswählen
@@ -78,13 +73,11 @@ def main():
     logger.info(f"   Domain:   {args.domain or 'auto'}")
     logger.info(f"   Varianten:{args.variants}")
     logger.info(f"   Retries:  {args.retries}")
-    logger.info(f"   Glättung: {'aus' if args.no_smoothing else 'an'}")
 
     pipeline = get_pipeline(
         domain=args.domain,
         num_variants=args.variants,
         max_retries=args.retries,
-        apply_smoothing=not args.no_smoothing,
     )
 
     result = pipeline.process_pdf(pdf_path)
@@ -99,7 +92,6 @@ def main():
         print(f"  Segmente:             {stats.get('preprocessing', {}).get('segments', 0)}")
         print(f"  Valide Varianten:     {graph_stats.get('total_valid', 0)}")
         print(f"  Validation-Rate:      {graph_stats.get('validation_rate', 0) * 100:.1f}%")
-        print(f"  Geglättete Varianten: {stats.get('postprocessing', {}).get('smoothed_variants', 0)}")
         print(f"\n  Output-Dateien:")
         for f in result.get("output_files", []):
             print(f"    → {f}")

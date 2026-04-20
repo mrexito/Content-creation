@@ -7,7 +7,7 @@ Architektur:
              ↓ HybridWorkflowState
     Phase 2: LangChain Agent          (Rewriting + Validation via AgentExecutor)
              ↓ HybridWorkflowState
-    Phase 3: LangChain Postprocessing (Glättung → Assembly → Export)
+    Phase 3: LangChain Postprocessing (Assembly → Export)
 
 Einziger Unterschied zum Hybrid-Prototyp (hybrid_prototype/):
 Phase 2 verwendet LangChain AgentExecutor statt LangGraph StateGraph.
@@ -43,30 +43,26 @@ class HybridAgentPipeline:
         domain: str = None,
         num_variants: int = 1,
         max_retries: int = 3,
-        apply_smoothing: bool = True,
     ):
         """
         Args:
             domain:          Domäne ('math', 'languages', 'economics') oder None
             num_variants:    Varianten pro Segment (Standard 1 für Agenten)
             max_retries:     Max. Retry-Versuche im Agent
-            apply_smoothing: LLM-Glättung im Postprocessing
         """
         self.domain = domain
         self.num_variants = num_variants
         self.max_retries = max_retries
-        self.apply_smoothing = apply_smoothing
 
         # Phase 1 & 3: identisch mit hybrid_prototype
         self.preprocessing = get_preprocessing_pipeline(domain=domain)
-        self.postprocessing = get_postprocessing_pipeline(apply_smoothing=apply_smoothing)
+        self.postprocessing = get_postprocessing_pipeline()
 
         logger.info(
             f"HybridAgentPipeline initialisiert – "
             f"Domain: {domain or 'auto'}, "
             f"Varianten: {num_variants}, "
-            f"Max Retries: {max_retries}, "
-            f"Glättung: {'an' if apply_smoothing else 'aus'}"
+            f"Max Retries: {max_retries}"
         )
 
     def process_pdf(
@@ -185,9 +181,6 @@ class HybridAgentPipeline:
                         "total_retries": agent_stats.get("total_retries", 0),
                         "hallucinated_calls": agent_stats.get("hallucinated_calls", 0),
                     },
-                    "postprocessing": {
-                        "smoothed_variants": stats.get("smoothed_variants", 0),
-                    },
                     "total_time": total_time,
                     "phase_time": state.get("total_processing_time", total_time),
                 },
@@ -211,12 +204,10 @@ def get_pipeline(
     domain: str = None,
     num_variants: int = 1,
     max_retries: int = 3,
-    apply_smoothing: bool = True,
 ) -> HybridAgentPipeline:
     """Factory für HybridAgentPipeline."""
     return HybridAgentPipeline(
         domain=domain,
         num_variants=num_variants,
         max_retries=max_retries,
-        apply_smoothing=apply_smoothing,
     )

@@ -2,9 +2,8 @@
 LangChain Postprocessing Pipeline – Phase 3 des Hybrid-Ansatzes
 
 Übernimmt den State nach dem LangGraph-Graphen und führt durch:
-    1. Sprachliche Glättung  (LLM-basiert, via LangChain)
-    2. Dokument-Assembly     (via LangChain AssemblyChain)
-    3. Export                (JSON + TXT)
+    1. Dokument-Assembly     (via LangChain AssemblyChain)
+    2. Export                (JSON + TXT)
 
 Architektur-Entscheidung:
     Diese abschliessenden Schritte erfordern keine Rückschleifen mehr –
@@ -23,66 +22,19 @@ from hybrid_prototype.state.hybrid_state import HybridWorkflowState
 
 logger = setup_logger(__name__)
 
-# Prompt für stilistische Glättung
-SMOOTHING_SYSTEM_PROMPT = """Du bist ein Lektor. Deine Aufgabe ist es, einen 
-generierten Text sprachlich zu glätten und natürlicher zu formulieren, 
-ohne den Inhalt zu verändern. Behalte Fachbegriffe, Zahlen und alle 
-inhaltlichen Details exakt bei."""
-
-SMOOTHING_USER_TEMPLATE = """Bitte glätte diesen Text sprachlich:
-
-{text}
-
-Gib nur den verbesserten Text zurück, ohne Erklärungen."""
-
 
 class HybridPostprocessingPipeline:
     """
     LangChain-basiertes Postprocessing für den Hybrid-Prototyp.
 
     Schritte:
-        1. Sprachliche Glättung der validen Varianten via LLM
-        2. Assembly des finalen Dokuments (Struktur + Text-Output)
-        3. Export als JSON und TXT
+        1. Assembly des finalen Dokuments (Struktur + Text-Output)
+        2. Export als JSON und TXT
     """
 
-    def __init__(self, apply_smoothing: bool = True):
-        """
-        Args:
-            apply_smoothing: Ob LLM-Glättung angewendet werden soll
-                             (kann deaktiviert werden für Speed-Tests)
-        """
-        self.apply_smoothing = apply_smoothing
+    def __init__(self):
         self.llm = get_llm_handler()
-        logger.info(
-            f"HybridPostprocessingPipeline initialisiert "
-            f"(Glättung: {'an' if apply_smoothing else 'aus'})"
-        )
-
-    def _smooth_variant(self, text: str) -> str:
-        """
-        Wendet stilistische LLM-Glättung auf eine Variante an.
-
-        Args:
-            text: Rohtext der Variante
-
-        Returns:
-            Geglätteter Text (oder Original bei Fehler)
-        """
-        if not self.apply_smoothing or not text:
-            return text
-
-        result = self.llm.generate(
-            prompt=SMOOTHING_USER_TEMPLATE.format(text=text),
-            system_prompt=SMOOTHING_SYSTEM_PROMPT,
-            temperature=0.3,  # Niedrig für konsistente Glättung
-        )
-
-        if result.get("success") and result.get("text"):
-            return result["text"].strip()
-
-        logger.warning("Glättung fehlgeschlagen, Original wird verwendet")
-        return text
+        logger.info("HybridPostprocessingPipeline initialisiert")
 
     def _assemble_document(
         self,
@@ -100,7 +52,6 @@ class HybridPostprocessingPipeline:
         assembled_segments = []
         total_variants = 0
         valid_variants = 0
-        smoothed_count = 0
 
         for seg_data in segments_with_variants:
             segment = seg_data.get("segment", {})
@@ -115,36 +66,20 @@ class HybridPostprocessingPipeline:
             total_variants += len(variants)
             valid_variants += len(valid_vars)
 
-            # Sprachliche Glättung der validen Varianten
-            smoothed_variants = []
-            for v in valid_vars:
-                original_variant_text = v.get("text", "")
-                smoothed_text = self._smooth_variant(original_variant_text)
-                if smoothed_text != original_variant_text:
-                    smoothed_count += 1
-                smoothed_variants.append(
-                    {
-                        **v,
-                        "text": smoothed_text,
-                        "smoothed": smoothed_text != original_variant_text,
-                    }
-                )
-
             assembled_segments.append(
                 {
                     "original": segment.get("text", ""),
                     "segment_type": segment.get("type", "unknown"),
                     "classification": classification,
-                    "num_variants": len(smoothed_variants),
+                    "num_variants": len(valid_vars),
                     "variants": [
                         {
                             "variant_id": v.get("variant_id"),
                             "text": v.get("text"),
-                            "smoothed": v.get("smoothed", False),
                             "validation_score": v.get("validation", {}).get("score", 1.0),
                             "solution": v.get("solution"),  # Musterantwort (kann None sein)
                         }
-                        for v in smoothed_variants
+                        for v in valid_vars
                     ],
                 }
             )
@@ -172,10 +107,7 @@ class HybridPostprocessingPipeline:
                 text_lines.append(f"**Varianten ({seg['num_variants']}):**")
                 text_lines.append("")
                 for v in seg["variants"]:
-                    smoothed_flag = " [geglättet]" if v.get("smoothed") else ""
-                    text_lines.append(
-                        f"Variante {v['variant_id']}{smoothed_flag}:"
-                    )
+                    text_lines.append(f"Variante {v['variant_id']}:")
                     text_lines.append(v["text"])
                     text_lines.append("")
             else:
@@ -195,7 +127,6 @@ class HybridPostprocessingPipeline:
                 ),
                 "total_variants": total_variants,
                 "valid_variants": valid_variants,
-                "smoothed_variants": smoothed_count,
                 "validation_rate": (
                     valid_variants / max(total_variants, 1)
                 ),
@@ -272,8 +203,8 @@ class HybridPostprocessingPipeline:
 
         start_time = time.time()
 
-        # Glättung + Assembly
-        logger.info("Step 1/2: Sprachliche Glättung + Assembly...")
+        # Assembly
+        logger.info("Step 1/2: Assembly...")
         assembled_document = self._assemble_document(state)
         state["final_document"] = assembled_document
 
@@ -291,13 +222,12 @@ class HybridPostprocessingPipeline:
         stats = assembled_document.get("statistics", {})
         logger.info(
             f"✅ Postprocessing abgeschlossen in {elapsed:.2f}s – "
-            f"{stats.get('valid_variants', 0)} valide Varianten, "
-            f"{stats.get('smoothed_variants', 0)} geglättet"
+            f"{stats.get('valid_variants', 0)} valide Varianten"
         )
 
         return state
 
 
-def get_postprocessing_pipeline(apply_smoothing: bool = True) -> HybridPostprocessingPipeline:
+def get_postprocessing_pipeline() -> HybridPostprocessingPipeline:
     """Factory für HybridPostprocessingPipeline"""
-    return HybridPostprocessingPipeline(apply_smoothing=apply_smoothing)
+    return HybridPostprocessingPipeline()

@@ -44,7 +44,7 @@ def create_workflow_graph() -> StateGraph:
     workflow.add_edge("classify", "rewrite")
     workflow.add_edge("rewrite", "validate")
     
-    # ⭐ HAUPTFEATURE: Conditional Edge mit Retry-Loop
+    # HAUPTFEATURE: Conditional Edge mit Retry-Loop
     workflow.add_conditional_edges(
         "validate",
         should_retry_after_validation,

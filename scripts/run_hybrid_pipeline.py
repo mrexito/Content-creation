@@ -96,7 +96,6 @@ def main():
     parser.add_argument("--domain", default="auto")
     parser.add_argument("--variants", type=int, default=2)
     parser.add_argument("--retries", type=int, default=2)
-    parser.add_argument("--no-smoothing", action="store_true")
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--progress", required=True, type=Path)
     parser.add_argument("--run-id", required=True)
@@ -190,7 +189,6 @@ def main():
             domain=domain,
             num_variants=args.variants,
             max_retries=args.retries,
-            apply_smoothing=not args.no_smoothing,
         )
 
         result = pipeline.process_pdf(

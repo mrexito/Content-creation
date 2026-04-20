@@ -7,7 +7,7 @@ Verbindet die drei Phasen des Hybrid-Ansatzes:
              ↓ HybridWorkflowState
     Phase 2: LangGraph StateGraph      (Rewriting → Validation → [Retry-Loop])
              ↓ HybridWorkflowState
-    Phase 3: LangChain Postprocessing  (Glättung → Assembly → Export)
+    Phase 3: LangChain Postprocessing  (Assembly → Export)
 
 Diese Architektur kombiniert die Stärken beider Frameworks:
   - LangChain: klare, sequentielle Chains für strukturierte Vorverarbeitung
@@ -42,23 +42,20 @@ class HybridPipeline:
         domain: str = None,
         num_variants: int = 3,
         max_retries: int = 2,
-        apply_smoothing: bool = True,
     ):
         """
         Args:
             domain:           Domäne ('math', 'languages', 'economics') oder None (Auto-Detect)
             num_variants:     Gewünschte Anzahl Varianten pro Segment
             max_retries:      Maximale Retry-Iterationen im LangGraph-Loop
-            apply_smoothing:  Ob LLM-Glättung im Postprocessing angewendet werden soll
         """
         self.domain = domain
         self.num_variants = num_variants
         self.max_retries = max_retries
-        self.apply_smoothing = apply_smoothing
 
         # Phase 1 & 3: LangChain
         self.preprocessing = get_preprocessing_pipeline(domain=domain)
-        self.postprocessing = get_postprocessing_pipeline(apply_smoothing=apply_smoothing)
+        self.postprocessing = get_postprocessing_pipeline()
 
         # Phase 2: LangGraph (Graph wird bei Bedarf erstellt)
 
@@ -66,8 +63,7 @@ class HybridPipeline:
             f"HybridPipeline initialisiert – "
             f"Domain: {domain or 'auto'}, "
             f"Varianten: {num_variants}, "
-            f"Max Retries: {max_retries}, "
-            f"Glättung: {'an' if apply_smoothing else 'aus'}"
+            f"Max Retries: {max_retries}"
         )
 
     def process_pdf(
@@ -177,9 +173,6 @@ class HybridPipeline:
                         "validation_rate": validation_stats.get("validation_rate", 0.0),
                         "retry_counts": state.get("retry_counts") or {},
                     },
-                    "postprocessing": {
-                        "smoothed_variants": stats.get("smoothed_variants", 0),
-                    },
                     "total_time": total_time,
                     "phase_time": state.get("total_processing_time", total_time),
                 },
@@ -204,12 +197,10 @@ def get_pipeline(
     domain: str = None,
     num_variants: int = 3,
     max_retries: int = 2,
-    apply_smoothing: bool = True,
 ) -> HybridPipeline:
     """Factory für HybridPipeline"""
     return HybridPipeline(
         domain=domain,
         num_variants=num_variants,
         max_retries=max_retries,
-        apply_smoothing=apply_smoothing,
     )
