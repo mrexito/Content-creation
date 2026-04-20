@@ -83,7 +83,7 @@ ALL_FRAMEWORKS = [
 ]
 ALL_DOMAINS = ["math", "languages", "economics"]
 
-TIMEOUT_SECONDS = 600  # 10 Minuten pro Run
+TIMEOUT_SECONDS = 1200  # 20 Minuten pro Run
 MAX_WORKERS = 3  # Parallele PDF×Framework-Jobs innerhalb einer Domäne (API-Rate-Limit)
 
 EMOJI: dict[str, str] = {
