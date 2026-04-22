@@ -81,6 +81,15 @@ class HybridPostprocessingPipeline:
                         }
                         for v in valid_vars
                     ],
+                    "all_variants": [
+                        {
+                            "variant_id": v.get("variant_id"),
+                            "text": v.get("text"),
+                            "is_valid": v.get("validation", {}).get("is_valid", False),
+                            "validation_issues": v.get("validation", {}).get("issues", []),
+                        }
+                        for v in variants
+                    ],
                 }
             )
 

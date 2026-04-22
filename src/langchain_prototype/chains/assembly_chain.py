@@ -86,7 +86,16 @@ class AssemblyChain:
                         'solution': v.get('solution'),  # Musterantwort (kann None sein)
                     }
                     for v in valid_variants
-                ]
+                ],
+                'all_variants': [
+                    {
+                        'variant_id': v.get('variant_id'),
+                        'text': v.get('text'),
+                        'is_valid': v.get('validation', {}).get('is_valid', False),
+                        'validation_issues': v.get('validation', {}).get('issues', []),
+                    }
+                    for v in validated_variants
+                ],
             })
         
         # Erstelle Text-Output

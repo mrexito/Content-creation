@@ -212,16 +212,22 @@ def _error_result(framework: str, domain: str, pdf_name: str, error: str) -> dic
 
 
 def _seg_from_assembled(seg: dict) -> dict:
-    """Konvertiert assembled_document-Segment ins einheitliche Schema."""
+    """Konvertiert assembled_document-Segment ins einheitliche Schema.
+
+    Bevorzugt `all_variants` (enthält valide + invalide inkl. Issues);
+    fällt auf `variants` (nur valide) zurück, falls `all_variants` fehlt.
+    """
+    raw = seg.get("all_variants") or seg.get("variants", [])
     variants = []
-    for v in seg.get("variants", []):
+    for v in raw:
         variants.append({
             "variant_id":        v.get("variant_id", 0),
             "text":              v.get("text", ""),
-            "is_valid":          True,
-            "validation_issues": [],
+            "is_valid":          v.get("is_valid", True),
+            "validation_issues": v.get("validation_issues", []),
         })
-    total = seg.get("num_variants", len(variants))
+    total = len(variants)
+    valid = sum(1 for v in variants if v["is_valid"])
     return {
         "original_segment": {
             "text": seg.get("original", ""),
@@ -229,7 +235,7 @@ def _seg_from_assembled(seg: dict) -> dict:
         },
         "classification": seg.get("classification", {}),
         "validated_variants": variants,
-        "validation_statistics": {"total": total, "valid": len(variants)},
+        "validation_statistics": {"total": total, "valid": valid},
     }
 
 

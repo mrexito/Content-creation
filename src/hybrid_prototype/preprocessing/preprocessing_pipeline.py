@@ -126,18 +126,24 @@ class HybridPreprocessingPipeline:
         # ── Step 3: Klassifizierung ───────────────────────────────────────────
         logger.info("Step 3/3: Klassifizierung...")
         classified_segments = []
-        for segment in state["segments"]:
+        for idx, segment in enumerate(state["segments"], 1):
             seg_result = self.classification_chain.invoke({"segment": segment})
             if not seg_result["success"]:
-                error_msg = "Klassifizierung fehlgeschlagen"
-                logger.error(error_msg)
-                state["errors"].append(error_msg)
-                state["current_phase"] = "error"
-                return state
+                warn_msg = f"Segment {idx}: Klassifizierung fehlgeschlagen (übersprungen)"
+                logger.warning(f"  ⚠ {warn_msg}")
+                state["errors"].append(warn_msg)
+                continue
             classified_segments.append({
                 "segment": segment,
                 "classification": seg_result["classification"],
             })
+
+        if not classified_segments:
+            error_msg = "Alle Segmente bei Klassifizierung fehlgeschlagen"
+            logger.error(error_msg)
+            state["errors"].append(error_msg)
+            state["current_phase"] = "error"
+            return state
 
         state["classified_segments"] = classified_segments
         elapsed = time.time() - start_time
