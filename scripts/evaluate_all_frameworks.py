@@ -358,19 +358,25 @@ def _normalise_hybrid(result: dict, domain: str, pdf_name: str) -> dict:
     total_v = total_valid + total_invalid
     valid_v = total_valid
 
+    metrics = {
+        "total_time":      round(stats.get("total_time", 0), 2),
+        "ocr_time":        round(preproc.get("ocr_time", 0), 2),
+        "ocr_tool":        preproc.get("ocr_tool", "?"),
+        "num_segments":    preproc.get("segments", len(segments)),
+        "total_variants":  total_v,
+        "valid_variants":  valid_v,
+        "validation_rate": round(valid_v / total_v, 4) if total_v else 0.0,
+        **_base_agent_metrics(),
+    }
+
+    graph_stats = stats.get("graph", {})
+    retry_counts = graph_stats.get("retry_counts") or {}
+    metrics["retries_total"] = sum(retry_counts.values()) if retry_counts else 0
+
     return {
         "success": True, "framework": "hybrid", "domain": domain,
         "pdf_name": pdf_name, "error": None,
-        "metrics": {
-            "total_time":      round(stats.get("total_time", 0), 2),
-            "ocr_time":        round(preproc.get("ocr_time", 0), 2),
-            "ocr_tool":        preproc.get("ocr_tool", "?"),
-            "num_segments":    preproc.get("segments", len(segments)),
-            "total_variants":  total_v,
-            "valid_variants":  valid_v,
-            "validation_rate": round(valid_v / total_v, 4) if total_v else 0.0,
-            **_base_agent_metrics(),
-        },
+        "metrics": metrics,
         "segments": segments,
     }
 
