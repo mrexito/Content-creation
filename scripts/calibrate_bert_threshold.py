@@ -35,6 +35,9 @@ RESULTS_FILE = Path("calibration_results.json")
 # Wie viele Paare pro Kategorie (valid/invalid) und Domäne samplen
 SAMPLES_PER_CATEGORY = 5
 
+# Baseline-Threshold aus Vorstudie (Anhang c, Tabelle 3)
+BASELINE_THRESHOLD = 0.92
+
 
 # ── Step 1: Paare extrahieren ────────────────────────────────────────────────
 
@@ -47,7 +50,7 @@ def extract_pairs():
     comparison_files = sorted(COMPARISON_DIR.glob("comparison_*.json"))
     if not comparison_files:
         print(f"FEHLER: Keine comparison_*.json in {COMPARISON_DIR.resolve()} gefunden.")
-        print(f"Kopiere die Dateien hierher oder passe COMPARISON_DIR an.")
+        print("Kopiere die Dateien hierher oder passe COMPARISON_DIR an.")
         sys.exit(1)
 
     all_pairs = []
@@ -100,37 +103,30 @@ def extract_pairs():
 
     print(f"✓ {len(all_pairs)} Paare extrahiert nach {PAIRS_FILE}")
     print(f"  Davon valid@0.92: {n_valid}, invalid@0.92: {n_invalid}")
-    print(f"  Domänen: {sorted(set(p['domain'] for p in all_pairs))}")
+    print(f"  Domänen: {sorted({p['domain'] for p in all_pairs})}")
     print()
     print("NÄCHSTER SCHRITT:")
     print(f"  1. Öffne {PAIRS_FILE}")
-    print(f'  2. Setze "manual_label" auf "GUT", "SCHLECHT" oder "GRENZFALL"')
+    print('  2. Setze "manual_label" auf "GUT", "SCHLECHT" oder "GRENZFALL"')
     print(f"  3. Führe aus: python {sys.argv[0]} --step2")
 
 
 # ── Step 2: BERTScore berechnen + Threshold finden ───────────────────────────
 
-def compute_and_calibrate():
-    """
-    Berechnet BERTScore für alle Paare und findet den optimalen Threshold.
-    """
-    if not PAIRS_FILE.exists():
-        print(f"FEHLER: {PAIRS_FILE} nicht gefunden. Zuerst --step1 ausführen.")
-        sys.exit(1)
-
-    with open(PAIRS_FILE) as f:
-        pairs = json.load(f)
-
-    # Prüfe ob alle Paare bewertet wurden
+def _validate_pairs_labeled(pairs):
+    """Beendet das Skript mit Fehler, wenn nicht alle Paare bewertet sind."""
     todos = [p for p in pairs if p["manual_label"] == "TODO"]
-    if todos:
-        print(f"FEHLER: {len(todos)} Paare haben noch manual_label='TODO'.")
-        print(f"Bitte alle Paare in {PAIRS_FILE} bewerten.")
-        for t in todos[:3]:
-            print(f"  → {t['id']}")
-        sys.exit(1)
+    if not todos:
+        return
+    print(f"FEHLER: {len(todos)} Paare haben noch manual_label='TODO'.")
+    print(f"Bitte alle Paare in {PAIRS_FILE} bewerten.")
+    for t in todos[:3]:
+        print(f"  → {t['id']}")
+    sys.exit(1)
 
-    # BERTScore berechnen
+
+def _compute_bert_scores(pairs):
+    """Berechnet BERTScore für alle Paare und annotiert sie in-place."""
     print("BERTScore wird berechnet (kann 30-60s dauern)...")
     try:
         from bert_score import score as bert_score_fn
@@ -153,80 +149,78 @@ def compute_and_calibrate():
         verbose=True,
     )
 
-    # Ergebnisse zuordnen
     for i, pair in enumerate(pairs):
         pair["bertscore_f1"] = round(float(F1[i]), 4)
         pair["bertscore_precision"] = round(float(P[i]), 4)
         pair["bertscore_recall"] = round(float(R[i]), 4)
 
-    # ── Analyse ──────────────────────────────────────────────────────────────
-    gut = [p for p in pairs if p["manual_label"] == "GUT"]
-    schlecht = [p for p in pairs if p["manual_label"] == "SCHLECHT"]
-    grenzfall = [p for p in pairs if p["manual_label"] == "GRENZFALL"]
 
+def _print_score_stats(label, scores):
+    """Druckt min/max/mean/median für eine Score-Liste."""
+    if not scores:
+        return
+    median = sorted(scores)[len(scores) // 2]
+    print(f"  {label} — F1: min={min(scores):.4f}  max={max(scores):.4f}  "
+          f"mean={sum(scores)/len(scores):.4f}  median={median:.4f}")
+
+
+def _print_label_stats(gut, schlecht, grenzfall):
     print(f"\n{'='*70}")
-    print(f"  KALIBRIERUNGSERGEBNISSE")
+    print("  KALIBRIERUNGSERGEBNISSE")
     print(f"{'='*70}")
     print(f"  Bewertungen: {len(gut)} GUT, {len(schlecht)} SCHLECHT, {len(grenzfall)} GRENZFALL")
-
     if gut:
-        scores_gut = [p["bertscore_f1"] for p in gut]
-        print(f"\n  GUT     — F1: min={min(scores_gut):.4f}  max={max(scores_gut):.4f}  "
-              f"mean={sum(scores_gut)/len(scores_gut):.4f}  median={sorted(scores_gut)[len(scores_gut)//2]:.4f}")
-    if schlecht:
-        scores_schlecht = [p["bertscore_f1"] for p in schlecht]
-        print(f"  SCHLECHT — F1: min={min(scores_schlecht):.4f}  max={max(scores_schlecht):.4f}  "
-              f"mean={sum(scores_schlecht)/len(scores_schlecht):.4f}  median={sorted(scores_schlecht)[len(scores_schlecht)//2]:.4f}")
-    if grenzfall:
-        scores_grenz = [p["bertscore_f1"] for p in grenzfall]
-        print(f"  GRENZFALL — F1: min={min(scores_grenz):.4f}  max={max(scores_grenz):.4f}  "
-              f"mean={sum(scores_grenz)/len(scores_grenz):.4f}  median={sorted(scores_grenz)[len(scores_grenz)//2]:.4f}")
+        print()  # Leerzeile vor erstem Stat-Block (wie im Original)
+    _print_score_stats("GUT     ", [p["bertscore_f1"] for p in gut])
+    _print_score_stats("SCHLECHT", [p["bertscore_f1"] for p in schlecht])
+    _print_score_stats("GRENZFALL", [p["bertscore_f1"] for p in grenzfall])
 
-    # ── Optimalen Threshold finden ───────────────────────────────────────────
-    # Nur GUT vs. SCHLECHT für die Optimierung (GRENZFALL wird ignoriert)
-    if not gut or not schlecht:
-        print("\nFEHLER: Brauche mindestens 1 GUT und 1 SCHLECHT für Optimierung.")
-        _save_results(pairs, None)
-        return
 
-    # Teste Thresholds von 0.70 bis 0.95 in 0.01-Schritten
-    best_threshold = 0.80
-    best_f1 = 0.0
-    best_details = {}
+def _classification_metrics(gut, schlecht, threshold):
+    """Berechnet TP/FP/FN/TN + Precision/Recall/F1 für gegebenen Threshold."""
+    tp = sum(1 for p in gut if p["bertscore_f1"] >= threshold)
+    fp = sum(1 for p in schlecht if p["bertscore_f1"] >= threshold)
+    fn = sum(1 for p in gut if p["bertscore_f1"] < threshold)
+    tn = sum(1 for p in schlecht if p["bertscore_f1"] < threshold)
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+    return {
+        "tp": tp, "fp": fp, "fn": fn, "tn": tn,
+        "precision": precision, "recall": recall, "f1": f1,
+    }
 
+
+def _find_optimal_threshold(gut, schlecht):
+    """Sucht Threshold mit maximalem F1 zwischen 0.70 und 0.95.
+    Druckt Tabelle, gibt (best_threshold, best_f1, best_details) zurück.
+    """
     print(f"\n  {'Threshold':>10s} | {'TP':>3s} {'FP':>3s} {'FN':>3s} {'TN':>3s} | "
           f"{'Precision':>9s} {'Recall':>6s} {'F1':>6s}")
     print(f"  {'-'*10} | {'-'*3} {'-'*3} {'-'*3} {'-'*3} | {'-'*9} {'-'*6} {'-'*6}")
 
+    best_threshold = 0.80
+    best_f1 = 0.0
+    best_details = {}
+
     for t_int in range(70, 96):
         threshold = t_int / 100.0
-
-        # TP = GUT und Score >= threshold (korrekt akzeptiert)
-        # FP = SCHLECHT und Score >= threshold (falsch akzeptiert)
-        # FN = GUT und Score < threshold (falsch abgelehnt)
-        # TN = SCHLECHT und Score < threshold (korrekt abgelehnt)
-        tp = sum(1 for p in gut if p["bertscore_f1"] >= threshold)
-        fp = sum(1 for p in schlecht if p["bertscore_f1"] >= threshold)
-        fn = sum(1 for p in gut if p["bertscore_f1"] < threshold)
-        tn = sum(1 for p in schlecht if p["bertscore_f1"] < threshold)
-
-        precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
-        recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+        m = _classification_metrics(gut, schlecht, threshold)
 
         marker = ""
-        if f1 > best_f1:
-            best_f1 = f1
+        if m["f1"] > best_f1:
+            best_f1 = m["f1"]
             best_threshold = threshold
-            best_details = {
-                "tp": tp, "fp": fp, "fn": fn, "tn": tn,
-                "precision": precision, "recall": recall, "f1": f1,
-            }
+            best_details = m
             marker = " ← best"
 
-        print(f"  {threshold:>10.2f} | {tp:>3d} {fp:>3d} {fn:>3d} {tn:>3d} | "
-              f"{precision:>9.3f} {recall:>6.3f} {f1:>6.3f}{marker}")
+        print(f"  {threshold:>10.2f} | {m['tp']:>3d} {m['fp']:>3d} {m['fn']:>3d} {m['tn']:>3d} | "
+              f"{m['precision']:>9.3f} {m['recall']:>6.3f} {m['f1']:>6.3f}{marker}")
 
+    return best_threshold, best_f1, best_details
+
+
+def _print_threshold_summary(best_threshold, best_f1, best_details):
     print(f"\n{'='*70}")
     print(f"  EMPFOHLENER THRESHOLD: {best_threshold:.2f}")
     print(f"{'='*70}")
@@ -236,40 +230,46 @@ def compute_and_calibrate():
     print(f"  False Negatives: {best_details['fn']} (gute Varianten fälschlich abgelehnt)")
     print(f"  True Negatives:  {best_details['tn']} (schlechte Varianten korrekt abgelehnt)")
 
-    # Vergleich mit aktuellem Threshold
-    tp_092 = sum(1 for p in gut if p["bertscore_f1"] >= 0.92)
-    fp_092 = sum(1 for p in schlecht if p["bertscore_f1"] >= 0.92)
-    fn_092 = sum(1 for p in gut if p["bertscore_f1"] < 0.92)
-    prec_092 = tp_092 / (tp_092 + fp_092) if (tp_092 + fp_092) > 0 else 0.0
-    rec_092 = tp_092 / (tp_092 + fn_092) if (tp_092 + fn_092) > 0 else 0.0
-    f1_092 = 2 * prec_092 * rec_092 / (prec_092 + rec_092) if (prec_092 + rec_092) > 0 else 0.0
 
-    print(f"\n  Vergleich mit aktuellem Threshold (0.92):")
-    print(f"    F1@0.92 = {f1_092:.3f} vs F1@{best_threshold:.2f} = {best_f1:.3f}")
-    if best_f1 > f1_092:
-        print(f"    → Verbesserung um {(best_f1 - f1_092)*100:.1f} Prozentpunkte")
+def _print_baseline_comparison(gut, schlecht, best_threshold, best_f1):
+    """Vergleicht den besten Threshold mit dem Baseline-Threshold (0.92)."""
+    m = _classification_metrics(gut, schlecht, BASELINE_THRESHOLD)
+    print(f"\n  Vergleich mit aktuellem Threshold ({BASELINE_THRESHOLD}):")
+    print(f"    F1@{BASELINE_THRESHOLD} = {m['f1']:.3f} vs F1@{best_threshold:.2f} = {best_f1:.3f}")
+    if best_f1 > m["f1"]:
+        print(f"    → Verbesserung um {(best_f1 - m['f1'])*100:.1f} Prozentpunkte")
+    return m
 
-    # ── Einzelergebnisse sortiert ────────────────────────────────────────────
+
+def _classify_marker(score, threshold):
+    return "✓" if score >= threshold else "✗"
+
+
+def _correctness_note(label, marker):
+    if label == "GUT" and marker == "✗":
+        return "  ← FALSE NEGATIVE"
+    if label == "SCHLECHT" and marker == "✓":
+        return "  ← FALSE POSITIVE"
+    return ""
+
+
+def _print_individual_results(pairs, best_threshold):
     print(f"\n{'='*70}")
-    print(f"  EINZELERGEBNISSE (sortiert nach BERTScore F1)")
+    print("  EINZELERGEBNISSE (sortiert nach BERTScore F1)")
     print(f"{'='*70}")
 
     for p in sorted(pairs, key=lambda x: x["bertscore_f1"]):
-        label = p["manual_label"]
-        marker = "✓" if p["bertscore_f1"] >= best_threshold else "✗"
-        match_092 = "✓" if p["bertscore_f1"] >= 0.92 else "✗"
-        correct = ""
-        if label == "GUT" and marker == "✗":
-            correct = "  ← FALSE NEGATIVE"
-        elif label == "SCHLECHT" and marker == "✓":
-            correct = "  ← FALSE POSITIVE"
+        score = p["bertscore_f1"]
+        marker = _classify_marker(score, best_threshold)
+        match_baseline = _classify_marker(score, BASELINE_THRESHOLD)
+        correct = _correctness_note(p["manual_label"], marker)
+        print(f"  {score:.4f} [{marker}@{best_threshold:.2f}|{match_baseline}@{BASELINE_THRESHOLD}] "
+              f"{p['manual_label']:>10s}  {p['domain']:>10s}  {p['pdf'][:25]}{correct}")
 
-        print(f"  {p['bertscore_f1']:.4f} [{marker}@{best_threshold:.2f}|{match_092}@0.92] "
-              f"{label:>10s}  {p['domain']:>10s}  {p['pdf'][:25]}{correct}")
 
-    # ── Claude Code Prompt ───────────────────────────────────────────────────
+def _print_claude_prompt(best_threshold, gut_count, schlecht_count):
     print(f"\n{'='*70}")
-    print(f"  CLAUDE CODE PROMPT (zum Anwenden des neuen Thresholds)")
+    print("  CLAUDE CODE PROMPT (zum Anwenden des neuen Thresholds)")
     print(f"{'='*70}")
     print(f"""
 Ändere in src/common/constants.py:
@@ -278,7 +278,7 @@ def compute_and_calibrate():
 
 Aktualisiere den Kommentar darüber:
 
-    # Wert {best_threshold} empirisch kalibriert mit {len(gut)+len(schlecht)} manuell
+    # Wert {best_threshold} empirisch kalibriert mit {gut_count + schlecht_count} manuell
     # bewerteten Paaren (Sprache + Wirtschaft). Optimiert auf maximalen
     # F1-Score der Klassifikation GUT vs. SCHLECHT.
     # Vorstudie (Anhang c, Tabelle 3) schlug 0.92 vor — empirische
@@ -287,12 +287,51 @@ Aktualisiere den Kommentar darüber:
     BERT_THRESHOLD: float = {best_threshold}
 """)
 
+
+def compute_and_calibrate():
+    """Berechnet BERTScore für alle Paare und findet den optimalen Threshold."""
+    if not PAIRS_FILE.exists():
+        print(f"FEHLER: {PAIRS_FILE} nicht gefunden. Zuerst --step1 ausführen.")
+        sys.exit(1)
+
+    with open(PAIRS_FILE) as f:
+        pairs = json.load(f)
+
+    _validate_pairs_labeled(pairs)
+    _compute_bert_scores(pairs)
+
+    gut = [p for p in pairs if p["manual_label"] == "GUT"]
+    schlecht = [p for p in pairs if p["manual_label"] == "SCHLECHT"]
+    grenzfall = [p for p in pairs if p["manual_label"] == "GRENZFALL"]
+
+    _print_label_stats(gut, schlecht, grenzfall)
+
+    # Nur GUT vs. SCHLECHT für die Optimierung (GRENZFALL wird ignoriert)
+    if not gut or not schlecht:
+        print("\nFEHLER: Brauche mindestens 1 GUT und 1 SCHLECHT für Optimierung.")
+        _save_results(pairs, None)
+        return
+
+    best_threshold, best_f1, best_details = _find_optimal_threshold(gut, schlecht)
+    _print_threshold_summary(best_threshold, best_f1, best_details)
+    baseline = _print_baseline_comparison(gut, schlecht, best_threshold, best_f1)
+    _print_individual_results(pairs, best_threshold)
+    _print_claude_prompt(best_threshold, len(gut), len(schlecht))
+
     _save_results(pairs, {
         "optimal_threshold": best_threshold,
         "classification_f1": best_f1,
         "details": best_details,
-        "comparison_092": {"precision": prec_092, "recall": rec_092, "f1": f1_092},
-        "sample_size": {"gut": len(gut), "schlecht": len(schlecht), "grenzfall": len(grenzfall)},
+        "comparison_092": {
+            "precision": baseline["precision"],
+            "recall": baseline["recall"],
+            "f1": baseline["f1"],
+        },
+        "sample_size": {
+            "gut": len(gut),
+            "schlecht": len(schlecht),
+            "grenzfall": len(grenzfall),
+        },
     })
 
 
