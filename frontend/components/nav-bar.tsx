@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { BarChart3, History, Home } from "lucide-react"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BarChart3, History, Home } from "lucide-react";
 
 const links = [
   { href: "/", label: "Run", icon: Home },
   { href: "/history", label: "History", icon: History },
-]
+];
 
 export function NavBar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav className="border-b border-gray-200 bg-white sticky top-0 z-50 shadow-sm">
@@ -38,5 +38,5 @@ export function NavBar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }

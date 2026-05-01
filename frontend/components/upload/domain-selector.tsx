@@ -1,18 +1,28 @@
-"use client"
+"use client";
 
-import type { Domain } from "@/lib/types"
-import { Calculator, Languages, TrendingUp, Sparkles } from "lucide-react"
+import type { Domain } from "@/lib/types";
+import { Calculator, Languages, TrendingUp, Sparkles } from "lucide-react";
 
-const domains: { value: Domain; label: string; icon: React.ElementType; desc: string }[] = [
+const domains: {
+  value: Domain;
+  label: string;
+  icon: React.ElementType;
+  desc: string;
+}[] = [
   { value: "auto", label: "Auto", icon: Sparkles, desc: "Auto-detect" },
   { value: "math", label: "Mathematik", icon: Calculator, desc: "SymPy" },
   { value: "languages", label: "Sprachen", icon: Languages, desc: "BERTScore" },
-  { value: "economics", label: "Wirtschaft", icon: TrendingUp, desc: "Consistency" },
-]
+  {
+    value: "economics",
+    label: "Wirtschaft",
+    icon: TrendingUp,
+    desc: "Consistency",
+  },
+];
 
 interface DomainSelectorProps {
-  value: Domain
-  onChange: (d: Domain) => void
+  value: Domain;
+  onChange: (d: Domain) => void;
 }
 
 export function DomainSelector({ value, onChange }: DomainSelectorProps) {
@@ -34,5 +44,5 @@ export function DomainSelector({ value, onChange }: DomainSelectorProps) {
         </button>
       ))}
     </div>
-  )
+  );
 }

@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import type { OcrTool, LlmProvider } from "@/lib/types"
+import type { OcrTool, LlmProvider } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
 // Model lists per provider
 // ---------------------------------------------------------------------------
 const OPENAI_MODELS = [
   { value: "gpt-4o-mini", label: "GPT-4o mini" },
-  { value: "gpt-4o",      label: "GPT-4o" },
+  { value: "gpt-4o", label: "GPT-4o" },
   { value: "gpt-4-turbo", label: "GPT-4 Turbo" },
-]
+];
 
 const BFH_MODELS = [
   { value: "gpt-oss:120b", label: "GPT-OSS 120B" },
-  { value: "gemma3:4b",    label: "Gemma 3 4B" },
-]
+  { value: "gemma3:4b", label: "Gemma 3 4B" },
+];
 
 function modelsForProvider(provider: LlmProvider) {
-  if (provider === "bfh")    return BFH_MODELS
-  if (provider === "openai") return OPENAI_MODELS
-  return [...OPENAI_MODELS, ...BFH_MODELS]
+  if (provider === "bfh") return BFH_MODELS;
+  if (provider === "openai") return OPENAI_MODELS;
+  return [...OPENAI_MODELS, ...BFH_MODELS];
 }
 
 // ---------------------------------------------------------------------------
@@ -27,33 +27,49 @@ function modelsForProvider(provider: LlmProvider) {
 // ---------------------------------------------------------------------------
 
 function Slider({
-  label, value, min, max, onChange, hint,
+  label,
+  value,
+  min,
+  max,
+  onChange,
+  hint,
 }: {
-  label: string; value: number; min: number; max: number
-  onChange: (n: number) => void; hint: string
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (n: number) => void;
+  hint: string;
 }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium text-gray-700">{label}</label>
-        <span className="text-sm font-semibold text-blue-600 tabular-nums w-5 text-right">{value}</span>
+        <span className="text-sm font-semibold text-blue-600 tabular-nums w-5 text-right">
+          {value}
+        </span>
       </div>
       <input
-        type="range" min={min} max={max} value={value}
+        type="range"
+        min={min}
+        max={max}
+        value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full accent-blue-600 cursor-pointer"
       />
       <p className="text-xs text-gray-400">{hint}</p>
     </div>
-  )
+  );
 }
 
 function ButtonGroup<T extends string>({
-  options, value, onChange,
+  options,
+  value,
+  onChange,
 }: {
-  options: { value: T; label: string }[]
-  value: T
-  onChange: (v: T) => void
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (v: T) => void;
 }) {
   return (
     <div className="flex rounded-md border border-gray-200 overflow-hidden text-xs">
@@ -74,7 +90,7 @@ function ButtonGroup<T extends string>({
         </button>
       ))}
     </div>
-  )
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -82,46 +98,57 @@ function ButtonGroup<T extends string>({
 // ---------------------------------------------------------------------------
 
 interface ConfigPanelProps {
-  numVariants: number
-  maxRetries: number
-  ocrTool: OcrTool
-  llmProvider: LlmProvider
-  llmModel: string
-  onVariantsChange: (n: number) => void
-  onRetriesChange: (n: number) => void
-  onOcrToolChange: (t: OcrTool) => void
-  onLlmProviderChange: (p: LlmProvider) => void
-  onLlmModelChange: (m: string) => void
+  numVariants: number;
+  maxRetries: number;
+  ocrTool: OcrTool;
+  llmProvider: LlmProvider;
+  llmModel: string;
+  onVariantsChange: (n: number) => void;
+  onRetriesChange: (n: number) => void;
+  onOcrToolChange: (t: OcrTool) => void;
+  onLlmProviderChange: (p: LlmProvider) => void;
+  onLlmModelChange: (m: string) => void;
 }
 
 export function ConfigPanel({
-  numVariants, maxRetries, ocrTool, llmProvider, llmModel,
-  onVariantsChange, onRetriesChange,
-  onOcrToolChange, onLlmProviderChange, onLlmModelChange,
+  numVariants,
+  maxRetries,
+  ocrTool,
+  llmProvider,
+  llmModel,
+  onVariantsChange,
+  onRetriesChange,
+  onOcrToolChange,
+  onLlmProviderChange,
+  onLlmModelChange,
 }: ConfigPanelProps) {
-  const models = modelsForProvider(llmProvider)
+  const models = modelsForProvider(llmProvider);
 
   const handleProviderChange = (p: LlmProvider) => {
-    onLlmProviderChange(p)
+    onLlmProviderChange(p);
     // Reset model if not available for new provider
-    const available = modelsForProvider(p)
+    const available = modelsForProvider(p);
     if (llmModel && !available.find((m) => m.value === llmModel)) {
-      onLlmModelChange("")
+      onLlmModelChange("");
     }
-  }
+  };
 
   return (
     <div className="space-y-5">
       {/* Varianten & Retries */}
       <Slider
         label="Varianten pro Segment"
-        value={numVariants} min={1} max={5}
+        value={numVariants}
+        min={1}
+        max={5}
         onChange={onVariantsChange}
         hint="Anzahl generierter Textvarianten"
       />
       <Slider
         label="Max. Retry-Versuche"
-        value={maxRetries} min={0} max={5}
+        value={maxRetries}
+        min={0}
+        max={5}
         onChange={onRetriesChange}
         hint="Versuche bei Validierungs-Fehler"
       />
@@ -132,9 +159,9 @@ export function ConfigPanel({
           <label className="text-sm font-medium text-gray-700">OCR-Tool</label>
           <ButtonGroup<OcrTool>
             options={[
-              { value: "auto",      label: "Auto" },
+              { value: "auto", label: "Auto" },
               { value: "tesseract", label: "Tesseract" },
-              { value: "mistral",   label: "Mistral" },
+              { value: "mistral", label: "Mistral" },
             ]}
             value={ocrTool}
             onChange={onOcrToolChange}
@@ -143,19 +170,21 @@ export function ConfigPanel({
             {ocrTool === "mistral"
               ? "Mistral Vision – ideal für Formeln (benötigt API-Key)"
               : ocrTool === "tesseract"
-              ? "Tesseract – lokal, geeignet für Fliesstext"
-              : "Domain-abhängig (Math → Mistral, Text → Tesseract)"}
+                ? "Tesseract – lokal, geeignet für Fliesstext"
+                : "Domain-abhängig (Math → Mistral, Text → Tesseract)"}
           </p>
         </div>
 
         {/* LLM Provider */}
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-gray-700">LLM-Provider</label>
+          <label className="text-sm font-medium text-gray-700">
+            LLM-Provider
+          </label>
           <ButtonGroup<LlmProvider>
             options={[
-              { value: "auto",   label: "Auto" },
+              { value: "auto", label: "Auto" },
               { value: "openai", label: "OpenAI" },
-              { value: "bfh",    label: "BFH" },
+              { value: "bfh", label: "BFH" },
             ]}
             value={llmProvider}
             onChange={handleProviderChange}
@@ -164,8 +193,8 @@ export function ConfigPanel({
             {llmProvider === "openai"
               ? "OpenAI API (benötigt OPENAI_API_KEY)"
               : llmProvider === "bfh"
-              ? "BFH-Inferenz (benötigt BFH_LLM_API_KEY)"
-              : "Automatisch anhand verfügbarer API-Keys"}
+                ? "BFH-Inferenz (benötigt BFH_LLM_API_KEY)"
+                : "Automatisch anhand verfügbarer API-Keys"}
           </p>
         </div>
 
@@ -179,12 +208,16 @@ export function ConfigPanel({
           >
             <option value="">Provider-Standard</option>
             {models.map((m) => (
-              <option key={m.value} value={m.value}>{m.label}</option>
+              <option key={m.value} value={m.value}>
+                {m.label}
+              </option>
             ))}
           </select>
-          <p className="text-xs text-gray-400">Leer = Standard-Modell des Providers</p>
+          <p className="text-xs text-gray-400">
+            Leer = Standard-Modell des Providers
+          </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

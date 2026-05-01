@@ -1,82 +1,100 @@
-"use client"
+"use client";
 
-import { useState, useCallback, useEffect } from "react"
-import type { Domain, Framework, OcrTool, LlmProvider, RunResult } from "@/lib/types"
-import { FileUpload } from "@/components/upload/file-upload"
-import { DomainSelector } from "@/components/upload/domain-selector"
-import { ConfigPanel } from "@/components/upload/config-panel"
-import { FrameworkSelector } from "@/components/execution/framework-selector"
-import { ProgressTracker } from "@/components/execution/progress-tracker"
-import { ComparisonView } from "@/components/results/comparison-view"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Play, Square, RotateCcw } from "lucide-react"
-import { toast } from "sonner"
-import { generateRunId } from "@/lib/file-utils"
+import { useState, useCallback, useEffect } from "react";
+import type {
+  Domain,
+  Framework,
+  OcrTool,
+  LlmProvider,
+  RunResult,
+} from "@/lib/types";
+import { FileUpload } from "@/components/upload/file-upload";
+import { DomainSelector } from "@/components/upload/domain-selector";
+import { ConfigPanel } from "@/components/upload/config-panel";
+import { FrameworkSelector } from "@/components/execution/framework-selector";
+import { ProgressTracker } from "@/components/execution/progress-tracker";
+import { ComparisonView } from "@/components/results/comparison-view";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Play, Square, RotateCcw } from "lucide-react";
+import { toast } from "sonner";
+import { generateRunId } from "@/lib/file-utils";
 
-type AppState = "idle" | "uploading" | "running" | "done"
+type AppState = "idle" | "uploading" | "running" | "done";
 
 function loadHistory(): RunResult[] {
-  if (typeof window === "undefined") return []
+  if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem("runs") ?? "[]")
+    return JSON.parse(localStorage.getItem("runs") ?? "[]");
   } catch {
-    return []
+    return [];
   }
 }
 
 function saveHistory(runs: RunResult[]) {
-  if (typeof window === "undefined") return
-  localStorage.setItem("runs", JSON.stringify(runs.slice(0, 50)))
+  if (typeof window === "undefined") return;
+  localStorage.setItem("runs", JSON.stringify(runs.slice(0, 50)));
 }
 
 export default function HomePage() {
-  const [files, setFiles] = useState<File[]>([])
-  const [domain, setDomain] = useState<Domain>("auto")
-  const [framework, setFramework] = useState<Framework>("all")
-  const [numVariants, setNumVariants] = useState(1)
-  const [maxRetries, setMaxRetries] = useState(3)
-  const [ocrTool, setOcrTool] = useState<OcrTool>("auto")
-  const [llmProvider, setLlmProvider] = useState<LlmProvider>("auto")
-  const [llmModel, setLlmModel] = useState("")
+  const [files, setFiles] = useState<File[]>([]);
+  const [domain, setDomain] = useState<Domain>("auto");
+  const [framework, setFramework] = useState<Framework>("all");
+  const [numVariants, setNumVariants] = useState(1);
+  const [maxRetries, setMaxRetries] = useState(3);
+  const [ocrTool, setOcrTool] = useState<OcrTool>("auto");
+  const [llmProvider, setLlmProvider] = useState<LlmProvider>("auto");
+  const [llmModel, setLlmModel] = useState("");
 
-  const [appState, setAppState] = useState<AppState>("idle")
-  const [activeRunId, setActiveRunId] = useState<string | null>(null)
-  const [currentRun, setCurrentRun] = useState<RunResult | null>(null)
+  const [appState, setAppState] = useState<AppState>("idle");
+  const [activeRunId, setActiveRunId] = useState<string | null>(null);
+  const [currentRun, setCurrentRun] = useState<RunResult | null>(null);
 
   const handleStart = useCallback(async () => {
     if (!files.length) {
-      toast.error("Bitte mindestens ein PDF hochladen")
-      return
+      toast.error("Bitte mindestens ein PDF hochladen");
+      return;
     }
 
-    setAppState("uploading")
+    setAppState("uploading");
 
     try {
       // 1. Upload PDFs
-      const formData = new FormData()
-      files.forEach((f) => formData.append("files", f))
-      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData })
-      const uploadData = await uploadRes.json()
+      const formData = new FormData();
+      files.forEach((f) => formData.append("files", f));
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const uploadData = await uploadRes.json();
 
-      if (!uploadData.success) throw new Error(uploadData.error)
+      if (!uploadData.success) throw new Error(uploadData.error);
 
-      const pdfPath = uploadData.files[0].path // Process first file
+      const pdfPath = uploadData.files[0].path; // Process first file
 
       // 2. Start run
       const runRes = await fetch("/api/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pdfPath, domain, framework, numVariants, maxRetries, ocrTool, llmProvider, llmModel }),
-      })
-      const runData = await runRes.json()
-      if (!runData.success) throw new Error(runData.error)
+        body: JSON.stringify({
+          pdfPath,
+          domain,
+          framework,
+          numVariants,
+          maxRetries,
+          ocrTool,
+          llmProvider,
+          llmModel,
+        }),
+      });
+      const runData = await runRes.json();
+      if (!runData.success) throw new Error(runData.error);
 
-      const runId = runData.runId
-      setActiveRunId(runId)
-      setAppState("running")
-      toast.success("Pipeline gestartet")
+      const runId = runData.runId;
+      setActiveRunId(runId);
+      setAppState("running");
+      toast.success("Pipeline gestartet");
 
       // Initialize run record
       const run: RunResult = {
@@ -85,65 +103,85 @@ export default function HomePage() {
         pdf_name: files[0].name,
         domain,
         framework,
-        config: { numVariants, maxRetries, ocrTool, llmProvider, llmModel: llmModel || undefined },
+        config: {
+          numVariants,
+          maxRetries,
+          ocrTool,
+          llmProvider,
+          llmModel: llmModel || undefined,
+        },
         status: "running",
-      }
-      setCurrentRun(run)
+      };
+      setCurrentRun(run);
     } catch (err) {
-      toast.error(`Fehler: ${err instanceof Error ? err.message : String(err)}`)
-      setAppState("idle")
+      toast.error(
+        `Fehler: ${err instanceof Error ? err.message : String(err)}`,
+      );
+      setAppState("idle");
     }
-  }, [files, domain, framework, numVariants, maxRetries, ocrTool, llmProvider, llmModel])
+  }, [
+    files,
+    domain,
+    framework,
+    numVariants,
+    maxRetries,
+    ocrTool,
+    llmProvider,
+    llmModel,
+  ]);
 
   const handleStop = useCallback(() => {
-    setAppState("idle")
-    setActiveRunId(null)
-    toast.info("Run gestoppt")
-  }, [])
+    setAppState("idle");
+    setActiveRunId(null);
+    toast.info("Run gestoppt");
+  }, []);
 
   const handleReset = useCallback(() => {
-    setFiles([])
-    setAppState("idle")
-    setActiveRunId(null)
-    setCurrentRun(null)
-    setDomain("auto")
-    setFramework("all")
-    setNumVariants(1)
-    setMaxRetries(3)
-    setOcrTool("auto")
-    setLlmProvider("auto")
-    setLlmModel("")
-    toast.info("Dashboard zurückgesetzt – bereit für neuen Run")
-  }, [])
+    setFiles([]);
+    setAppState("idle");
+    setActiveRunId(null);
+    setCurrentRun(null);
+    setDomain("auto");
+    setFramework("all");
+    setNumVariants(1);
+    setMaxRetries(3);
+    setOcrTool("auto");
+    setLlmProvider("auto");
+    setLlmModel("");
+    toast.info("Dashboard zurückgesetzt – bereit für neuen Run");
+  }, []);
 
-  const handleFilesChange = useCallback((newFiles: File[]) => {
-    setFiles(newFiles)
-    if (newFiles.length > 0 && appState === "done") {
-      setCurrentRun(null)
-      setActiveRunId(null)
-      setAppState("idle")
-      toast.info("Neue Datei erkannt – Run zurückgesetzt")
-    }
-  }, [appState])
+  const handleFilesChange = useCallback(
+    (newFiles: File[]) => {
+      setFiles(newFiles);
+      if (newFiles.length > 0 && appState === "done") {
+        setCurrentRun(null);
+        setActiveRunId(null);
+        setAppState("idle");
+        toast.info("Neue Datei erkannt – Run zurückgesetzt");
+      }
+    },
+    [appState],
+  );
 
   // Keyboard shortcuts — nach handleStart/handleStop deklariert (const wird nicht gehoisted)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.code === "Space" && e.target === document.body) {
-        e.preventDefault()
-        if (appState === "idle") handleStart()
-        else if (appState === "running") handleStop()
+        e.preventDefault();
+        if (appState === "idle") handleStart();
+        else if (appState === "running") handleStop();
       }
-      if (e.code === "Escape" && appState === "running") handleStop()
-    }
-    window.addEventListener("keydown", handler)
-    return () => window.removeEventListener("keydown", handler)
-  }, [appState, handleStart, handleStop])
+      if (e.code === "Escape" && appState === "running") handleStop();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [appState, handleStart, handleStop]);
 
   const handleComplete = useCallback(
     (results: Record<string, unknown>) => {
-      setAppState("done")
-      if (!currentRun) return
+      setAppState("done");
+      if (!currentRun) return;
 
       const updatedRun: RunResult = {
         ...currentRun,
@@ -151,28 +189,31 @@ export default function HomePage() {
         langchain: results.langchain as RunResult["langchain"],
         langgraph: results.langgraph as RunResult["langgraph"],
         hybrid: results.hybrid as RunResult["hybrid"],
-        agent_orchestrator: results.agent_orchestrator as RunResult["agent_orchestrator"],
+        agent_orchestrator:
+          results.agent_orchestrator as RunResult["agent_orchestrator"],
         agent_multi: results.agent_multi as RunResult["agent_multi"],
         hybrid_agent: results.hybrid_agent as RunResult["hybrid_agent"],
         duration: Date.now() - new Date(currentRun.timestamp).getTime(),
-      }
-      setCurrentRun(updatedRun)
+      };
+      setCurrentRun(updatedRun);
 
       // Persist to history
-      const history = loadHistory()
-      saveHistory([updatedRun, ...history])
+      const history = loadHistory();
+      saveHistory([updatedRun, ...history]);
 
-      toast.success("Run abgeschlossen!")
+      toast.success("Run abgeschlossen!");
     },
-    [currentRun]
-  )
+    [currentRun],
+  );
 
-  const canStart = appState === "idle" && files.length > 0
+  const canStart = appState === "idle" && files.length > 0;
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Content Rewriting Demo</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Content Rewriting Demo
+        </h1>
         <p className="text-gray-500 text-sm mt-1">
           LangChain · LangGraph · Hybrid – Master Thesis BFH
         </p>
@@ -183,7 +224,9 @@ export default function HomePage() {
         <div className="lg:col-span-1 space-y-4">
           <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-gray-700">1. PDF Upload</CardTitle>
+              <CardTitle className="text-sm font-semibold text-gray-700">
+                1. PDF Upload
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <FileUpload files={files} onChange={handleFilesChange} />
@@ -192,7 +235,9 @@ export default function HomePage() {
 
           <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-gray-700">2. Domain</CardTitle>
+              <CardTitle className="text-sm font-semibold text-gray-700">
+                2. Domain
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <DomainSelector value={domain} onChange={setDomain} />
@@ -201,7 +246,9 @@ export default function HomePage() {
 
           <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-gray-700">3. Framework</CardTitle>
+              <CardTitle className="text-sm font-semibold text-gray-700">
+                3. Framework
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <FrameworkSelector value={framework} onChange={setFramework} />
@@ -210,7 +257,9 @@ export default function HomePage() {
 
           <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold text-gray-700">4. Konfiguration</CardTitle>
+              <CardTitle className="text-sm font-semibold text-gray-700">
+                4. Konfiguration
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ConfigPanel
@@ -269,7 +318,9 @@ export default function HomePage() {
           {activeRunId && (appState === "running" || appState === "done") && (
             <Card className="bg-white border-gray-200 shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-gray-700">Live Progress</CardTitle>
+                <CardTitle className="text-sm font-semibold text-gray-700">
+                  Live Progress
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ProgressTracker
@@ -281,12 +332,19 @@ export default function HomePage() {
             </Card>
           )}
 
-          {appState === "done" && currentRun && (currentRun.langchain || currentRun.langgraph || currentRun.hybrid || currentRun.agent_orchestrator || currentRun.agent_multi || currentRun.hybrid_agent) && (
-            <>
-              <Separator className="bg-gray-200" />
-              <ComparisonView run={currentRun} />
-            </>
-          )}
+          {appState === "done" &&
+            currentRun &&
+            (currentRun.langchain ||
+              currentRun.langgraph ||
+              currentRun.hybrid ||
+              currentRun.agent_orchestrator ||
+              currentRun.agent_multi ||
+              currentRun.hybrid_agent) && (
+              <>
+                <Separator className="bg-gray-200" />
+                <ComparisonView run={currentRun} />
+              </>
+            )}
 
           {appState === "idle" && !currentRun && (
             <div className="flex items-center justify-center h-48 border border-dashed border-gray-300 rounded-lg text-gray-400 text-sm">
@@ -296,5 +354,5 @@ export default function HomePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

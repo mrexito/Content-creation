@@ -1,59 +1,81 @@
-"use client"
+"use client";
 
-import type { PipelineResult } from "@/lib/types"
-import type { ResultEntry } from "./comparison-view"
-import { FW_CONFIG } from "./comparison-view"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import type { PipelineResult } from "@/lib/types";
+import type { ResultEntry } from "./comparison-view";
+import { FW_CONFIG } from "./comparison-view";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell,
-} from "recharts"
-import { Clock, CheckCircle, Layers, Percent } from "lucide-react"
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import { Clock, CheckCircle, Layers, Percent } from "lucide-react";
 
 interface MetricsDashboardProps {
-  results: ResultEntry[]
+  results: ResultEntry[];
 }
 
-function StatCard({ icon: Icon, label, value, sub, color = "text-blue-600" }: {
-  icon: React.ElementType
-  label: string
-  value: string
-  sub?: string
-  color?: string
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  sub,
+  color = "text-blue-600",
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+  sub?: string;
+  color?: string;
 }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm space-y-1">
       <div className="flex items-center gap-2 text-gray-500">
         <Icon className={`h-4 w-4 ${color}`} />
-        <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
+        <span className="text-xs font-medium uppercase tracking-wide">
+          {label}
+        </span>
       </div>
       <p className="text-2xl font-bold text-gray-900">{value}</p>
       {sub && <p className="text-xs text-gray-400">{sub}</p>}
     </div>
-  )
+  );
 }
 
-function DonutChart({ result, label, color }: {
-  result: PipelineResult
-  label: string
-  color: string
+function DonutChart({
+  result,
+  label,
+  color,
+}: {
+  result: PipelineResult;
+  label: string;
+  color: string;
 }) {
-  const valid = result.metrics?.valid_variants ?? 0
-  const invalid = (result.metrics?.total_variants ?? 0) - valid
+  const valid = result.metrics?.valid_variants ?? 0;
+  const invalid = (result.metrics?.total_variants ?? 0) - valid;
   const donutData = [
     { name: "Valide", value: valid || 0.001, fill: color },
     { name: "Ungültig", value: invalid || 0.001, fill: "#fee2e2" },
-  ]
+  ];
   return (
     <div className="flex flex-col items-center gap-1">
       <span className="text-xs font-medium text-gray-500">{label}</span>
       <PieChart width={120} height={120}>
         <Pie
           data={donutData}
-          cx={55} cy={55}
-          innerRadius={32} outerRadius={50}
+          cx={55}
+          cy={55}
+          innerRadius={32}
+          outerRadius={50}
           dataKey="value"
-          startAngle={90} endAngle={-270}
+          startAngle={90}
+          endAngle={-270}
           paddingAngle={2}
         >
           {donutData.map((entry, i) => (
@@ -61,67 +83,87 @@ function DonutChart({ result, label, color }: {
           ))}
         </Pie>
         <Tooltip
-          contentStyle={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8 }}
+          contentStyle={{
+            background: "#fff",
+            border: "1px solid #e5e7eb",
+            borderRadius: 8,
+          }}
           itemStyle={{ color: "#6b7280" }}
         />
       </PieChart>
-      <span className="text-xs font-semibold text-gray-700">{valid} valide</span>
+      <span className="text-xs font-semibold text-gray-700">
+        {valid} valide
+      </span>
     </div>
-  )
+  );
 }
 
 export function MetricsDashboard({ results }: MetricsDashboardProps) {
-  if (!results.length) return null
+  if (!results.length) return null;
 
-  const hasMultiple = results.length > 1
+  const hasMultiple = results.length > 1;
 
   const times = results
     .map((e) => e.result.metrics?.total_time)
-    .filter((t): t is number => t != null)
-  const maxTime = times.length ? Math.max(...times) : 0
+    .filter((t): t is number => t != null);
+  const maxTime = times.length ? Math.max(...times) : 0;
 
-  const numSegments = results[0].result.metrics?.num_segments ?? 0
+  const numSegments = results[0].result.metrics?.num_segments ?? 0;
 
-  const totalValid = results.reduce((s, e) => s + (e.result.metrics?.valid_variants ?? 0), 0)
-  const totalVariants = results.reduce((s, e) => s + (e.result.metrics?.total_variants ?? 0), 0)
+  const totalValid = results.reduce(
+    (s, e) => s + (e.result.metrics?.valid_variants ?? 0),
+    0,
+  );
+  const totalVariants = results.reduce(
+    (s, e) => s + (e.result.metrics?.total_variants ?? 0),
+    0,
+  );
 
   const rates = results
     .map((e) => e.result.metrics?.validation_rate)
-    .filter((v): v is number => v != null)
-  const avgRate = rates.length ? rates.reduce((a, b) => a + b, 0) / rates.length : 0
+    .filter((v): v is number => v != null);
+  const avgRate = rates.length
+    ? rates.reduce((a, b) => a + b, 0) / rates.length
+    : 0;
 
   const timeSub = hasMultiple
     ? results
         .filter((e) => e.result.metrics?.total_time != null)
         .map((e) => {
-          const cfg = FW_CONFIG[e.key]
-          const abbr = cfg?.label.replace(/[^A-Z+]/g, "") || e.key.slice(0, 2).toUpperCase()
-          return `${abbr}: ${e.result.metrics!.total_time!.toFixed(1)}s`
+          const cfg = FW_CONFIG[e.key];
+          const abbr =
+            cfg?.label.replace(/[^A-Z+]/g, "") ||
+            e.key.slice(0, 2).toUpperCase();
+          return `${abbr}: ${e.result.metrics!.total_time!.toFixed(1)}s`;
         })
         .join(" · ") || undefined
-    : undefined
+    : undefined;
 
   const validSub = hasMultiple
     ? results
         .filter((e) => e.result.metrics != null)
         .map((e) => {
-          const cfg = FW_CONFIG[e.key]
-          const abbr = cfg?.label.replace(/[^A-Z+]/g, "") || e.key.slice(0, 2).toUpperCase()
-          return `${abbr}: ${e.result.metrics!.valid_variants}/${e.result.metrics!.total_variants}`
+          const cfg = FW_CONFIG[e.key];
+          const abbr =
+            cfg?.label.replace(/[^A-Z+]/g, "") ||
+            e.key.slice(0, 2).toUpperCase();
+          return `${abbr}: ${e.result.metrics!.valid_variants}/${e.result.metrics!.total_variants}`;
         })
         .join(" · ") || undefined
-    : undefined
+    : undefined;
 
   const rateSub = hasMultiple
     ? results
         .filter((e) => e.result.metrics?.validation_rate != null)
         .map((e) => {
-          const cfg = FW_CONFIG[e.key]
-          const abbr = cfg?.label.replace(/[^A-Z+]/g, "") || e.key.slice(0, 2).toUpperCase()
-          return `${abbr}: ${(e.result.metrics!.validation_rate! * 100).toFixed(1)}%`
+          const cfg = FW_CONFIG[e.key];
+          const abbr =
+            cfg?.label.replace(/[^A-Z+]/g, "") ||
+            e.key.slice(0, 2).toUpperCase();
+          return `${abbr}: ${(e.result.metrics!.validation_rate! * 100).toFixed(1)}%`;
         })
         .join(" · ") || undefined
-    : undefined
+    : undefined;
 
   const timeData = results
     .filter((e) => e.result.metrics?.total_time != null)
@@ -129,7 +171,7 @@ export function MetricsDashboard({ results }: MetricsDashboardProps) {
       name: FW_CONFIG[e.key]?.label ?? e.key,
       time: +e.result.metrics!.total_time!.toFixed(2),
       fill: FW_CONFIG[e.key]?.color ?? "#6b7280",
-    }))
+    }));
 
   return (
     <div className="space-y-4">
@@ -169,7 +211,9 @@ export function MetricsDashboard({ results }: MetricsDashboardProps) {
         {timeData.length > 0 && (
           <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold text-gray-700">Laufzeit (s)</CardTitle>
+              <CardTitle className="text-sm font-semibold text-gray-700">
+                Laufzeit (s)
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={160}>
@@ -208,7 +252,9 @@ export function MetricsDashboard({ results }: MetricsDashboardProps) {
 
         <Card className="bg-white border-gray-200 shadow-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-gray-700">Valide vs. Ungültig</CardTitle>
+            <CardTitle className="text-sm font-semibold text-gray-700">
+              Valide vs. Ungültig
+            </CardTitle>
           </CardHeader>
           <CardContent className="py-4">
             <div className="flex justify-around items-center flex-wrap gap-2">
@@ -225,5 +271,5 @@ export function MetricsDashboard({ results }: MetricsDashboardProps) {
         </Card>
       </div>
     </div>
-  )
+  );
 }

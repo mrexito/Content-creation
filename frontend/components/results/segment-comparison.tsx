@@ -1,77 +1,88 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import type { ResultEntry } from "./comparison-view"
-import { FW_CONFIG } from "./comparison-view"
-import { ChevronDown, ChevronRight, CheckCircle, XCircle } from "lucide-react"
+import { useState } from "react";
+import type { ResultEntry } from "./comparison-view";
+import { FW_CONFIG } from "./comparison-view";
+import { ChevronDown, ChevronRight, CheckCircle, XCircle } from "lucide-react";
 
 interface SegmentComparisonProps {
-  results: ResultEntry[]
+  results: ResultEntry[];
 }
 
-const NON_REWRITABLE_SEGMENT_TYPES = new Set(["title", "solution", "metadata"])
+const NON_REWRITABLE_SEGMENT_TYPES = new Set(["title", "solution", "metadata"]);
 
 const SEGMENT_TYPE_LABELS: Record<string, string> = {
-  title:    "Titel",
+  title: "Titel",
   solution: "Musterlösung",
   metadata: "Metadaten",
-}
+};
 
 const DOMAIN_STYLES: Record<string, string> = {
   math: "bg-blue-100 text-blue-700",
   economics: "bg-amber-100 text-amber-700",
   languages: "bg-purple-100 text-purple-700",
   general: "bg-gray-100 text-gray-600",
-}
+};
 
 export function SegmentComparison({ results }: SegmentComparisonProps) {
   const activeFrameworks = results.filter(
-    (e) => (e.result.segments?.length ?? 0) > 0
-  )
+    (e) => (e.result.segments?.length ?? 0) > 0,
+  );
 
-  const numSegments = activeFrameworks[0]?.result?.segments?.length ?? 0
-  const [expanded, setExpanded] = useState<number | null>(0)
+  const numSegments = activeFrameworks[0]?.result?.segments?.length ?? 0;
+  const [expanded, setExpanded] = useState<number | null>(0);
 
   if (!numSegments) {
     return (
       <p className="text-sm text-gray-400 italic text-center py-8">
         Keine Segmente verfügbar.
       </p>
-    )
+    );
   }
 
   const colClass =
     activeFrameworks.length >= 3
       ? "grid-cols-3"
       : activeFrameworks.length === 2
-      ? "grid-cols-2"
-      : "grid-cols-1"
+        ? "grid-cols-2"
+        : "grid-cols-1";
 
   return (
     <div className="space-y-2">
       {Array.from({ length: numSegments }, (_, i) => {
-        const isOpen = expanded === i
+        const isOpen = expanded === i;
 
         const segData = activeFrameworks.map((e) => ({
           key: e.key,
           config: FW_CONFIG[e.key],
           segment: e.result.segments?.[i] ?? null,
-        }))
+        }));
 
         const domain =
-          segData.find((s) => s.segment)?.segment?.classification?.domain ?? "general"
+          segData.find((s) => s.segment)?.segment?.classification?.domain ??
+          "general";
 
         const segmentType =
-          segData.find((s) => s.segment)?.segment?.original_segment?.type ?? "unknown"
-        const isSkipped = NON_REWRITABLE_SEGMENT_TYPES.has(segmentType)
+          segData.find((s) => s.segment)?.segment?.original_segment?.type ??
+          "unknown";
+        const isSkipped = NON_REWRITABLE_SEGMENT_TYPES.has(segmentType);
 
         const summaries = segData.map((s) => {
-          const seg = s.segment
-          const cfg = s.config
-          const labelShort = cfg?.label.replace("Lang", "") ?? s.key
-          if (!seg) return { key: s.key, labelShort, text: "–", hasData: false, allValid: false, noneValid: true }
-          const valid = seg.validated_variants?.filter((v) => v.is_valid).length ?? 0
-          const total = seg.validated_variants?.length ?? 0
+          const seg = s.segment;
+          const cfg = s.config;
+          const labelShort = cfg?.label.replace("Lang", "") ?? s.key;
+          if (!seg)
+            return {
+              key: s.key,
+              labelShort,
+              text: "–",
+              hasData: false,
+              allValid: false,
+              noneValid: true,
+            };
+          const valid =
+            seg.validated_variants?.filter((v) => v.is_valid).length ?? 0;
+          const total = seg.validated_variants?.length ?? 0;
           return {
             key: s.key,
             labelShort,
@@ -79,14 +90,17 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
             hasData: true,
             allValid: valid === total && total > 0,
             noneValid: valid === 0,
-          }
-        })
+          };
+        });
 
         const originalText =
-          segData.find((s) => s.segment)?.segment?.original_segment?.text ?? ""
+          segData.find((s) => s.segment)?.segment?.original_segment?.text ?? "";
 
         return (
-          <div key={i} className="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+          <div
+            key={i}
+            className="border border-gray-200 rounded-xl overflow-hidden shadow-sm"
+          >
             {/* Accordion header */}
             <button
               className="w-full flex items-center justify-between px-4 py-3
@@ -94,9 +108,11 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
               onClick={() => setExpanded(isOpen ? null : i)}
             >
               <div className="flex items-center gap-3 min-w-0">
-                {isOpen
-                  ? <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />
-                  : <ChevronRight className="h-4 w-4 text-gray-400 shrink-0" />}
+                {isOpen ? (
+                  <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-gray-400 shrink-0" />
+                )}
                 <span className="text-sm font-semibold text-gray-800 shrink-0">
                   Segment {i + 1}
                 </span>
@@ -110,7 +126,8 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
                 <div className="flex items-center gap-1.5 ml-1">
                   {isSkipped ? (
                     <span className="text-xs px-1.5 py-0.5 rounded font-medium bg-gray-100 text-gray-400 italic">
-                      {SEGMENT_TYPE_LABELS[segmentType] ?? segmentType} – übersprungen
+                      {SEGMENT_TYPE_LABELS[segmentType] ?? segmentType} –
+                      übersprungen
                     </span>
                   ) : (
                     summaries.map((s) => (
@@ -121,8 +138,8 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
                             ? s.allValid
                               ? "bg-emerald-100 text-emerald-700"
                               : s.noneValid
-                              ? "bg-red-100 text-red-600"
-                              : "bg-amber-100 text-amber-700"
+                                ? "bg-red-100 text-red-600"
+                                : "bg-amber-100 text-amber-700"
                             : "bg-gray-100 text-gray-400"
                         }`}
                       >
@@ -152,7 +169,8 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
                 {isSkipped && (
                   <div className="px-4 py-5 text-center bg-gray-50">
                     <p className="text-xs text-gray-400 italic">
-                      {SEGMENT_TYPE_LABELS[segmentType] ?? segmentType} — wird nicht umgeschrieben
+                      {SEGMENT_TYPE_LABELS[segmentType] ?? segmentType} — wird
+                      nicht umgeschrieben
                     </p>
                   </div>
                 )}
@@ -167,13 +185,19 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
                           className={`px-3 py-2 ${config?.headerBg ?? "bg-gray-50"} border-b ${config?.headerBorder ?? "border-gray-200"}`}
                         >
                           <div className="flex items-center gap-1.5">
-                            <span className={`w-2 h-2 rounded-full ${config?.dot ?? "bg-gray-400"}`} />
-                            <span className={`text-xs font-semibold ${config?.headerText ?? "text-gray-700"}`}>
+                            <span
+                              className={`w-2 h-2 rounded-full ${config?.dot ?? "bg-gray-400"}`}
+                            />
+                            <span
+                              className={`text-xs font-semibold ${config?.headerText ?? "text-gray-700"}`}
+                            >
                               {config?.label ?? key}
                             </span>
                             {segment && (
                               <span className="ml-auto text-xs text-gray-500">
-                                {segment.validated_variants?.filter((v) => v.is_valid).length ?? 0}
+                                {segment.validated_variants?.filter(
+                                  (v) => v.is_valid,
+                                ).length ?? 0}
                                 /{segment.validated_variants?.length ?? 0} valid
                               </span>
                             )}
@@ -183,8 +207,10 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
                         {/* Variants */}
                         <div className="p-3 space-y-2.5">
                           {!segment ? (
-                            <div className="flex items-center justify-center h-20 text-gray-400
-                              text-xs italic border border-dashed border-gray-200 rounded-lg">
+                            <div
+                              className="flex items-center justify-center h-20 text-gray-400
+                              text-xs italic border border-dashed border-gray-200 rounded-lg"
+                            >
                               Nicht verfügbar
                             </div>
                           ) : (
@@ -221,7 +247,11 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
                                           : "text-amber-600 bg-amber-50"
                                       }`}
                                     >
-                                      Δ{(variant.numbers_changed_pct * 100).toFixed(0)}%
+                                      Δ
+                                      {(
+                                        variant.numbers_changed_pct * 100
+                                      ).toFixed(0)}
+                                      %
                                     </span>
                                   )}
                                   {variant.diversity_score != null && (
@@ -240,11 +270,16 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
 
                                 {/* Validation issues */}
                                 {!variant.is_valid &&
-                                  (variant.validation_issues?.length ?? 0) > 0 && (
+                                  (variant.validation_issues?.length ?? 0) >
+                                    0 && (
                                     <ul className="text-xs text-red-600 space-y-0.5">
-                                      {variant.validation_issues.slice(0, 2).map((issue, ii) => (
-                                        <li key={ii} className="truncate">• {issue}</li>
-                                      ))}
+                                      {variant.validation_issues
+                                        .slice(0, 2)
+                                        .map((issue, ii) => (
+                                          <li key={ii} className="truncate">
+                                            • {issue}
+                                          </li>
+                                        ))}
                                     </ul>
                                   )}
                               </div>
@@ -258,8 +293,8 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
               </div>
             )}
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

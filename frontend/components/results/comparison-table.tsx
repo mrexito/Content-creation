@@ -1,35 +1,35 @@
-"use client"
+"use client";
 
-import type { ResultEntry } from "./comparison-view"
-import { FW_CONFIG } from "./comparison-view"
+import type { ResultEntry } from "./comparison-view";
+import { FW_CONFIG } from "./comparison-view";
 
 interface ComparisonTableProps {
-  results: ResultEntry[]
+  results: ResultEntry[];
 }
 
 interface RowValue {
-  key: string
-  raw: number | null
-  display: string
+  key: string;
+  raw: number | null;
+  display: string;
 }
 
 interface Row {
-  label: string
-  values: RowValue[]
-  bestIsLow: boolean
+  label: string;
+  values: RowValue[];
+  bestIsLow: boolean;
 }
 
 function getBestIdx(values: RowValue[], bestIsLow: boolean): number {
   const valid = values
     .map((v, i) => ({ i, raw: v.raw }))
-    .filter((v) => v.raw !== null)
-  if (!valid.length) return -1
-  if (bestIsLow) return valid.reduce((a, b) => (a.raw! < b.raw! ? a : b)).i
-  return valid.reduce((a, b) => (a.raw! > b.raw! ? a : b)).i
+    .filter((v) => v.raw !== null);
+  if (!valid.length) return -1;
+  if (bestIsLow) return valid.reduce((a, b) => (a.raw! < b.raw! ? a : b)).i;
+  return valid.reduce((a, b) => (a.raw! > b.raw! ? a : b)).i;
 }
 
 export function ComparisonTable({ results }: ComparisonTableProps) {
-  if (results.length < 2) return null
+  if (results.length < 2) return null;
 
   const rows: Row[] = [
     {
@@ -37,8 +37,10 @@ export function ComparisonTable({ results }: ComparisonTableProps) {
       values: results.map((e) => ({
         key: e.key,
         raw: e.result.metrics?.total_time ?? null,
-        display: e.result.metrics?.total_time != null
-          ? `${e.result.metrics.total_time.toFixed(1)}s` : "–",
+        display:
+          e.result.metrics?.total_time != null
+            ? `${e.result.metrics.total_time.toFixed(1)}s`
+            : "–",
       })),
       bestIsLow: true,
     },
@@ -47,8 +49,10 @@ export function ComparisonTable({ results }: ComparisonTableProps) {
       values: results.map((e) => ({
         key: e.key,
         raw: e.result.metrics?.num_segments ?? null,
-        display: e.result.metrics?.num_segments != null
-          ? String(e.result.metrics.num_segments) : "–",
+        display:
+          e.result.metrics?.num_segments != null
+            ? String(e.result.metrics.num_segments)
+            : "–",
       })),
       bestIsLow: false,
     },
@@ -57,8 +61,10 @@ export function ComparisonTable({ results }: ComparisonTableProps) {
       values: results.map((e) => ({
         key: e.key,
         raw: e.result.metrics?.valid_variants ?? null,
-        display: e.result.metrics != null
-          ? `${e.result.metrics.valid_variants}/${e.result.metrics.total_variants}` : "–",
+        display:
+          e.result.metrics != null
+            ? `${e.result.metrics.valid_variants}/${e.result.metrics.total_variants}`
+            : "–",
       })),
       bestIsLow: false,
     },
@@ -67,17 +73,21 @@ export function ComparisonTable({ results }: ComparisonTableProps) {
       values: results.map((e) => ({
         key: e.key,
         raw: e.result.metrics?.validation_rate ?? null,
-        display: e.result.metrics?.validation_rate != null
-          ? `${(e.result.metrics.validation_rate * 100).toFixed(1)}%` : "–",
+        display:
+          e.result.metrics?.validation_rate != null
+            ? `${(e.result.metrics.validation_rate * 100).toFixed(1)}%`
+            : "–",
       })),
       bestIsLow: false,
     },
-  ]
+  ];
 
   return (
     <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
       <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-700">Framework-Vergleich</h3>
+        <h3 className="text-sm font-semibold text-gray-700">
+          Framework-Vergleich
+        </h3>
       </div>
       <table className="w-full text-sm">
         <thead>
@@ -86,25 +96,30 @@ export function ComparisonTable({ results }: ComparisonTableProps) {
               Metrik
             </th>
             {results.map((e) => {
-              const cfg = FW_CONFIG[e.key]
+              const cfg = FW_CONFIG[e.key];
               return (
                 <th
                   key={e.key}
                   className={`text-center px-4 py-2.5 text-xs font-semibold ${
-                    cfg ? `${cfg.headerText} ${cfg.headerBg}` : "text-gray-700 bg-gray-50"
+                    cfg
+                      ? `${cfg.headerText} ${cfg.headerBg}`
+                      : "text-gray-700 bg-gray-50"
                   }`}
                 >
                   {cfg?.label ?? e.key}
                 </th>
-              )
+              );
             })}
           </tr>
         </thead>
         <tbody>
           {rows.map((row, ri) => {
-            const bestIdx = getBestIdx(row.values, row.bestIsLow)
+            const bestIdx = getBestIdx(row.values, row.bestIsLow);
             return (
-              <tr key={ri} className={ri % 2 === 0 ? "bg-white" : "bg-gray-50/50"}>
+              <tr
+                key={ri}
+                className={ri % 2 === 0 ? "bg-white" : "bg-gray-50/50"}
+              >
                 <td className="px-4 py-2.5 text-xs text-gray-500 font-medium">
                   {row.label}
                 </td>
@@ -125,10 +140,10 @@ export function ComparisonTable({ results }: ComparisonTableProps) {
                   </td>
                 ))}
               </tr>
-            )
+            );
           })}
         </tbody>
       </table>
     </div>
-  )
+  );
 }

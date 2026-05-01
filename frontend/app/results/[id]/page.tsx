@@ -1,52 +1,66 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import type { RunResult } from "@/lib/types"
-import { ComparisonView } from "@/components/results/comparison-view"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { use } from "react"
+import { useEffect, useState } from "react";
+import type { RunResult } from "@/lib/types";
+import { ComparisonView } from "@/components/results/comparison-view";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { use } from "react";
 
 interface PageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
 function loadRunFromHistory(id: string): RunResult | null {
   try {
-    const runs: RunResult[] = JSON.parse(localStorage.getItem("runs") ?? "[]")
-    return runs.find((r) => r.id === id) ?? null
+    const runs: RunResult[] = JSON.parse(localStorage.getItem("runs") ?? "[]");
+    return runs.find((r) => r.id === id) ?? null;
   } catch {
-    return null
+    return null;
   }
 }
 
 export default function ResultPage({ params }: PageProps) {
-  const { id } = use(params)
-  const [run, setRun] = useState<RunResult | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { id } = use(params);
+  const [run, setRun] = useState<RunResult | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fromHistory = loadRunFromHistory(id)
+    const fromHistory = loadRunFromHistory(id);
     if (fromHistory) {
-      setRun(fromHistory)
-      setLoading(false)
-      return
+      setRun(fromHistory);
+      setLoading(false);
+      return;
     }
 
     // Try fetching from API (if run is still in progress)
     fetch(`/api/results/${id}`)
-      .then((r) => { if (!r.ok) throw new Error(r.statusText); return r.json() })
+      .then((r) => {
+        if (!r.ok) throw new Error(r.statusText);
+        return r.json();
+      })
       .then((data) => {
-        const anyResult = data.langchain ?? data.langgraph ?? data.hybrid ?? data.agent_orchestrator ?? data.agent_multi ?? data.hybrid_agent
+        const anyResult =
+          data.langchain ??
+          data.langgraph ??
+          data.hybrid ??
+          data.agent_orchestrator ??
+          data.agent_multi ??
+          data.hybrid_agent;
         if (anyResult) {
           const fw =
-            data.hybrid || (data.langchain && data.langgraph) ? "all"
-            : data.hybrid_agent ? "hybrid_agent"
-            : data.agent_orchestrator ? "agent_orchestrator"
-            : data.agent_multi ? "agent_multi"
-            : data.langchain ? "langchain"
-            : "langgraph"
+            data.hybrid || (data.langchain && data.langgraph)
+              ? "all"
+              : data.hybrid_agent
+                ? "hybrid_agent"
+                : data.agent_orchestrator
+                  ? "agent_orchestrator"
+                  : data.agent_multi
+                    ? "agent_multi"
+                    : data.langchain
+                      ? "langchain"
+                      : "langgraph";
           setRun({
             id,
             timestamp: new Date().toISOString(),
@@ -61,21 +75,21 @@ export default function ResultPage({ params }: PageProps) {
             agent_orchestrator: data.agent_orchestrator,
             agent_multi: data.agent_multi,
             hybrid_agent: data.hybrid_agent,
-          })
+          });
         }
       })
       .catch(() => {
         // Run not found or API error — leave run as null, handled in render
       })
-      .finally(() => setLoading(false))
-  }, [id])
+      .finally(() => setLoading(false));
+  }, [id]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-500 text-sm">
         Lade Ergebnisse…
       </div>
-    )
+    );
   }
 
   if (!run) {
@@ -89,18 +103,22 @@ export default function ResultPage({ params }: PageProps) {
           </Button>
         </Link>
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-6">
       <Link href="/history">
-        <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700 -ml-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-gray-500 hover:text-gray-700 -ml-2"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           History
         </Button>
       </Link>
       <ComparisonView run={run} />
     </div>
-  )
+  );
 }

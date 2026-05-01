@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react"
-import type { ProgressState, Framework } from "@/lib/types"
-import { Progress } from "@/components/ui/progress"
-import { PhaseIndicator } from "./phase-indicator"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle, XCircle, Loader2 } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useEffect, useState, useCallback, useMemo } from "react";
+import type { ProgressState, Framework } from "@/lib/types";
+import { Progress } from "@/components/ui/progress";
+import { PhaseIndicator } from "./phase-indicator";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ProgressTrackerProps {
-  runId: string
-  framework: Framework
-  onComplete?: (results: Record<string, unknown>) => void
+  runId: string;
+  framework: Framework;
+  onComplete?: (results: Record<string, unknown>) => void;
 }
 
 const STATUS_STYLES = {
@@ -19,80 +19,88 @@ const STATUS_STYLES = {
   complete: "text-emerald-600 border-emerald-200 bg-emerald-50",
   error: "text-red-600 border-red-200 bg-red-50",
   pending: "text-gray-500 border-gray-200 bg-gray-50",
-}
+};
 
 const FW_LABELS: Record<string, string> = {
-  langchain:          "LangChain",
-  langgraph:          "LangGraph",
-  hybrid:             "Hybrid",
+  langchain: "LangChain",
+  langgraph: "LangGraph",
+  hybrid: "Hybrid",
   agent_orchestrator: "Agent A (Orchestrator)",
-  agent_multi:        "Agent B (Multi-Agent)",
-  hybrid_agent:       "Hybrid+Agent",
-}
+  agent_multi: "Agent B (Multi-Agent)",
+  hybrid_agent: "Hybrid+Agent",
+};
 
 const ALL_TRACKED_FRAMEWORKS = [
-  "langchain", "langgraph", "hybrid",
-  "agent_orchestrator", "agent_multi", "hybrid_agent",
-] as const
-type TrackedFramework = typeof ALL_TRACKED_FRAMEWORKS[number]
+  "langchain",
+  "langgraph",
+  "hybrid",
+  "agent_orchestrator",
+  "agent_multi",
+  "hybrid_agent",
+] as const;
+type TrackedFramework = (typeof ALL_TRACKED_FRAMEWORKS)[number];
 
-const POLL_ERROR_THRESHOLD = 3 // consecutive failures before showing connection error
+const POLL_ERROR_THRESHOLD = 3; // consecutive failures before showing connection error
 
-export function ProgressTracker({ runId, framework, onComplete }: ProgressTrackerProps) {
-  const [progress, setProgress] = useState<Record<string, ProgressState>>({})
-  const [done, setDone] = useState(false)
-  const [consecutiveErrors, setConsecutiveErrors] = useState(0)
-  const [connectionError, setConnectionError] = useState(false)
+export function ProgressTracker({
+  runId,
+  framework,
+  onComplete,
+}: ProgressTrackerProps) {
+  const [progress, setProgress] = useState<Record<string, ProgressState>>({});
+  const [done, setDone] = useState(false);
+  const [consecutiveErrors, setConsecutiveErrors] = useState(0);
+  const [connectionError, setConnectionError] = useState(false);
 
   const frameworks: TrackedFramework[] = useMemo(() => {
-    if (framework === "all") return ["langchain", "langgraph", "hybrid"]
-    if ((framework as string) === "both") return ["langchain", "langgraph"] // backwards compat
+    if (framework === "all") return ["langchain", "langgraph", "hybrid"];
+    if ((framework as string) === "both") return ["langchain", "langgraph"]; // backwards compat
     if (ALL_TRACKED_FRAMEWORKS.includes(framework as TrackedFramework))
-      return [framework as TrackedFramework]
-    return ["langchain"]
-  }, [framework])
+      return [framework as TrackedFramework];
+    return ["langchain"];
+  }, [framework]);
 
   const poll = useCallback(async () => {
     try {
-      const res = await fetch(`/api/progress/${runId}`)
+      const res = await fetch(`/api/progress/${runId}`);
       if (!res.ok) {
         setConsecutiveErrors((n) => {
-          const next = n + 1
-          if (next >= POLL_ERROR_THRESHOLD) setConnectionError(true)
-          return next
-        })
-        return
+          const next = n + 1;
+          if (next >= POLL_ERROR_THRESHOLD) setConnectionError(true);
+          return next;
+        });
+        return;
       }
-      const data = await res.json()
-      setConsecutiveErrors(0)
-      setConnectionError(false)
-      setProgress(data)
+      const data = await res.json();
+      setConsecutiveErrors(0);
+      setConnectionError(false);
+      setProgress(data);
 
       const allDone = frameworks.every(
-        (fw) => data[fw]?.status === "complete" || data[fw]?.status === "error"
-      )
+        (fw) => data[fw]?.status === "complete" || data[fw]?.status === "error",
+      );
       if (allDone && !done) {
-        setDone(true)
+        setDone(true);
         // Always call onComplete, even when some frameworks failed (no result.json)
-        const rRes = await fetch(`/api/results/${runId}`)
-        const results = rRes.ok ? await rRes.json() : {}
-        onComplete?.(results)
+        const rRes = await fetch(`/api/results/${runId}`);
+        const results = rRes.ok ? await rRes.json() : {};
+        onComplete?.(results);
       }
     } catch {
       setConsecutiveErrors((n) => {
-        const next = n + 1
-        if (next >= POLL_ERROR_THRESHOLD) setConnectionError(true)
-        return next
-      })
+        const next = n + 1;
+        if (next >= POLL_ERROR_THRESHOLD) setConnectionError(true);
+        return next;
+      });
     }
-  }, [runId, frameworks, onComplete, done])
+  }, [runId, frameworks, onComplete, done]);
 
   useEffect(() => {
-    if (done) return
-    poll()
-    const interval = setInterval(poll, 500)
-    return () => clearInterval(interval)
-  }, [poll, done])
+    if (done) return;
+    poll();
+    const interval = setInterval(poll, 500);
+    return () => clearInterval(interval);
+  }, [poll, done]);
 
   return (
     <div className="space-y-3">
@@ -102,24 +110,35 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
         </div>
       )}
       {frameworks.map((fw) => {
-        const p = progress[fw]
-        const status = p?.status ?? "pending"
+        const p = progress[fw];
+        const status = p?.status ?? "pending";
         return (
-          <div key={fw} className="bg-white rounded-lg border border-gray-200 p-4 space-y-3 shadow-sm">
+          <div
+            key={fw}
+            className="bg-white rounded-lg border border-gray-200 p-4 space-y-3 shadow-sm"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-gray-800">{FW_LABELS[fw] ?? fw}</span>
+                <span className="font-semibold text-gray-800">
+                  {FW_LABELS[fw] ?? fw}
+                </span>
                 <Badge
                   variant="outline"
                   className={`text-xs ${STATUS_STYLES[status as keyof typeof STATUS_STYLES] ?? ""}`}
                 >
-                  {status === "running" && <Loader2 className="h-3 w-3 mr-1 animate-spin" />}
-                  {status === "complete" && <CheckCircle className="h-3 w-3 mr-1" />}
+                  {status === "running" && (
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  )}
+                  {status === "complete" && (
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                  )}
                   {status === "error" && <XCircle className="h-3 w-3 mr-1" />}
                   {status}
                 </Badge>
               </div>
-              <span className="text-sm font-medium text-gray-500">{p?.progress_percent ?? 0}%</span>
+              <span className="text-sm font-medium text-gray-500">
+                {p?.progress_percent ?? 0}%
+              </span>
             </div>
 
             <Progress
@@ -170,8 +189,8 @@ export function ProgressTracker({ runId, framework, onComplete }: ProgressTracke
               </div>
             )}
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

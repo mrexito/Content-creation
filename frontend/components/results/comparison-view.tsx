@@ -1,121 +1,151 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import type { RunResult, PipelineResult } from "@/lib/types"
-import { MetricsDashboard } from "./metrics-dashboard"
-import { ComparisonTable } from "./comparison-table"
-import { SegmentComparison } from "./segment-comparison"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { CheckCircle, XCircle, Download, FileDown, ChevronDown, ChevronRight } from "lucide-react"
+import { useState } from "react";
+import type { RunResult, PipelineResult } from "@/lib/types";
+import { MetricsDashboard } from "./metrics-dashboard";
+import { ComparisonTable } from "./comparison-table";
+import { SegmentComparison } from "./segment-comparison";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  CheckCircle,
+  XCircle,
+  Download,
+  FileDown,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 
 interface ComparisonViewProps {
-  run: RunResult
+  run: RunResult;
 }
 
 // Zentrale Konfiguration für alle 6 Frameworks
-export const FW_CONFIG: Record<string, {
-  label: string
-  color: string
-  statusStyle: string
-  pdfTaskStyle: string
-  pdfSolStyle: string
-  headerBg: string
-  headerText: string
-  headerBorder: string
-  dot: string
-}> = {
+export const FW_CONFIG: Record<
+  string,
+  {
+    label: string;
+    color: string;
+    statusStyle: string;
+    pdfTaskStyle: string;
+    pdfSolStyle: string;
+    headerBg: string;
+    headerText: string;
+    headerBorder: string;
+    dot: string;
+  }
+> = {
   langchain: {
-    label:        "LangChain",
-    color:        "#3b82f6",
-    statusStyle:  "text-blue-700 border-blue-200 bg-blue-50",
-    pdfTaskStyle: "border-blue-300 text-blue-600 hover:text-blue-800 hover:bg-blue-50",
-    pdfSolStyle:  "border-blue-200 text-blue-500 hover:text-blue-700 hover:bg-blue-50",
-    headerBg:     "bg-blue-50",
-    headerText:   "text-blue-700",
+    label: "LangChain",
+    color: "#3b82f6",
+    statusStyle: "text-blue-700 border-blue-200 bg-blue-50",
+    pdfTaskStyle:
+      "border-blue-300 text-blue-600 hover:text-blue-800 hover:bg-blue-50",
+    pdfSolStyle:
+      "border-blue-200 text-blue-500 hover:text-blue-700 hover:bg-blue-50",
+    headerBg: "bg-blue-50",
+    headerText: "text-blue-700",
     headerBorder: "border-blue-200",
-    dot:          "bg-blue-500",
+    dot: "bg-blue-500",
   },
   langgraph: {
-    label:        "LangGraph",
-    color:        "#10b981",
-    statusStyle:  "text-emerald-700 border-emerald-200 bg-emerald-50",
-    pdfTaskStyle: "border-emerald-300 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50",
-    pdfSolStyle:  "border-emerald-200 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50",
-    headerBg:     "bg-emerald-50",
-    headerText:   "text-emerald-700",
+    label: "LangGraph",
+    color: "#10b981",
+    statusStyle: "text-emerald-700 border-emerald-200 bg-emerald-50",
+    pdfTaskStyle:
+      "border-emerald-300 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50",
+    pdfSolStyle:
+      "border-emerald-200 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50",
+    headerBg: "bg-emerald-50",
+    headerText: "text-emerald-700",
     headerBorder: "border-emerald-200",
-    dot:          "bg-emerald-500",
+    dot: "bg-emerald-500",
   },
   hybrid: {
-    label:        "Hybrid",
-    color:        "#f59e0b",
-    statusStyle:  "text-amber-700 border-amber-200 bg-amber-50",
-    pdfTaskStyle: "border-amber-300 text-amber-600 hover:text-amber-800 hover:bg-amber-50",
-    pdfSolStyle:  "border-amber-200 text-amber-500 hover:text-amber-700 hover:bg-amber-50",
-    headerBg:     "bg-amber-50",
-    headerText:   "text-amber-700",
+    label: "Hybrid",
+    color: "#f59e0b",
+    statusStyle: "text-amber-700 border-amber-200 bg-amber-50",
+    pdfTaskStyle:
+      "border-amber-300 text-amber-600 hover:text-amber-800 hover:bg-amber-50",
+    pdfSolStyle:
+      "border-amber-200 text-amber-500 hover:text-amber-700 hover:bg-amber-50",
+    headerBg: "bg-amber-50",
+    headerText: "text-amber-700",
     headerBorder: "border-amber-200",
-    dot:          "bg-amber-500",
+    dot: "bg-amber-500",
   },
   agent_orchestrator: {
-    label:        "Agent A",
-    color:        "#f43f5e",
-    statusStyle:  "text-rose-700 border-rose-200 bg-rose-50",
-    pdfTaskStyle: "border-rose-300 text-rose-600 hover:text-rose-800 hover:bg-rose-50",
-    pdfSolStyle:  "border-rose-200 text-rose-500 hover:text-rose-700 hover:bg-rose-50",
-    headerBg:     "bg-rose-50",
-    headerText:   "text-rose-700",
+    label: "Agent A",
+    color: "#f43f5e",
+    statusStyle: "text-rose-700 border-rose-200 bg-rose-50",
+    pdfTaskStyle:
+      "border-rose-300 text-rose-600 hover:text-rose-800 hover:bg-rose-50",
+    pdfSolStyle:
+      "border-rose-200 text-rose-500 hover:text-rose-700 hover:bg-rose-50",
+    headerBg: "bg-rose-50",
+    headerText: "text-rose-700",
     headerBorder: "border-rose-200",
-    dot:          "bg-rose-500",
+    dot: "bg-rose-500",
   },
   agent_multi: {
-    label:        "Agent B",
-    color:        "#f97316",
-    statusStyle:  "text-orange-700 border-orange-200 bg-orange-50",
-    pdfTaskStyle: "border-orange-300 text-orange-600 hover:text-orange-800 hover:bg-orange-50",
-    pdfSolStyle:  "border-orange-200 text-orange-500 hover:text-orange-700 hover:bg-orange-50",
-    headerBg:     "bg-orange-50",
-    headerText:   "text-orange-700",
+    label: "Agent B",
+    color: "#f97316",
+    statusStyle: "text-orange-700 border-orange-200 bg-orange-50",
+    pdfTaskStyle:
+      "border-orange-300 text-orange-600 hover:text-orange-800 hover:bg-orange-50",
+    pdfSolStyle:
+      "border-orange-200 text-orange-500 hover:text-orange-700 hover:bg-orange-50",
+    headerBg: "bg-orange-50",
+    headerText: "text-orange-700",
     headerBorder: "border-orange-200",
-    dot:          "bg-orange-500",
+    dot: "bg-orange-500",
   },
   hybrid_agent: {
-    label:        "Hybrid+Agent",
-    color:        "#14b8a6",
-    statusStyle:  "text-teal-700 border-teal-200 bg-teal-50",
-    pdfTaskStyle: "border-teal-300 text-teal-600 hover:text-teal-800 hover:bg-teal-50",
-    pdfSolStyle:  "border-teal-200 text-teal-500 hover:text-teal-700 hover:bg-teal-50",
-    headerBg:     "bg-teal-50",
-    headerText:   "text-teal-700",
+    label: "Hybrid+Agent",
+    color: "#14b8a6",
+    statusStyle: "text-teal-700 border-teal-200 bg-teal-50",
+    pdfTaskStyle:
+      "border-teal-300 text-teal-600 hover:text-teal-800 hover:bg-teal-50",
+    pdfSolStyle:
+      "border-teal-200 text-teal-500 hover:text-teal-700 hover:bg-teal-50",
+    headerBg: "bg-teal-50",
+    headerText: "text-teal-700",
     headerBorder: "border-teal-200",
-    dot:          "bg-teal-500",
+    dot: "bg-teal-500",
   },
-}
+};
 
-export type ResultEntry = { key: string; result: PipelineResult }
+export type ResultEntry = { key: string; result: PipelineResult };
 
 function downloadJson(data: unknown, filename: string) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = filename
-  a.click()
-  URL.revokeObjectURL(url)
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function downloadPdf(runId: string, framework: string, filename: string) {
-  const url = `/api/download/${runId}/${framework}/${filename}`
-  const a = document.createElement("a")
-  a.href = url
-  a.download = filename
-  a.click()
+  const url = `/api/download/${runId}/${framework}/${filename}`;
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
 }
 
-function JsonAccordion({ result, fwKey }: { result: PipelineResult; fwKey: string }) {
-  const [open, setOpen] = useState(false)
-  const label = FW_CONFIG[fwKey]?.label ?? fwKey
+function JsonAccordion({
+  result,
+  fwKey,
+}: {
+  result: PipelineResult;
+  fwKey: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const label = FW_CONFIG[fwKey]?.label ?? fwKey;
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden">
       <button
@@ -123,9 +153,11 @@ function JsonAccordion({ result, fwKey }: { result: PipelineResult; fwKey: strin
         className="w-full flex items-center gap-2 px-4 py-3 bg-gray-50
           hover:bg-gray-100 transition-colors text-left"
       >
-        {open
-          ? <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />
-          : <ChevronRight className="h-4 w-4 text-gray-400 shrink-0" />}
+        {open ? (
+          <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />
+        ) : (
+          <ChevronRight className="h-4 w-4 text-gray-400 shrink-0" />
+        )}
         <span className="text-sm font-medium text-gray-700">
           {label} – result.json
         </span>
@@ -133,13 +165,13 @@ function JsonAccordion({ result, fwKey }: { result: PipelineResult; fwKey: strin
           role="button"
           tabIndex={0}
           onClick={(e) => {
-            e.stopPropagation()
-            downloadJson(result, `${fwKey}_result.json`)
+            e.stopPropagation();
+            downloadJson(result, `${fwKey}_result.json`);
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.stopPropagation()
-              downloadJson(result, `${fwKey}_result.json`)
+            if (e.key === "Enter" || e.key === " ") {
+              e.stopPropagation();
+              downloadJson(result, `${fwKey}_result.json`);
             }
           }}
           className="ml-auto text-xs text-gray-400 hover:text-gray-700 flex items-center gap-1 cursor-pointer"
@@ -156,32 +188,34 @@ function JsonAccordion({ result, fwKey }: { result: PipelineResult; fwKey: strin
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export function ComparisonView({ run }: ComparisonViewProps) {
   // Alle 6 Frameworks einlesen
   const ALL_FW_KEYS = [
-    "langchain", "langgraph", "hybrid",
-    "agent_orchestrator", "agent_multi", "hybrid_agent",
-  ] as const
+    "langchain",
+    "langgraph",
+    "hybrid",
+    "agent_orchestrator",
+    "agent_multi",
+    "hybrid_agent",
+  ] as const;
 
-  const resultEntries: ResultEntry[] = ALL_FW_KEYS
-    .flatMap((key) => {
-      const result = run[key as keyof RunResult] as PipelineResult | undefined
-      return result ? [{ key, result } satisfies ResultEntry] : []
-    })
+  const resultEntries: ResultEntry[] = ALL_FW_KEYS.flatMap((key) => {
+    const result = run[key as keyof RunResult] as PipelineResult | undefined;
+    return result ? [{ key, result } satisfies ResultEntry] : [];
+  });
 
   if (!resultEntries.length) {
-    return <p className="text-gray-500">Keine Ergebnisse verfügbar.</p>
+    return <p className="text-gray-500">Keine Ergebnisse verfügbar.</p>;
   }
 
-  const hasMultiple = resultEntries.length > 1
-  const numSegments = resultEntries[0]?.result?.segments?.length ?? 0
+  const hasMultiple = resultEntries.length > 1;
+  const numSegments = resultEntries[0]?.result?.segments?.length ?? 0;
 
   return (
     <div className="space-y-6">
-
       {/* ── [1] Header ─────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div className="space-y-1.5">
@@ -194,9 +228,11 @@ export function ComparisonView({ run }: ComparisonViewProps) {
             )}
           </h2>
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant="outline" className="text-xs text-gray-600">{run.domain}</Badge>
+            <Badge variant="outline" className="text-xs text-gray-600">
+              {run.domain}
+            </Badge>
             {resultEntries.map(({ key, result }) => {
-              const cfg = FW_CONFIG[key]
+              const cfg = FW_CONFIG[key];
               return (
                 <Badge
                   key={key}
@@ -207,12 +243,14 @@ export function ComparisonView({ run }: ComparisonViewProps) {
                       : "text-red-600 border-red-200 bg-red-50"
                   }`}
                 >
-                  {result.success
-                    ? <CheckCircle className="h-3 w-3" />
-                    : <XCircle className="h-3 w-3" />}
+                  {result.success ? (
+                    <CheckCircle className="h-3 w-3" />
+                  ) : (
+                    <XCircle className="h-3 w-3" />
+                  )}
                   {cfg?.label ?? key}
                 </Badge>
-              )
+              );
             })}
             <span className="text-xs text-gray-400">
               {new Date(run.timestamp).toLocaleString("de-CH")}
@@ -235,7 +273,7 @@ export function ComparisonView({ run }: ComparisonViewProps) {
           {resultEntries.some((e) => e.result.pdf_files) && (
             <div className="flex flex-wrap justify-end gap-1.5">
               {resultEntries.map(({ key, result }) => {
-                const cfg = FW_CONFIG[key]
+                const cfg = FW_CONFIG[key];
                 return result.pdf_files ? (
                   <div key={key} className="flex items-center gap-1">
                     <span
@@ -263,7 +301,7 @@ export function ComparisonView({ run }: ComparisonViewProps) {
                       Lösungen
                     </Button>
                   </div>
-                ) : null
+                ) : null;
               })}
             </div>
           )}
@@ -299,5 +337,5 @@ export function ComparisonView({ run }: ComparisonViewProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
