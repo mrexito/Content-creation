@@ -406,31 +406,123 @@ def _md_summary_table(results: list[dict]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _md_metrics_row(r: dict) -> str:
+    """Erzeugt eine einzelne Tabellenzeile für die Metrik-Tabelle pro Framework."""
+    fw = r["framework"]
+    if not r["success"]:
+        return f"| ❌ {fw.capitalize()} | – | – | – | – | – |"
+    m = r["metrics"]
+    return (
+        f"| {EMOJI.get(fw,'')} {fw.capitalize()} "
+        f"| {m['num_segments']} "
+        f"| {m['valid_variants']} / {m['total_variants']} "
+        f"| {m['validation_rate']*100:.0f}% "
+        f"| {m['total_time']:.1f} "
+        f"| {m['ocr_tool']} |"
+    )
+
+
+def _md_metrics_table(domain_results: list[dict]) -> list[str]:
+    """Kurze Metrik-Tabelle pro Framework."""
+    lines = [
+        "\n### Metriken\n",
+        "| Framework | Segmente | Valide / Total | Rate | Zeit (s) | OCR |",
+        "|-----------|----------|----------------|------|----------|-----|",
+    ]
+    for r in domain_results:
+        lines.append(_md_metrics_row(r))
+    lines.append("")
+    return lines
+
+
+def _md_segment_original(domain_results: list[dict], seg_idx: int) -> tuple[str, str]:
+    """Hole Original-Text und -Typ aus erstem erfolgreichem Framework."""
+    for r in domain_results:
+        if r["success"] and seg_idx < len(r["segments"]):
+            orig = r["segments"][seg_idx]["original_segment"]
+            return orig["text"], orig.get("type", "?")
+    return "", ""
+
+
+def _md_variant_block(v: dict) -> list[str]:
+    """Erzeugt den <details>-Block für eine einzelne Variante."""
+    ok_str = "✅ VALIDE" if v["is_valid"] else "❌ INVALID"
+    issues = v.get("validation_issues") or v.get("validation", {}).get("issues", [])
+    block = [
+        "<details>",
+        f"<summary>Variante {v['variant_id']} — {ok_str}</summary>\n",
+        "```",
+        v["text"] if v["text"] else "(leer)",
+        "```",
+    ]
+    if issues:
+        block.append("\n> **Issues:** " + " | ".join(str(i) for i in issues))
+    block.append("</details>\n")
+    return block
+
+
+def _md_framework_segment(r: dict, seg_idx: int) -> list[str]:
+    """Erzeugt die Markdown-Zeilen für ein Framework-Segment."""
+    fw = r["framework"]
+    icon = EMOJI.get(fw, "")
+    if not r["success"]:
+        return [f"**{icon} {fw.capitalize()}:** ❌ Pipeline fehlgeschlagen — `{r.get('error','?')}`\n"]
+
+    if seg_idx >= len(r["segments"]):
+        return [f"**{icon} {fw.capitalize()}:** _(kein Segment #{seg_idx+1})_\n"]
+
+    seg = r["segments"][seg_idx]
+    cls = seg.get("classification", {})
+    cls_str = f"{cls.get('domain','?')} / {cls.get('content_type','?')}"
+    stats = seg["validation_statistics"]
+
+    out = [
+        f"**{icon} {fw.capitalize()}** — Klassifiziert als `{cls_str}` — {stats['valid']}/{stats['total']} valide\n"
+    ]
+
+    variants = seg["validated_variants"]
+    if not variants:
+        out.append("_Keine Varianten generiert (Segment übersprungen)_\n")
+    else:
+        for v in variants:
+            out.extend(_md_variant_block(v))
+
+    out.append("")
+    return out
+
+
+def _md_segment_block(domain_results: list[dict], seg_idx: int) -> list[str]:
+    """Erzeugt Markdown-Zeilen für ein einzelnes Segment über alle Frameworks."""
+    original_text, original_type = _md_segment_original(domain_results, seg_idx)
+
+    preview = original_text[:80].replace("\n", " ")
+    if len(original_text) > 80:
+        preview += "…"
+
+    lines = [
+        f"#### Segment {seg_idx + 1} — `{original_type}` — _{preview}_\n",
+        "**Original:**",
+        "```",
+        original_text,
+        "```\n",
+    ]
+
+    for r in domain_results:
+        lines.extend(_md_framework_segment(r, seg_idx))
+
+    return lines
+
+
 def _md_domain_section(domain: str, domain_results: list[dict]) -> str:
-    cfg      = DOMAIN_CONFIG[domain]
+    cfg = DOMAIN_CONFIG[domain]
     pdf_used = domain_results[0]["pdf_name"] if domain_results else cfg["pdf"].split("/")[-1]
-    lines = [f"---\n\n## Domäne: {cfg['label']} (`{domain}`)\n",
-             f"**PDF:** `{pdf_used}` | **Validator:** {cfg['validator']}\n"]
+    lines = [
+        f"---\n\n## Domäne: {cfg['label']} (`{domain}`)\n",
+        f"**PDF:** `{pdf_used}` | **Validator:** {cfg['validator']}\n",
+    ]
 
     # Kurze Metrik-Tabelle pro Framework
-    lines.append("\n### Metriken\n")
-    lines.append("| Framework | Segmente | Valide / Total | Rate | Zeit (s) | OCR |")
-    lines.append("|-----------|----------|----------------|------|----------|-----|")
-    for r in domain_results:
-        m  = r["metrics"]
-        fw = r["framework"]
-        if r["success"]:
-            lines.append(
-                f"| {EMOJI.get(fw,'')} {fw.capitalize()} "
-                f"| {m['num_segments']} "
-                f"| {m['valid_variants']} / {m['total_variants']} "
-                f"| {m['validation_rate']*100:.0f}% "
-                f"| {m['total_time']:.1f} "
-                f"| {m['ocr_tool']} |"
-            )
-        else:
-            lines.append(f"| ❌ {fw.capitalize()} | – | – | – | – | – |")
-    lines.append("")
+    lines.extend(_md_metrics_table(domain_results))
 
     # Segment-für-Segment Volltext-Vergleich
     lines.append("\n### Segment-Vergleich (Volltext)\n")
@@ -439,69 +531,76 @@ def _md_domain_section(domain: str, domain_results: list[dict]) -> str:
     max_segs = max((len(r["segments"]) for r in domain_results if r["success"]), default=0)
 
     for seg_idx in range(max_segs):
-        # Hole Original aus erstem erfolgreichem Framework
-        original_text = ""
-        original_type = ""
-        for r in domain_results:
-            if r["success"] and seg_idx < len(r["segments"]):
-                original_text = r["segments"][seg_idx]["original_segment"]["text"]
-                original_type = r["segments"][seg_idx]["original_segment"].get("type", "?")
-                break
-
-        preview = original_text[:80].replace("\n", " ")
-        if len(original_text) > 80:
-            preview += "…"
-
-        lines.append(f"#### Segment {seg_idx + 1} — `{original_type}` — _{preview}_\n")
-
-        # Original
-        lines.append("**Original:**")
-        lines.append("```")
-        lines.append(original_text)
-        lines.append("```\n")
-
-        # Pro Framework: alle Varianten
-        for r in domain_results:
-            fw = r["framework"]
-            icon = EMOJI.get(fw, "")
-            if not r["success"]:
-                lines.append(f"**{icon} {fw.capitalize()}:** ❌ Pipeline fehlgeschlagen — `{r.get('error','?')}`\n")
-                continue
-
-            if seg_idx >= len(r["segments"]):
-                lines.append(f"**{icon} {fw.capitalize()}:** _(kein Segment #{seg_idx+1})_\n")
-                continue
-
-            seg = r["segments"][seg_idx]
-            cls = seg.get("classification", {})
-            cls_str = f"{cls.get('domain','?')} / {cls.get('content_type','?')}"
-            stats   = seg["validation_statistics"]
-
-            lines.append(f"**{icon} {fw.capitalize()}** — Klassifiziert als `{cls_str}` — {stats['valid']}/{stats['total']} valide\n")
-
-            variants = seg["validated_variants"]
-            if not variants:
-                lines.append("_Keine Varianten generiert (Segment übersprungen)_\n")
-            else:
-                for v in variants:
-                    ok_str   = "✅ VALIDE" if v["is_valid"] else "❌ INVALID"
-                    issues   = v.get("validation_issues") or v.get("validation", {}).get("issues", [])
-                    issue_md = ""
-                    if issues:
-                        issue_md = "\n> **Issues:** " + " | ".join(str(i) for i in issues)
-
-                    lines.append(f"<details>")
-                    lines.append(f"<summary>Variante {v['variant_id']} — {ok_str}</summary>\n")
-                    lines.append("```")
-                    lines.append(v["text"] if v["text"] else "(leer)")
-                    lines.append("```")
-                    if issue_md:
-                        lines.append(issue_md)
-                    lines.append("</details>\n")
-
-            lines.append("")
+        lines.extend(_md_segment_block(domain_results, seg_idx))
 
     return "\n".join(lines)
+
+
+def _iter_variants(results: list[dict]):
+    """Iteriert über (result, segment, segment_index, variant) Tupel."""
+    for r in results:
+        for seg_idx, seg in enumerate(r.get("segments", [])):
+            for v in seg.get("validated_variants", []):
+                yield r, seg, seg_idx, v
+
+
+def _is_prompt_leak(text: str) -> bool:
+    """Prüft, ob Prompt-Text im Output erkennbar ist."""
+    return (
+        "Erstelle eine inhaltlich äquivalente" in text
+        or "DEUTLICH anders formulierte Variante" in text
+    )
+
+
+def _collect_prompt_leaks(results: list[dict]) -> list[str]:
+    leaks = []
+    for r, _seg, _seg_idx, v in _iter_variants(results):
+        if _is_prompt_leak(v.get("text", "")):
+            leaks.append(
+                f"- **{r['framework'].capitalize()}** / {r['domain']} / "
+                f"Variante {v['variant_id']}: Prompt-Text im Output erkannt"
+            )
+    return leaks
+
+
+def _collect_latex_issues(results: list[dict]) -> list[str]:
+    issues = []
+    for r, _seg, _seg_idx, v in _iter_variants(results):
+        if v.get("is_valid") and "\\documentclass" in v.get("text", ""):
+            issues.append(
+                f"- **{r['framework'].capitalize()}** / {r['domain']} / "
+                f"Variante {v['variant_id']}: LaTeX-Preamble im validierten Output"
+            )
+    return issues
+
+
+def _collect_length_issues(results: list[dict]) -> list[str]:
+    issues = []
+    for r, seg, seg_idx, v in _iter_variants(results):
+        orig_len = len(seg["original_segment"]["text"])
+        if orig_len <= 0:
+            continue
+        ratio = len(v.get("text", "")) / orig_len
+        if ratio > 3.0:
+            issues.append(
+                f"- **{r['framework'].capitalize()}** / {r['domain']} / "
+                f"Seg {seg_idx+1} / V{v['variant_id']}: "
+                f"Ratio {ratio:.1f}× (Original: {orig_len} Zeichen)"
+            )
+    return issues
+
+
+def _append_findings_block(lines: list[str], header: str, items: list[str], limit: int | None = None) -> None:
+    """Hängt einen Findings-Block (Header + Items) an, falls Items vorhanden sind."""
+    if not items:
+        return
+    lines.append(header)
+    if limit is not None and len(items) > limit:
+        lines.extend(items[:limit])
+        lines.append(f"  … und {len(items)-limit} weitere")
+    else:
+        lines.extend(items)
+    lines.append("")
 
 
 def _md_findings_section(results: list[dict]) -> str:
@@ -509,58 +608,22 @@ def _md_findings_section(results: list[dict]) -> str:
              "_Dieser Abschnitt ist für manuelle Ergänzung nach Claude-Upload vorgesehen._\n",
              "### Automatisch erkannte Auffälligkeiten\n"]
 
-    # Prompt-Leaks
-    leaks = []
-    for r in results:
-        for seg in r.get("segments", []):
-            for v in seg.get("validated_variants", []):
-                text = v.get("text", "")
-                if "Erstelle eine inhaltlich äquivalente" in text or \
-                   "DEUTLICH anders formulierte Variante" in text:
-                    leaks.append(
-                        f"- **{r['framework'].capitalize()}** / {r['domain']} / "
-                        f"Variante {v['variant_id']}: Prompt-Text im Output erkannt"
-                    )
-    if leaks:
-        lines.append("**⚠️ Prompt-Leaks:**")
-        lines.extend(leaks)
-        lines.append("")
+    leaks         = _collect_prompt_leaks(results)
+    latex_issues  = _collect_latex_issues(results)
+    length_issues = _collect_length_issues(results)
 
-    # Falsch-positive: Variante ist "valid" aber enthält LaTeX-Preamble
-    latex_issues = []
-    for r in results:
-        for seg in r.get("segments", []):
-            for v in seg.get("validated_variants", []):
-                if v.get("is_valid") and "\\documentclass" in v.get("text", ""):
-                    latex_issues.append(
-                        f"- **{r['framework'].capitalize()}** / {r['domain']} / "
-                        f"Variante {v['variant_id']}: LaTeX-Preamble im validierten Output"
-                    )
-    if latex_issues:
-        lines.append("**⚠️ LaTeX-Preamble in validen Varianten (Falsch-Positive):**")
-        lines.extend(latex_issues)
-        lines.append("")
-
-    # Extrem lange Varianten (Ratio > 3×)
-    length_issues = []
-    for r in results:
-        for seg_idx, seg in enumerate(r.get("segments", [])):
-            orig_len = len(seg["original_segment"]["text"])
-            for v in seg.get("validated_variants", []):
-                if orig_len > 0:
-                    ratio = len(v.get("text", "")) / orig_len
-                    if ratio > 3.0:
-                        length_issues.append(
-                            f"- **{r['framework'].capitalize()}** / {r['domain']} / "
-                            f"Seg {seg_idx+1} / V{v['variant_id']}: "
-                            f"Ratio {ratio:.1f}× (Original: {orig_len} Zeichen)"
-                        )
-    if length_issues:
-        lines.append("**⚠️ Extreme Längenabweichungen (> 3× Original):**")
-        lines.extend(length_issues[:20])  # max 20 Einträge
-        if len(length_issues) > 20:
-            lines.append(f"  … und {len(length_issues)-20} weitere")
-        lines.append("")
+    _append_findings_block(lines, "**⚠️ Prompt-Leaks:**", leaks)
+    _append_findings_block(
+        lines,
+        "**⚠️ LaTeX-Preamble in validen Varianten (Falsch-Positive):**",
+        latex_issues,
+    )
+    _append_findings_block(
+        lines,
+        "**⚠️ Extreme Längenabweichungen (> 3× Original):**",
+        length_issues,
+        limit=20,
+    )
 
     if not leaks and not latex_issues and not length_issues:
         lines.append("_Keine automatisch erkannten Auffälligkeiten._\n")
@@ -612,7 +675,7 @@ RUNNERS = {
 }
 
 
-def main() -> None:
+def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Evaluiert alle drei Frameworks über alle drei Domänen."
     )
@@ -630,18 +693,59 @@ def main() -> None:
     parser.add_argument("--pdf",         type=str, default=None,
                         help="Spezifischer PDF-Dateiname (z.B. equations_advanced.pdf) "
                              "um Standard-PDF zu überschreiben")
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    ts  = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    ts_file = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    out_dir: Path = args.output_dir or (
-        Config.DATA_OUTPUT_PATH / "evaluation" / ts_file
-    )
-    out_dir.mkdir(parents=True, exist_ok=True)
+def _resolve_pdf_path(domain: str, pdf_override: str | None) -> Path:
+    """Bestimmt den PDF-Pfad für eine Domain, optional mit --pdf override."""
+    if pdf_override:
+        matches = [p for p in DOMAIN_PDFS[domain] if Path(p).name == pdf_override]
+        pdf_rel = matches[0] if matches else f"{domain}/{pdf_override}"
+    else:
+        pdf_rel = DOMAIN_PDFS[domain][0]
+    return Config.DATA_INPUT_PATH / pdf_rel
 
+
+def _print_run_result(result: dict) -> None:
+    """Druckt das Ergebnis eines einzelnen Framework-Runs."""
+    if result["success"]:
+        m = result["metrics"]
+        print(f"  ✅ {m['valid_variants']}/{m['total_variants']} valide "
+              f"({m['validation_rate']*100:.0f}%) | {m['total_time']:.1f}s | "
+              f"OCR: {m['ocr_tool']}")
+    else:
+        print(f"  ❌ Fehler: {result.get('error','?')}")
+
+
+def _execute_framework_run(
+    framework: str,
+    pdf_path: Path,
+    domain: str,
+    variants: int,
+    run_num: int,
+    total_runs: int,
+    domain_label: str,
+) -> dict:
+    """Führt einen Framework-Run aus und druckt Status-Informationen."""
+    icon = EMOJI.get(framework, "")
+    print(f"\n[{run_num}/{total_runs}] {icon} {framework.upper()} — {domain_label.upper()}")
+    print(f"  PDF: {pdf_path.name}")
+
+    runner = RUNNERS[framework]
+    try:
+        result = runner(pdf_path, domain, variants)
+    except Exception as exc:
+        print(f"  ❌ Exception: {exc}")
+        result = _error_result(framework, domain, pdf_path.name, str(exc))
+
+    _print_run_result(result)
+    return result
+
+
+def _run_all_evaluations(args: argparse.Namespace) -> list[dict]:
+    """Führt alle Framework-Domain-Kombinationen aus und sammelt Ergebnisse."""
     total_runs = len(args.frameworks) * len(args.domains)
-    run_num    = 0
+    run_num = 0
     results: list[dict] = []
 
     print("=" * 70)
@@ -651,15 +755,7 @@ def main() -> None:
 
     for domain in args.domains:
         cfg_dom = DOMAIN_CONFIG[domain]
-
-        # --pdf override: search in this domain's PDF list by filename
-        if args.pdf:
-            matches = [p for p in DOMAIN_PDFS[domain] if Path(p).name == args.pdf]
-            pdf_rel = matches[0] if matches else f"{domain}/{args.pdf}"
-        else:
-            pdf_rel = DOMAIN_PDFS[domain][0]
-
-        pdf_path = Config.DATA_INPUT_PATH / pdf_rel
+        pdf_path = _resolve_pdf_path(domain, args.pdf)
 
         if not pdf_path.exists():
             print(f"\n⚠️  PDF nicht gefunden: {pdf_path} — überspringe Domain '{domain}'")
@@ -670,28 +766,23 @@ def main() -> None:
 
         for framework in args.frameworks:
             run_num += 1
-            icon = EMOJI.get(framework, "")
-            print(f"\n[{run_num}/{total_runs}] {icon} {framework.upper()} — {cfg_dom['label'].upper()}")
-            print(f"  PDF: {pdf_path.name}")
-
-            runner = RUNNERS[framework]
-            try:
-                result = runner(pdf_path, domain, args.variants)
-            except Exception as exc:
-                print(f"  ❌ Exception: {exc}")
-                result = _error_result(framework, domain, pdf_path.name, str(exc))
-
+            result = _execute_framework_run(
+                framework, pdf_path, domain, args.variants,
+                run_num, total_runs, cfg_dom["label"],
+            )
             results.append(result)
 
-            if result["success"]:
-                m = result["metrics"]
-                print(f"  ✅ {m['valid_variants']}/{m['total_variants']} valide "
-                      f"({m['validation_rate']*100:.0f}%) | {m['total_time']:.1f}s | "
-                      f"OCR: {m['ocr_tool']}")
-            else:
-                print(f"  ❌ Fehler: {result.get('error','?')}")
+    return results
 
-    # ── Reports schreiben ────────────────────────────────────────────────────
+
+def _write_reports(
+    results: list[dict],
+    args: argparse.Namespace,
+    out_dir: Path,
+    ts: str,
+    ts_file: str,
+) -> tuple[Path, Path]:
+    """Schreibt JSON- und Markdown-Reports und gibt deren Pfade zurück."""
     run_cfg = {
         "frameworks":   args.frameworks,
         "domains":      args.domains,
@@ -706,8 +797,8 @@ def main() -> None:
     )
 
     # Markdown
-    md_parts = [_md_header(ts, args.frameworks, args.domains, args.variants)]
-    md_parts.append(_md_summary_table(results))
+    md_parts = [_md_header(ts, args.frameworks, args.domains, args.variants),
+                _md_summary_table(results)]
 
     for domain in args.domains:
         domain_results = [r for r in results if r["domain"] == domain]
@@ -719,7 +810,11 @@ def main() -> None:
     md_path   = out_dir / f"evaluation_{ts_file}.md"
     md_path.write_text(md_report, encoding="utf-8")
 
-    # ── Abschluss-Übersicht ──────────────────────────────────────────────────
+    return json_path, md_path
+
+
+def _print_summary(results: list[dict], json_path: Path, md_path: Path) -> None:
+    """Druckt die Abschluss-Übersicht über alle Runs."""
     print("\n" + "=" * 70)
     print("  ZUSAMMENFASSUNG")
     print("=" * 70)
@@ -742,6 +837,22 @@ def main() -> None:
     print(f"     MD:   {md_path}")
     print("\n  💡 Tipp: Das Markdown-File direkt zu Claude hochladen für Analyse.")
     print("=" * 70 + "\n")
+
+
+def main() -> None:
+    args = _parse_args()
+
+    ts  = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ts_file = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    out_dir: Path = args.output_dir or (
+        Config.DATA_OUTPUT_PATH / "evaluation" / ts_file
+    )
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    results = _run_all_evaluations(args)
+    json_path, md_path = _write_reports(results, args, out_dir, ts, ts_file)
+    _print_summary(results, json_path, md_path)
 
 
 if __name__ == "__main__":

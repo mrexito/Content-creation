@@ -247,7 +247,6 @@ def run_variant(
     variant_name: str,
     segments: List[Dict],
     domain: Optional[str],
-    num_variants: int,
     max_retries: int,
     rewriting_chain=None,
     validation_chain=None,
@@ -587,10 +586,6 @@ def get_domain_pdfs(domain: str) -> List[Path]:
     return sorted(d.glob("*.pdf"))
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# CLI
-# ─────────────────────────────────────────────────────────────────────────────
-
 def parse_args():
     p = argparse.ArgumentParser(
         description="Vergleich der drei LangChain-Varianten auf identischen Inputs",
@@ -708,7 +703,6 @@ def run_single_domain(
             variant_name=vname,
             segments=all_segments,
             domain=domain,
-            num_variants=num_variants,
             max_retries=max_retries,
             rewriting_chain=rewriting_chain,
             validation_chain=validation_chain,
@@ -736,23 +730,20 @@ def run_single_domain(
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Main
-# ─────────────────────────────────────────────────────────────────────────────
+def _validate_args(args) -> None:
+    """Beendet das Programm mit Fehlermeldung, wenn Pflicht-Argumente fehlen."""
+    if args.all_domains:
+        return
+    if args.pdf is None or args.domain is None:
+        print(
+            "Fehler: --pdf und --domain sind erforderlich (oder --all-domains verwenden).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
-def main():
-    args = parse_args()
 
-    # Validierung: --pdf/--domain sind Pflicht ohne --all-domains
-    if not args.all_domains:
-        if args.pdf is None or args.domain is None:
-            print(
-                "Fehler: --pdf und --domain sind erforderlich (oder --all-domains verwenden).",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-
-    # LLM Handler initialisieren
+def _init_llm(args) -> None:
+    """Initialisiert den LLM-Handler entsprechend der CLI-Argumente."""
     from common.llm_handler import reset_llm_handler, get_llm_handler
     reset_llm_handler()
     get_llm_handler(
@@ -760,7 +751,9 @@ def main():
         model=args.llm_model if args.llm_model else None,
     )
 
-    # Varianten-Auswahl
+
+def _select_variants(args) -> List[str]:
+    """Bestimmt die aktiven Varianten anhand der --skip-* Flags."""
     active_variants: List[str] = []
     if not args.skip_pipeline:
         active_variants.append("langchain_pipeline")
@@ -768,43 +761,42 @@ def main():
         active_variants.append("agent_orchestrator")
     if not args.skip_multi:
         active_variants.append("agent_multi")
+    return active_variants
 
-    if not active_variants:
-        print("Alle Varianten übersprungen — nichts zu tun.", file=sys.stderr)
-        sys.exit(1)
 
-    # ── Alle Domänen ────────────────────────────────────────────────────────
-    if args.all_domains:
-        DOMAINS = ["mathematics", "languages", "economics"]
-        print(f"\nStarte alle {len(DOMAINS)} Domänen: {', '.join(DOMAINS)}")
+def _run_all_domains(args, active_variants: List[str]) -> None:
+    """Führt den Vergleich nacheinander auf allen drei Domänen aus."""
+    DOMAINS = ["mathematics", "languages", "economics"]
+    print(f"\nStarte alle {len(DOMAINS)} Domänen: {', '.join(DOMAINS)}")
 
-        saved_files: List[Path] = []
-        for domain in DOMAINS:
-            pdf_paths = get_domain_pdfs(domain)
-            if not pdf_paths:
-                print(f"  Keine PDFs gefunden für Domain '{domain}' — überspringe.")
-                continue
-            print(f"  {domain}: {len(pdf_paths)} PDF(s) gefunden: "
-                  f"{', '.join(p.name for p in pdf_paths)}")
-            out = run_single_domain(
-                pdf_paths=pdf_paths,
-                domain=domain,
-                active_variants=active_variants,
-                num_variants=args.variants,
-                max_retries=args.retries,
-                output_dir=args.output_dir,
-            )
-            if out:
-                saved_files.append(out)
+    saved_files: List[Path] = []
+    for domain in DOMAINS:
+        pdf_paths = get_domain_pdfs(domain)
+        if not pdf_paths:
+            print(f"  Keine PDFs gefunden für Domain '{domain}' — überspringe.")
+            continue
+        print(f"  {domain}: {len(pdf_paths)} PDF(s) gefunden: "
+              f"{', '.join(p.name for p in pdf_paths)}")
+        out = run_single_domain(
+            pdf_paths=pdf_paths,
+            domain=domain,
+            active_variants=active_variants,
+            num_variants=args.variants,
+            max_retries=args.retries,
+            output_dir=args.output_dir,
+        )
+        if out:
+            saved_files.append(out)
 
-        print("\n" + "=" * 60)
-        print("ALLE DOMÄNEN ABGESCHLOSSEN")
-        print("=" * 60)
-        for f in saved_files:
-            print(f"  {f}")
-        return
+    print("\n" + "=" * 60)
+    print("ALLE DOMÄNEN ABGESCHLOSSEN")
+    print("=" * 60)
+    for f in saved_files:
+        print(f"  {f}")
 
-    # ── Einzelne Domain ─────────────────────────────────────────────────────
+
+def _run_single_domain_cli(args, active_variants: List[str]) -> None:
+    """Führt den Vergleich für die per CLI angegebene Einzel-Domain aus."""
     domain = normalize_domain(args.domain)
     out = run_single_domain(
         pdf_paths=[args.pdf],
@@ -818,6 +810,23 @@ def main():
         print(f"Rohdaten: {out}")
     else:
         sys.exit(1)
+
+
+def main():
+    args = parse_args()
+    _validate_args(args)
+    _init_llm(args)
+
+    active_variants = _select_variants(args)
+    if not active_variants:
+        print("Alle Varianten übersprungen — nichts zu tun.", file=sys.stderr)
+        sys.exit(1)
+
+    if args.all_domains:
+        _run_all_domains(args, active_variants)
+        return
+
+    _run_single_domain_cli(args, active_variants)
 
 
 if __name__ == "__main__":

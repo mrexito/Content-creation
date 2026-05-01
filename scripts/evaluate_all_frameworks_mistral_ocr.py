@@ -690,14 +690,28 @@ def _md_summary(results: list[dict], frameworks: list[str]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _md_domain_section(domain: str, domain_results: list[dict]) -> str:
-    cfg   = DOMAIN_CONFIG[domain]
-    pdf_list = " | ".join(f"`{p}`" for p in cfg["pdfs"])
-    lines = [f"---\n\n## 3.{['math', 'languages', 'economics'].index(domain) + 1} Domäne: {cfg['label']} (`{domain}`)\n",
-             f"**PDFs:** {pdf_list} | **Validator:** {cfg['validator']}\n"]
+def _md_metrics_row(r: dict) -> str:
+    """Erstellt eine Tabellenzeile für die Metriken-Tabelle eines Runs."""
+    m  = r["metrics"]
+    fw = FRAMEWORK_LABELS.get(r["framework"], r["framework"])
+    if not r["success"]:
+        return f"| {fw} | – | – | – | – | – | – | – | – |"
+    tc   = str(m.get("tool_calls_total"))  if m.get("tool_calls_total")  is not None else "–"
+    ret  = str(m.get("retries_total"))      if m.get("retries_total")      is not None else "–"
+    hall = str(m.get("hallucinated_calls")) if m.get("hallucinated_calls") is not None else "–"
+    return (
+        f"| {fw} | {m['num_segments']} "
+        f"| {m['valid_variants']} / {m['total_variants']} "
+        f"| {m['validation_rate'] * 100:.0f}% "
+        f"| {m['total_time']:.1f} "
+        f"| {m['ocr_tool']} "
+        f"| {tc} | {ret} | {hall} |"
+    )
 
-    lines.append("\n### Metriken\n")
-    pdf_names = list(dict.fromkeys(r["pdf_name"] for r in domain_results))
+
+def _md_metrics_section(domain_results: list[dict], pdf_names: list[str]) -> list[str]:
+    """Erzeugt die Metriken-Tabelle für alle PDFs einer Domain."""
+    lines: list[str] = ["\n### Metriken\n"]
     for pdf_name in pdf_names:
         pdf_results = [r for r in domain_results if r["pdf_name"] == pdf_name]
         lines.append(f"**PDF:** `{pdf_name}`\n")
@@ -710,93 +724,193 @@ def _md_domain_section(domain: str, domain_results: list[dict]) -> str:
             "-----|------------|---------|--------------|"
         )
         for r in pdf_results:
-            m  = r["metrics"]
-            fw = FRAMEWORK_LABELS.get(r["framework"], r["framework"])
-            if r["success"]:
-                tc   = str(m.get("tool_calls_total"))  if m.get("tool_calls_total")  is not None else "–"
-                ret  = str(m.get("retries_total"))      if m.get("retries_total")      is not None else "–"
-                hall = str(m.get("hallucinated_calls")) if m.get("hallucinated_calls") is not None else "–"
-                lines.append(
-                    f"| {fw} | {m['num_segments']} "
-                    f"| {m['valid_variants']} / {m['total_variants']} "
-                    f"| {m['validation_rate'] * 100:.0f}% "
-                    f"| {m['total_time']:.1f} "
-                    f"| {m['ocr_tool']} "
-                    f"| {tc} | {ret} | {hall} |"
-                )
-            else:
-                lines.append(f"| {fw} | – | – | – | – | – | – | – | – |")
+            lines.append(_md_metrics_row(r))
         lines.append("")
+    return lines
 
-    lines.append("\n### Segment-Vergleich (Volltext)\n")
+
+def _md_segment_original(first_pdf_results: list[dict], seg_idx: int) -> tuple[str, str]:
+    """Findet Original-Text und -Typ für ein Segment im ersten erfolgreichen Run."""
+    for r in first_pdf_results:
+        if r["success"] and seg_idx < len(r["segments"]):
+            text = r["segments"][seg_idx]["original_segment"]["text"]
+            seg_type = r["segments"][seg_idx]["original_segment"].get("type", "?")
+            return text, seg_type
+    return "", ""
+
+
+def _md_variant_block(v: dict) -> list[str]:
+    """Erzeugt das Markdown-Block für eine einzelne Variante."""
+    ok_str   = "✅ VALIDE" if v["is_valid"] else "❌ INVALID"
+    issues   = v.get("validation_issues", [])
+    issue_md = "\n> **Issues:** " + " | ".join(str(i) for i in issues) if issues else ""
+    block = [
+        "<details>",
+        f"<summary>Variante {v['variant_id']} — {ok_str}</summary>\n",
+        "```",
+        v["text"] if v["text"] else "(leer)",
+        "```",
+    ]
+    if issue_md:
+        block.append(issue_md)
+    block.append("</details>\n")
+    return block
+
+
+def _md_framework_segment(r: dict, seg_idx: int) -> list[str]:
+    """Erzeugt den Markdown-Block für ein Segment eines Frameworks."""
+    fw    = r["framework"]
+    icon  = EMOJI.get(fw, "")
+    label = FRAMEWORK_LABELS.get(fw, fw)
+
+    if not r["success"]:
+        return [
+            f"**{icon} {label}:** ❌ Pipeline fehlgeschlagen "
+            f"— `{r.get('error','?')[:80]}`\n"
+        ]
+    if seg_idx >= len(r["segments"]):
+        return [f"**{icon} {label}:** _(kein Segment #{seg_idx+1})_\n"]
+
+    seg     = r["segments"][seg_idx]
+    cls     = seg.get("classification", {})
+    cls_str = f"{cls.get('domain','?')} / {cls.get('content_type','?')}"
+    stats   = seg["validation_statistics"]
+
+    lines: list[str] = [
+        f"**{icon} {label}** — Klassifiziert als `{cls_str}` "
+        f"— {stats['valid']}/{stats['total']} valide\n"
+    ]
+    variants = seg["validated_variants"]
+    if not variants:
+        lines.append("_Keine Varianten generiert (Segment übersprungen)_\n")
+    else:
+        for v in variants:
+            lines.extend(_md_variant_block(v))
+    lines.append("")
+    return lines
+
+
+def _md_segment_block(first_pdf_results: list[dict], seg_idx: int) -> list[str]:
+    """Erzeugt den Markdown-Block für ein einzelnes Segment (Original + Frameworks)."""
+    original_text, original_type = _md_segment_original(first_pdf_results, seg_idx)
+
+    preview = original_text[:80].replace("\n", " ")
+    if len(original_text) > 80:
+        preview += "…"
+
+    lines: list[str] = [
+        f"#### Segment {seg_idx + 1} — `{original_type}` — _{preview}_\n",
+        "**Original:**",
+        "```",
+        original_text,
+        "```\n",
+    ]
+    for r in first_pdf_results:
+        lines.extend(_md_framework_segment(r, seg_idx))
+    return lines
+
+
+def _md_segment_section(domain_results: list[dict], pdf_names: list[str]) -> list[str]:
+    """Erzeugt die Segment-Vergleich-Sektion."""
+    lines: list[str] = ["\n### Segment-Vergleich (Volltext)\n"]
     first_pdf = pdf_names[0] if pdf_names else None
-    first_pdf_results = [r for r in domain_results if r["pdf_name"] == first_pdf] if first_pdf else domain_results
-    max_segs = max((len(r["segments"]) for r in first_pdf_results if r["success"]), default=0)
+    first_pdf_results = (
+        [r for r in domain_results if r["pdf_name"] == first_pdf]
+        if first_pdf else domain_results
+    )
+    max_segs = max(
+        (len(r["segments"]) for r in first_pdf_results if r["success"]),
+        default=0,
+    )
 
     if first_pdf:
         lines.append(f"_Segmentvergleich für erstes PDF: `{first_pdf}`_\n")
 
     for seg_idx in range(max_segs):
-        original_text = ""
-        original_type = ""
-        for r in first_pdf_results:
-            if r["success"] and seg_idx < len(r["segments"]):
-                original_text = r["segments"][seg_idx]["original_segment"]["text"]
-                original_type = r["segments"][seg_idx]["original_segment"].get("type", "?")
-                break
+        lines.extend(_md_segment_block(first_pdf_results, seg_idx))
+    return lines
 
-        preview = original_text[:80].replace("\n", " ")
-        if len(original_text) > 80:
-            preview += "…"
 
-        lines.append(f"#### Segment {seg_idx + 1} — `{original_type}` — _{preview}_\n")
-        lines.append("**Original:**")
-        lines.append("```")
-        lines.append(original_text)
-        lines.append("```\n")
+def _md_domain_section(domain: str, domain_results: list[dict]) -> str:
+    cfg      = DOMAIN_CONFIG[domain]
+    pdf_list = " | ".join(f"`{p}`" for p in cfg["pdfs"])
+    domain_idx = ['math', 'languages', 'economics'].index(domain) + 1
+    lines = [
+        f"---\n\n## 3.{domain_idx} Domäne: {cfg['label']} (`{domain}`)\n",
+        f"**PDFs:** {pdf_list} | **Validator:** {cfg['validator']}\n",
+    ]
 
-        for r in first_pdf_results:
-            fw   = r["framework"]
-            icon = EMOJI.get(fw, "")
-            label = FRAMEWORK_LABELS.get(fw, fw)
-            if not r["success"]:
-                lines.append(
-                    f"**{icon} {label}:** ❌ Pipeline fehlgeschlagen "
-                    f"— `{r.get('error','?')[:80]}`\n"
-                )
-                continue
-            if seg_idx >= len(r["segments"]):
-                lines.append(f"**{icon} {label}:** _(kein Segment #{seg_idx+1})_\n")
-                continue
-
-            seg   = r["segments"][seg_idx]
-            cls   = seg.get("classification", {})
-            cls_str = f"{cls.get('domain','?')} / {cls.get('content_type','?')}"
-            stats   = seg["validation_statistics"]
-            lines.append(
-                f"**{icon} {label}** — Klassifiziert als `{cls_str}` "
-                f"— {stats['valid']}/{stats['total']} valide\n"
-            )
-
-            variants = seg["validated_variants"]
-            if not variants:
-                lines.append("_Keine Varianten generiert (Segment übersprungen)_\n")
-            else:
-                for v in variants:
-                    ok_str   = "✅ VALIDE" if v["is_valid"] else "❌ INVALID"
-                    issues   = v.get("validation_issues", [])
-                    issue_md = "\n> **Issues:** " + " | ".join(str(i) for i in issues) if issues else ""
-                    lines.append("<details>")
-                    lines.append(f"<summary>Variante {v['variant_id']} — {ok_str}</summary>\n")
-                    lines.append("```")
-                    lines.append(v["text"] if v["text"] else "(leer)")
-                    lines.append("```")
-                    if issue_md:
-                        lines.append(issue_md)
-                    lines.append("</details>\n")
-            lines.append("")
+    pdf_names = list(dict.fromkeys(r["pdf_name"] for r in domain_results))
+    lines.extend(_md_metrics_section(domain_results, pdf_names))
+    lines.extend(_md_segment_section(domain_results, pdf_names))
 
     return "\n".join(lines)
+
+
+def _md_agent_tool_table(agent_results: list[dict]) -> list[str]:
+    """Tool-Call-Verteilungs-Tabelle für Agent-Frameworks."""
+    lines: list[str] = [
+        "### Tool-Call-Verteilung\n",
+        "| Framework | Domain | Tool-Calls | Retries | Halluziniert | Valid-Rate |",
+        "|-----------|--------|------------|---------|--------------|------------|",
+    ]
+    for r in agent_results:
+        m    = r["metrics"]
+        fw   = FRAMEWORK_LABELS.get(r["framework"], r["framework"])
+        tc   = str(m.get("tool_calls_total", "–"))
+        ret  = str(m.get("retries_total", "–"))
+        hall = str(m.get("hallucinated_calls", "–"))
+        rate = f"{m['validation_rate'] * 100:.0f}%"
+        lines.append(f"| {fw} | {r['domain']} | {tc} | {ret} | {hall} | {rate} |")
+    lines.append("")
+    return lines
+
+
+def _md_hallucination_summary(agent_results: list[dict]) -> list[str]:
+    """Berechnet Halluzinations-Gesamtrate (oder leere Liste)."""
+    hall_data = [
+        r["metrics"].get("hallucinated_calls", 0)
+        for r in agent_results
+        if r["metrics"].get("hallucinated_calls") is not None
+    ]
+    if not hall_data:
+        return []
+    total_hall  = sum(hall_data)
+    total_calls = sum(
+        r["metrics"].get("tool_calls_total", 0) or 0
+        for r in agent_results
+    )
+    if total_calls <= 0:
+        return []
+    hall_rate = total_hall / total_calls * 100
+    return [
+        f"**Halluzinations-Rate gesamt:** "
+        f"{total_hall} / {total_calls} Tool-Events = {hall_rate:.1f}%\n"
+    ]
+
+
+def _ret_str(r: dict | None) -> str:
+    """Formatiert Retry-Wert eines Runs als Spaltentext."""
+    if r is None or not r.get("success"):
+        return "–"
+    v = r["metrics"].get("retries_total")
+    return str(v) if v is not None else "–"
+
+
+def _md_retry_efficiency(results: list[dict]) -> list[str]:
+    """Vergleichstabelle der Retry-Effizienz pro Domain."""
+    lines: list[str] = [
+        "### Vergleich Retry-Effizienz: Agent vs. LangGraph\n",
+        "| Domain | LangGraph (Retries) | Hybrid+Agent (Retries) | Agent Orch. (Retries) |",
+        "|--------|---------------------|------------------------|----------------------|",
+    ]
+    for domain in ALL_DOMAINS:
+        lg = next((r for r in results if r["framework"] == "langgraph" and r["domain"] == domain), None)
+        ha = next((r for r in results if r["framework"] == "hybrid_agent" and r["domain"] == domain), None)
+        ao = next((r for r in results if r["framework"] == "agent_orchestrator" and r["domain"] == domain), None)
+        lines.append(f"| {domain} | {_ret_str(lg)} | {_ret_str(ha)} | {_ret_str(ao)} |")
+    lines.append("")
+    return lines
 
 
 def _md_agent_analysis(results: list[dict]) -> str:
@@ -804,75 +918,20 @@ def _md_agent_analysis(results: list[dict]) -> str:
     if not agent_results:
         return ""
 
-    lines = ["---\n\n## 4. Agent-spezifische Analyse\n"]
-    lines.append(
-        "_Diese Metriken sind nur für Frameworks mit AgentExecutor verfügbar._\n"
-    )
-
-    lines.append("### Tool-Call-Verteilung\n")
-    lines.append("| Framework | Domain | Tool-Calls | Retries | Halluziniert | Valid-Rate |")
-    lines.append("|-----------|--------|------------|---------|--------------|------------|")
-    for r in agent_results:
-        m     = r["metrics"]
-        fw    = FRAMEWORK_LABELS.get(r["framework"], r["framework"])
-        tc    = str(m.get("tool_calls_total", "–"))
-        ret   = str(m.get("retries_total", "–"))
-        hall  = str(m.get("hallucinated_calls", "–"))
-        rate  = f"{m['validation_rate'] * 100:.0f}%"
-        lines.append(f"| {fw} | {r['domain']} | {tc} | {ret} | {hall} | {rate} |")
-    lines.append("")
-
-    hall_data = [
-        (r["framework"], r["domain"], r["metrics"].get("hallucinated_calls", 0))
-        for r in agent_results
-        if r["metrics"].get("hallucinated_calls") is not None
+    lines = [
+        "---\n\n## 4. Agent-spezifische Analyse\n",
+        "_Diese Metriken sind nur für Frameworks mit AgentExecutor verfügbar._\n",
     ]
-    if hall_data:
-        total_hall = sum(h for _, _, h in hall_data)
-        total_calls = sum(
-            r["metrics"].get("tool_calls_total", 0) or 0
-            for r in agent_results
-        )
-        if total_calls > 0:
-            hall_rate = total_hall / total_calls * 100
-            lines.append(
-                f"**Halluzinations-Rate gesamt:** "
-                f"{total_hall} / {total_calls} Tool-Events = {hall_rate:.1f}%\n"
-            )
-
-    lines.append("### Vergleich Retry-Effizienz: Agent vs. LangGraph\n")
-    lines.append("| Domain | LangGraph (Retries) | Hybrid+Agent (Retries) | Agent Orch. (Retries) |")
-    lines.append("|--------|---------------------|------------------------|----------------------|")
-    for domain in ALL_DOMAINS:
-        lg = next((r for r in results if r["framework"] == "langgraph" and r["domain"] == domain), None)
-        ha = next((r for r in results if r["framework"] == "hybrid_agent" and r["domain"] == domain), None)
-        ao = next((r for r in results if r["framework"] == "agent_orchestrator" and r["domain"] == domain), None)
-
-        def _ret(r):
-            if r is None or not r.get("success"):
-                return "–"
-            v = r["metrics"].get("retries_total")
-            return str(v) if v is not None else "–"
-
-        lines.append(f"| {domain} | {_ret(lg)} | {_ret(ha)} | {_ret(ao)} |")
-    lines.append("")
+    lines.extend(_md_agent_tool_table(agent_results))
+    lines.extend(_md_hallucination_summary(agent_results))
+    lines.extend(_md_retry_efficiency(results))
 
     return "\n".join(lines) + "\n"
 
 
-def _md_thesis_observations(results: list[dict], frameworks: list[str]) -> str:
-    """Generiert automatische Beobachtungen für Thesis Kapitel 6."""
-    lines = ["---\n\n## 5. Thesis-Erkenntnisse (auto-generiert)\n",
-             "_Diese Beobachtungen basieren auf den gemessenen Werten und können "
-             "direkt als Rohmaterial für Kapitel 6 (Evaluation) verwendet werden._\n"]
-
-    observations = []
-
-    successful = [r for r in results if r["success"]]
-    if not successful:
-        lines.append("_Keine erfolgreichen Runs – keine Beobachtungen möglich._\n")
-        return "\n".join(lines)
-
+def _obs_best_per_domain(successful: list[dict]) -> list[str]:
+    """Beobachtungen: höchste Validation-Rate pro Domain (nur bei eindeutigem Sieger)."""
+    obs: list[str] = []
     for domain in ALL_DOMAINS:
         dom_results = [r for r in successful if r["domain"] == domain]
         if not dom_results:
@@ -882,82 +941,127 @@ def _md_thesis_observations(results: list[dict], frameworks: list[str]) -> str:
         best_label = FRAMEWORK_LABELS.get(best["framework"], best["framework"])
         tied = [r for r in dom_results if abs(r["metrics"]["validation_rate"] - best_rate) < 0.01]
         if len(tied) == 1:
-            observations.append(
+            obs.append(
                 f"**{best_label}** erzielte in der Domain *{domain}* die höchste "
                 f"Validation-Rate ({best_rate * 100:.0f}%)."
             )
+    return obs
 
+
+def _obs_agent_orchestrator_vs_langchain(successful: list[dict]) -> list[str]:
+    """Beobachtung: Zeitvergleich Agent Orchestrator vs. LangChain (erstes passendes Domain-Paar)."""
     for domain in ALL_DOMAINS:
         lc = next((r for r in successful if r["framework"] == "langchain" and r["domain"] == domain), None)
         ao = next((r for r in successful if r["framework"] == "agent_orchestrator" and r["domain"] == domain), None)
-        if lc and ao:
-            diff_pct = (ao["metrics"]["total_time"] - lc["metrics"]["total_time"]) / max(lc["metrics"]["total_time"], 1) * 100
-            if abs(diff_pct) > 10:
-                direction = "mehr" if diff_pct > 0 else "weniger"
-                observations.append(
-                    f"**Agent Orchestrator** benötigte in Domain *{domain}* "
-                    f"Ø {abs(diff_pct):.0f}% {direction} Zeit als **LangChain Pipeline** "
-                    f"({ao['metrics']['total_time']:.1f}s vs. {lc['metrics']['total_time']:.1f}s)."
-                )
-            break
+        if not (lc and ao):
+            continue
+        lc_time = lc["metrics"]["total_time"]
+        ao_time = ao["metrics"]["total_time"]
+        diff_pct = (ao_time - lc_time) / max(lc_time, 1) * 100
+        if abs(diff_pct) > 10:
+            direction = "mehr" if diff_pct > 0 else "weniger"
+            return [
+                f"**Agent Orchestrator** benötigte in Domain *{domain}* "
+                f"Ø {abs(diff_pct):.0f}% {direction} Zeit als **LangChain Pipeline** "
+                f"({ao_time:.1f}s vs. {lc_time:.1f}s)."
+            ]
+        return []
+    return []
 
+
+def _obs_hybrid_agent_vs_hybrid(successful: list[dict]) -> list[str]:
+    """Beobachtung: Vergleich Hybrid+Agent vs. Hybrid (erstes passendes Domain-Paar)."""
     ha_results = [r for r in successful if r["framework"] == "hybrid_agent"]
     h_results  = [r for r in successful if r["framework"] == "hybrid"]
-    if ha_results and h_results:
-        for domain in ALL_DOMAINS:
-            ha = next((r for r in ha_results if r["domain"] == domain), None)
-            h  = next((r for r in h_results  if r["domain"] == domain), None)
-            if ha and h:
-                time_diff = ha["metrics"]["total_time"] - h["metrics"]["total_time"]
-                rate_diff = (ha["metrics"]["validation_rate"] - h["metrics"]["validation_rate"]) * 100
-                sign_t = "+" if time_diff > 0 else ""
-                sign_r = "+" if rate_diff > 0 else ""
-                observations.append(
-                    f"**Hybrid+Agent vs. Hybrid** ({domain}): "
-                    f"Zeit {sign_t}{time_diff:.1f}s, "
-                    f"Validation-Rate {sign_r}{rate_diff:.0f}%. "
-                    f"Identisches Pre/Postprocessing – Unterschied ausschliesslich Phase 2 "
-                    f"(AgentExecutor vs. LangGraph StateGraph)."
-                )
-                break
+    if not (ha_results and h_results):
+        return []
+    for domain in ALL_DOMAINS:
+        ha = next((r for r in ha_results if r["domain"] == domain), None)
+        h  = next((r for r in h_results  if r["domain"] == domain), None)
+        if not (ha and h):
+            continue
+        time_diff = ha["metrics"]["total_time"] - h["metrics"]["total_time"]
+        rate_diff = (ha["metrics"]["validation_rate"] - h["metrics"]["validation_rate"]) * 100
+        sign_t = "+" if time_diff > 0 else ""
+        sign_r = "+" if rate_diff > 0 else ""
+        return [
+            f"**Hybrid+Agent vs. Hybrid** ({domain}): "
+            f"Zeit {sign_t}{time_diff:.1f}s, "
+            f"Validation-Rate {sign_r}{rate_diff:.0f}%. "
+            f"Identisches Pre/Postprocessing – Unterschied ausschliesslich Phase 2 "
+            f"(AgentExecutor vs. LangGraph StateGraph)."
+        ]
+    return []
 
-    am_results = [r for r in successful if r["framework"] == "agent_multi"]
-    lc_results = [r for r in successful if r["framework"] == "langchain"]
-    if am_results and lc_results:
-        am_rates = [r["metrics"]["validation_rate"] for r in am_results]
-        lc_rates = [r["metrics"]["validation_rate"] for r in lc_results]
-        if am_rates and lc_rates:
-            avg_am = sum(am_rates) / len(am_rates)
-            avg_lc = sum(lc_rates) / len(lc_rates)
-            diff   = (avg_am - avg_lc) * 100
-            if abs(diff) < 5:
-                observations.append(
-                    f"**Agent Multi-Step** erzielte mit Ø {avg_am * 100:.0f}% Validation-Rate "
-                    f"keine signifikant höhere Rate als **LangChain Pipeline** "
-                    f"({avg_lc * 100:.0f}%, Differenz: {diff:+.0f}%). "
-                    f"Dies unterstützt die These, dass ein Agent mit einem einzigen Tool "
-                    f"zur deterministischen Pipeline degeneriert."
-                )
 
+def _obs_agent_multi_vs_langchain(successful: list[dict]) -> list[str]:
+    """Beobachtung: Agent Multi-Step vs. LangChain Validation-Rates."""
+    am_rates = [r["metrics"]["validation_rate"] for r in successful if r["framework"] == "agent_multi"]
+    lc_rates = [r["metrics"]["validation_rate"] for r in successful if r["framework"] == "langchain"]
+    if not (am_rates and lc_rates):
+        return []
+    avg_am = sum(am_rates) / len(am_rates)
+    avg_lc = sum(lc_rates) / len(lc_rates)
+    diff   = (avg_am - avg_lc) * 100
+    if abs(diff) >= 5:
+        return []
+    return [
+        f"**Agent Multi-Step** erzielte mit Ø {avg_am * 100:.0f}% Validation-Rate "
+        f"keine signifikant höhere Rate als **LangChain Pipeline** "
+        f"({avg_lc * 100:.0f}%, Differenz: {diff:+.0f}%). "
+        f"Dies unterstützt die These, dass ein Agent mit einem einzigen Tool "
+        f"zur deterministischen Pipeline degeneriert."
+    ]
+
+
+def _retries_value(retries: Any) -> int:
+    """Extrahiert Retry-Anzahl aus dict (Summe der Werte) oder int."""
+    if isinstance(retries, dict):
+        return sum(retries.values())
+    return retries or 0
+
+
+def _obs_retry_comparison(successful: list[dict]) -> list[str]:
+    """Beobachtung: LangGraph- vs. Agent-Orchestrator-Retries."""
     lg_retries = [
-        sum(dict(r["metrics"].get("retries_total") or {}).values()
-            if isinstance(r["metrics"].get("retries_total"), dict)
-            else [r["metrics"].get("retries_total") or 0])
+        _retries_value(r["metrics"].get("retries_total"))
         for r in successful if r["framework"] == "langgraph"
     ]
     ao_retries = [
         r["metrics"].get("retries_total") or 0
         for r in successful if r["framework"] == "agent_orchestrator"
     ]
-    if lg_retries and ao_retries:
-        avg_lg_ret = sum(lg_retries) / len(lg_retries)
-        avg_ao_ret = sum(ao_retries) / len(ao_retries)
-        observations.append(
-            f"**LangGraph** (Conditional Edges): Ø {avg_lg_ret:.1f} Retries/Run — "
-            f"**Agent Orchestrator** (LLM-Scratchpad): Ø {avg_ao_ret:.1f} Retries/Run. "
-            f"LangGraph-Retries sind explizit im Graphen definiert; "
-            f"Agent-Retries entstehen implizit durch LLM-Entscheidung."
-        )
+    if not (lg_retries and ao_retries):
+        return []
+    avg_lg_ret = sum(lg_retries) / len(lg_retries)
+    avg_ao_ret = sum(ao_retries) / len(ao_retries)
+    return [
+        f"**LangGraph** (Conditional Edges): Ø {avg_lg_ret:.1f} Retries/Run — "
+        f"**Agent Orchestrator** (LLM-Scratchpad): Ø {avg_ao_ret:.1f} Retries/Run. "
+        f"LangGraph-Retries sind explizit im Graphen definiert; "
+        f"Agent-Retries entstehen implizit durch LLM-Entscheidung."
+    ]
+
+
+def _md_thesis_observations(results: list[dict]) -> str:
+    """Generiert automatische Beobachtungen für Thesis Kapitel 6."""
+    lines = [
+        "---\n\n## 5. Thesis-Erkenntnisse (auto-generiert)\n",
+        "_Diese Beobachtungen basieren auf den gemessenen Werten und können "
+        "direkt als Rohmaterial für Kapitel 6 (Evaluation) verwendet werden._\n",
+    ]
+
+    successful = [r for r in results if r["success"]]
+    if not successful:
+        lines.append("_Keine erfolgreichen Runs – keine Beobachtungen möglich._\n")
+        return "\n".join(lines)
+
+    observations: list[str] = []
+    observations.extend(_obs_best_per_domain(successful))
+    observations.extend(_obs_agent_orchestrator_vs_langchain(successful))
+    observations.extend(_obs_hybrid_agent_vs_hybrid(successful))
+    observations.extend(_obs_agent_multi_vs_langchain(successful))
+    observations.extend(_obs_retry_comparison(successful))
 
     if not observations:
         observations.append(
@@ -971,41 +1075,61 @@ def _md_thesis_observations(results: list[dict], frameworks: list[str]) -> str:
     return "\n".join(lines)
 
 
+_PROMPT_LEAK_MARKERS = (
+    "Erstelle eine inhaltlich äquivalente",
+    "DEUTLICH anders formulierte Variante",
+)
+
+
+def _is_prompt_leak(text: str) -> bool:
+    return any(marker in text for marker in _PROMPT_LEAK_MARKERS)
+
+
+def _collect_prompt_leaks(results: list[dict]) -> list[str]:
+    leaks: list[str] = []
+    for r in results:
+        fw = FRAMEWORK_LABELS.get(r['framework'], r['framework'])
+        for seg in r.get("segments", []):
+            for v in seg.get("validated_variants", []):
+                if _is_prompt_leak(v.get("text", "")):
+                    leaks.append(
+                        f"- **{fw}** / {r['domain']} / V{v['variant_id']}: "
+                        f"Prompt-Text im Output erkannt"
+                    )
+    return leaks
+
+
+def _collect_length_issues(results: list[dict]) -> list[str]:
+    issues: list[str] = []
+    for r in results:
+        fw = FRAMEWORK_LABELS.get(r['framework'], r['framework'])
+        for si, seg in enumerate(r.get("segments", [])):
+            orig_len = len(seg["original_segment"]["text"])
+            if orig_len <= 0:
+                continue
+            for v in seg.get("validated_variants", []):
+                ratio = len(v.get("text", "")) / orig_len
+                if ratio > 3.0:
+                    issues.append(
+                        f"- **{fw}** / {r['domain']} / Seg {si+1} / "
+                        f"V{v['variant_id']}: Ratio {ratio:.1f}×"
+                    )
+    return issues
+
+
 def _md_quality_flags(results: list[dict]) -> str:
     """Qualitäts-Flags analog zu evaluate_all_domains.py."""
     lines = ["---\n\n## 6. Qualitäts-Auffälligkeiten\n"]
     found = False
 
-    leaks = []
-    for r in results:
-        for seg in r.get("segments", []):
-            for v in seg.get("validated_variants", []):
-                text = v.get("text", "")
-                if ("Erstelle eine inhaltlich äquivalente" in text or
-                        "DEUTLICH anders formulierte Variante" in text):
-                    leaks.append(
-                        f"- **{FRAMEWORK_LABELS.get(r['framework'], r['framework'])}** / "
-                        f"{r['domain']} / V{v['variant_id']}: Prompt-Text im Output erkannt"
-                    )
+    leaks = _collect_prompt_leaks(results)
     if leaks:
         found = True
         lines.append("**⚠️ Prompt-Leaks:**")
         lines.extend(leaks)
         lines.append("")
 
-    length_issues = []
-    for r in results:
-        for si, seg in enumerate(r.get("segments", [])):
-            orig_len = len(seg["original_segment"]["text"])
-            for v in seg.get("validated_variants", []):
-                if orig_len > 0:
-                    ratio = len(v.get("text", "")) / orig_len
-                    if ratio > 3.0:
-                        length_issues.append(
-                            f"- **{FRAMEWORK_LABELS.get(r['framework'], r['framework'])}** / "
-                            f"{r['domain']} / Seg {si+1} / V{v['variant_id']}: "
-                            f"Ratio {ratio:.1f}×"
-                        )
+    length_issues = _collect_length_issues(results)
     if length_issues:
         found = True
         lines.append("**⚠️ Extreme Längenabweichungen (> 3× Original):**")
@@ -1066,7 +1190,7 @@ _RUNNERS: dict[str, Any] = {
 
 # ─── Hauptprogramm ────────────────────────────────────────────────────────────
 
-def main() -> None:
+def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Thesis-Evaluation mit Mistral OCR für alle Domains."
     )
@@ -1090,13 +1214,15 @@ def main() -> None:
                         help="Kein Markdown-Report (nur Konsolen-Output + JSON)")
     parser.add_argument("--no-multiprocessing", action="store_true",
                         help="Kein Timeout-Isolation (einfacher, aber kein Timeout möglich)")
-    args = parser.parse_args()
+    return parser
 
-    # ── Framework/Domain-Auswahl ──────────────────────────────────────────────
+
+def _select_frameworks_and_domains(args: argparse.Namespace) -> tuple[list[str], list[str]]:
+    """Bestimmt Framework- und Domain-Liste anhand der CLI-Argumente."""
     if args.fast:
+        args.variants = 1
         frameworks = ["langchain", "langgraph", "hybrid"]
         domains    = ["math"]
-        args.variants = 1
     elif args.agents_only:
         frameworks = ["hybrid_agent", "agent_orchestrator", "agent_multi"]
         domains    = args.domains or ALL_DOMAINS
@@ -1106,6 +1232,208 @@ def main() -> None:
 
     if args.no_agents:
         frameworks = [fw for fw in frameworks if fw not in IS_AGENT]
+    return frameworks, domains
+
+
+def _runtime_estimate(args: argparse.Namespace, frameworks: list[str], domains: list[str]) -> str:
+    """Liefert die geschätzte Laufzeit als String."""
+    if args.fast:
+        return "     ~5–10 Min (--fast: nur math, ohne Agents)"
+    if not any(fw in IS_AGENT for fw in frameworks):
+        return "     ~15–30 Min (3 Frameworks × Domains, ohne Agents)"
+    all_6 = len(frameworks) == 6 and len(domains) == 3
+    if all_6:
+        return "     ~60–120 Min (6 Frameworks × 3 Domains, inkl. Agents)"
+    return "     ~30–90 Min (mit Agent-Frameworks)"
+
+
+def _print_run_header(
+    args: argparse.Namespace,
+    frameworks: list[str],
+    domains: list[str],
+    total_runs: int,
+) -> None:
+    print("=" * 70)
+    print("  FRAMEWORK-VERGLEICH: Alle Prototypen (Mistral OCR für alle Domains)")
+    print("=" * 70)
+    print("  OCR-Modus:   Mistral für alle Domains (OCR_FORCE_MISTRAL=1)")
+    print(f"  Frameworks:  {', '.join(FRAMEWORK_LABELS.get(f, f) for f in frameworks)}")
+    print(f"  Domains:     {', '.join(domains)}")
+    print(f"  Varianten:   {args.variants}/Segment")
+    print(f"  Gesamt Runs: {total_runs}")
+    print()
+    print("  ⏱  Geschätzte Laufzeit:")
+    print(_runtime_estimate(args, frameworks, domains))
+    print(f"  ⏱  Timeout pro Run: {TIMEOUT_SECONDS}s")
+    print("=" * 70)
+
+
+def _print_run_result(result: dict, elapsed: float) -> None:
+    if not result["success"]:
+        print(f"  ❌ {result.get('error', '?')[:120]}")
+        return
+    m = result["metrics"]
+    tc_str  = f" | Tools: {m['tool_calls_total']}" if m.get("tool_calls_total") is not None else ""
+    ret_str = f" | Retries: {m['retries_total']}"  if m.get("retries_total")   is not None else ""
+    print(
+        f"  ✅ {m['valid_variants']}/{m['total_variants']} valide "
+        f"({m['validation_rate'] * 100:.0f}%) | {elapsed:.1f}s | "
+        f"OCR: {m['ocr_tool']}{tc_str}{ret_str}"
+    )
+
+
+def _execute_single_run(
+    args: argparse.Namespace,
+    framework: str,
+    pdf_path: Path,
+    domain: str,
+) -> dict:
+    """Führt einen einzelnen Framework-Run aus (mit oder ohne Multiprocessing)."""
+    try:
+        if args.no_multiprocessing:
+            runner = _RUNNERS[framework]
+            return runner(pdf_path, domain, args.variants)
+        return _run_with_timeout(
+            framework, pdf_path, domain, args.variants,
+            timeout=TIMEOUT_SECONDS,
+        )
+    except Exception as exc:
+        print(f"  ❌ Exception: {exc}")
+        return _error_result(framework, domain, pdf_path.name, str(exc))
+
+
+def _run_pdf(
+    args: argparse.Namespace,
+    domain: str,
+    cfg_dom: dict,
+    pdf_rel: str,
+    frameworks: list[str],
+    run_state: dict,
+    total_runs: int,
+) -> list[dict]:
+    """Führt alle Frameworks für ein PDF aus und liefert die Resultate."""
+    pdf_path = Config.DATA_INPUT_PATH / pdf_rel
+    if not pdf_path.exists():
+        print(f"\n⚠️  PDF nicht gefunden: {pdf_path} — überspringe '{pdf_rel}'")
+        return [
+            _error_result(
+                fw, domain, pdf_rel.split("/")[-1],
+                f"PDF not found: {pdf_path}",
+            )
+            for fw in frameworks
+        ]
+
+    pdf_results: list[dict] = []
+    for framework in frameworks:
+        run_state["run_num"] += 1
+        icon  = EMOJI.get(framework, "")
+        label = FRAMEWORK_LABELS.get(framework, framework)
+        print(
+            f"\n[{run_state['run_num']}/{total_runs}] {icon} "
+            f"{label.upper()} — {cfg_dom['label'].upper()}"
+        )
+        print(f"  PDF: {pdf_path.name}")
+
+        t0 = time.time()
+        result = _execute_single_run(args, framework, pdf_path, domain)
+        elapsed = time.time() - t0
+        _print_run_result(result, elapsed)
+        pdf_results.append(result)
+    return pdf_results
+
+
+def _execute_all_runs(
+    args: argparse.Namespace,
+    frameworks: list[str],
+    domains: list[str],
+    total_runs: int,
+) -> list[dict]:
+    """Iteriert über alle Domains/PDFs/Frameworks und sammelt die Ergebnisse."""
+    results: list[dict] = []
+    run_state = {"run_num": 0}
+    for domain in domains:
+        cfg_dom = DOMAIN_CONFIG[domain]
+        for pdf_rel in cfg_dom["pdfs"]:
+            results.extend(
+                _run_pdf(args, domain, cfg_dom, pdf_rel, frameworks, run_state, total_runs)
+            )
+    return results
+
+
+def _print_summaries(
+    results: list[dict], frameworks: list[str], domains: list[str]
+) -> None:
+    for domain in domains:
+        domain_results = [r for r in results if r["domain"] == domain]
+        _print_domain_table(domain, domain_results)
+    _print_overall_summary(results, frameworks)
+    _print_failures(results)
+
+
+def _write_json_report(
+    results: list[dict], ts: str, run_cfg: dict, out_dir: Path, ts_file: str
+) -> Path:
+    json_report = _build_json_report(results, ts, run_cfg)
+    json_path   = out_dir / f"results_mistral_ocr_{ts_file}.json"
+    json_path.write_text(
+        json.dumps(json_report, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    return json_path
+
+
+def _write_markdown_report(
+    results: list[dict],
+    args: argparse.Namespace,
+    frameworks: list[str],
+    domains: list[str],
+    ts: str,
+    out_dir: Path,
+) -> Path:
+    md_parts = [
+        f"# Framework-Vergleich: Alle Prototypen (Mistral OCR)\n\n"
+        f"**Datum:** {ts}  |  **OCR:** Mistral für alle Domains  |  "
+        f"**Varianten/Segment:** {args.variants}  |  "
+        f"**Frameworks:** {len(frameworks)}  |  **Domains:** {len(domains)}\n\n"
+        f"---\n\n"
+    ]
+    md_parts.append(_md_summary(results, frameworks))
+    md_parts.append(_md_arch_table())
+    md_parts.append("\n---\n\n## 3. Ergebnisse pro Domain\n")
+    for domain in domains:
+        domain_results = [r for r in results if r["domain"] == domain]
+        md_parts.append(_md_domain_section(domain, domain_results))
+    md_parts.append(_md_agent_analysis(results))
+    md_parts.append(_md_thesis_observations(results))
+    md_parts.append(_md_quality_flags(results))
+
+    md_path = out_dir / "full_comparison_report_mistral_ocr.md"
+    md_path.write_text("\n".join(md_parts), encoding="utf-8")
+    return md_path
+
+
+def _print_completion(
+    results: list[dict], out_dir: Path, json_path: Path, md_path: Path | None
+) -> None:
+    failed_count  = sum(1 for r in results if not r["success"])
+    success_count = len(results) - failed_count
+
+    print(f"\n{'═' * 70}")
+    print("  EVALUATION ABGESCHLOSSEN")
+    print(f"  ✅ Erfolgreich: {success_count}/{len(results)}")
+    if failed_count:
+        print(f"  ❌ Fehlgeschlagen: {failed_count}/{len(results)}")
+    print(f"\n  📁 Reports gespeichert in: {out_dir}")
+    print(f"     JSON: {json_path.name}")
+    if md_path:
+        print(f"     MD:   {md_path.name}")
+    print("\n  💡 Tipp: Das Markdown-File direkt zu Claude hochladen für Kapitel-6-Analyse.")
+    print(f"{'═' * 70}\n")
+
+
+def main() -> None:
+    args = _build_arg_parser().parse_args()
+
+    frameworks, domains = _select_frameworks_and_domains(args)
 
     ts      = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     ts_file = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1116,142 +1444,21 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     total_runs = len(frameworks) * sum(len(DOMAIN_CONFIG[d]["pdfs"]) for d in domains)
-    has_agents = any(fw in IS_AGENT for fw in frameworks)
 
-    # ── Laufzeit-Warnung ─────────────────────────────────────────────────────
-    print("=" * 70)
-    print("  FRAMEWORK-VERGLEICH: Alle Prototypen (Mistral OCR für alle Domains)")
-    print("=" * 70)
-    print(f"  OCR-Modus:   Mistral für alle Domains (OCR_FORCE_MISTRAL=1)")
-    print(f"  Frameworks:  {', '.join(FRAMEWORK_LABELS.get(f, f) for f in frameworks)}")
-    print(f"  Domains:     {', '.join(domains)}")
-    print(f"  Varianten:   {args.variants}/Segment")
-    print(f"  Gesamt Runs: {total_runs}")
-    print()
-    print("  ⏱  Geschätzte Laufzeit:")
-    if args.fast:
-        print("     ~5–10 Min (--fast: nur math, ohne Agents)")
-    elif not has_agents:
-        print("     ~15–30 Min (3 Frameworks × Domains, ohne Agents)")
-    else:
-        all_6 = len(frameworks) == 6 and len(domains) == 3
-        print(f"     {'~60–120 Min (6 Frameworks × 3 Domains, inkl. Agents)' if all_6 else '~30–90 Min (mit Agent-Frameworks)'}")
-    print(f"  ⏱  Timeout pro Run: {TIMEOUT_SECONDS}s")
-    print("=" * 70)
+    _print_run_header(args, frameworks, domains, total_runs)
 
-    # ── Runs ──────────────────────────────────────────────────────────────────
-    run_num  = 0
-    results: list[dict] = []
+    results = _execute_all_runs(args, frameworks, domains, total_runs)
 
-    for domain in domains:
-        cfg_dom = DOMAIN_CONFIG[domain]
+    _print_summaries(results, frameworks, domains)
 
-        for pdf_rel in cfg_dom["pdfs"]:
-            pdf_path = Config.DATA_INPUT_PATH / pdf_rel
-
-            if not pdf_path.exists():
-                print(f"\n⚠️  PDF nicht gefunden: {pdf_path} — überspringe '{pdf_rel}'")
-                for fw in frameworks:
-                    results.append(_error_result(
-                        fw, domain, pdf_rel.split("/")[-1],
-                        f"PDF not found: {pdf_path}"
-                    ))
-                continue
-
-            for framework in frameworks:
-                run_num += 1
-                icon  = EMOJI.get(framework, "")
-                label = FRAMEWORK_LABELS.get(framework, framework)
-                print(f"\n[{run_num}/{total_runs}] {icon} {label.upper()} — {cfg_dom['label'].upper()}")
-                print(f"  PDF: {pdf_path.name}")
-
-                t0 = time.time()
-                try:
-                    if args.no_multiprocessing:
-                        runner = _RUNNERS[framework]
-                        result = runner(pdf_path, domain, args.variants)
-                    else:
-                        result = _run_with_timeout(
-                            framework, pdf_path, domain, args.variants,
-                            timeout=TIMEOUT_SECONDS,
-                        )
-                except Exception as exc:
-                    print(f"  ❌ Exception: {exc}")
-                    result = _error_result(framework, domain, pdf_path.name, str(exc))
-
-                elapsed = time.time() - t0
-                results.append(result)
-
-                if result["success"]:
-                    m = result["metrics"]
-                    tc_str   = f" | Tools: {m['tool_calls_total']}" if m.get("tool_calls_total") is not None else ""
-                    ret_str  = f" | Retries: {m['retries_total']}" if m.get("retries_total") is not None else ""
-                    print(
-                        f"  ✅ {m['valid_variants']}/{m['total_variants']} valide "
-                        f"({m['validation_rate'] * 100:.0f}%) | {elapsed:.1f}s | "
-                        f"OCR: {m['ocr_tool']}{tc_str}{ret_str}"
-                    )
-                else:
-                    print(f"  ❌ {result.get('error', '?')[:120]}")
-
-    # ── Konsolen-Zusammenfassung ───────────────────────────────────────────────
-    for domain in domains:
-        domain_results = [r for r in results if r["domain"] == domain]
-        _print_domain_table(domain, domain_results)
-
-    _print_overall_summary(results, frameworks)
-    _print_failures(results)
-
-    # ── Reports schreiben ─────────────────────────────────────────────────────
     run_cfg = {"num_variants": args.variants, "domains": domains, "frameworks": frameworks}
+    json_path = _write_json_report(results, ts, run_cfg, out_dir, ts_file)
 
-    # JSON
-    json_report = _build_json_report(results, ts, run_cfg)
-    json_path   = out_dir / f"results_mistral_ocr_{ts_file}.json"
-    json_path.write_text(
-        json.dumps(json_report, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-
-    # Markdown
+    md_path: Path | None = None
     if not args.no_markdown:
-        md_parts = [
-            f"# Framework-Vergleich: Alle Prototypen (Mistral OCR)\n\n"
-            f"**Datum:** {ts}  |  **OCR:** Mistral für alle Domains  |  "
-            f"**Varianten/Segment:** {args.variants}  |  "
-            f"**Frameworks:** {len(frameworks)}  |  **Domains:** {len(domains)}\n\n"
-            f"---\n\n"
-        ]
-        md_parts.append(_md_summary(results, frameworks))
-        md_parts.append(_md_arch_table())
-        md_parts.append("\n---\n\n## 3. Ergebnisse pro Domain\n")
-        for domain in domains:
-            domain_results = [r for r in results if r["domain"] == domain]
-            md_parts.append(_md_domain_section(domain, domain_results))
-        md_parts.append(_md_agent_analysis(results))
-        md_parts.append(_md_thesis_observations(results, frameworks))
-        md_parts.append(_md_quality_flags(results))
+        md_path = _write_markdown_report(results, args, frameworks, domains, ts, out_dir)
 
-        md_report = "\n".join(md_parts)
-        md_path   = out_dir / "full_comparison_report_mistral_ocr.md"
-        md_path.write_text(md_report, encoding="utf-8")
-    else:
-        md_path = None
-
-    # ── Abschluss ─────────────────────────────────────────────────────────────
-    failed_count  = sum(1 for r in results if not r["success"])
-    success_count = len(results) - failed_count
-
-    print(f"\n{'═' * 70}")
-    print(f"  EVALUATION ABGESCHLOSSEN")
-    print(f"  ✅ Erfolgreich: {success_count}/{len(results)}")
-    if failed_count:
-        print(f"  ❌ Fehlgeschlagen: {failed_count}/{len(results)}")
-    print(f"\n  📁 Reports gespeichert in: {out_dir}")
-    print(f"     JSON: {json_path.name}")
-    if md_path:
-        print(f"     MD:   {md_path.name}")
-    print(f"\n  💡 Tipp: Das Markdown-File direkt zu Claude hochladen für Kapitel-6-Analyse.")
-    print(f"{'═' * 70}\n")
+    _print_completion(results, out_dir, json_path, md_path)
 
 
 if __name__ == "__main__":
