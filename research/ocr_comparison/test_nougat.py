@@ -46,7 +46,7 @@ def test_nougat_ocr_via_cli(pdf_path: Path) -> dict:
             ]
             
             logger.info(f"  Führe aus: {' '.join(cmd)}")
-            logger.info(f"  ⏳ Bitte warten, Nougat ist langsam (kann 30-60s pro Seite dauern)...")
+            logger.info("  ⏳ Bitte warten, Nougat ist langsam (kann 30-60s pro Seite dauern)...")
             
             result = subprocess.run(
                 cmd,
@@ -88,7 +88,7 @@ def test_nougat_ocr_via_cli(pdf_path: Path) -> dict:
             else:
                 # Liste alle Dateien im tmpdir
                 all_files = list(Path(tmpdir).iterdir())
-                logger.error(f"✗ Keine Output-Datei gefunden")
+                logger.error("✗ Keine Output-Datei gefunden")
                 logger.error(f"  Gefundene Dateien: {[f.name for f in all_files]}")
                 
                 return {
@@ -100,7 +100,7 @@ def test_nougat_ocr_via_cli(pdf_path: Path) -> dict:
                 }
                 
     except subprocess.TimeoutExpired:
-        logger.error(f"✗ Timeout nach 5 Minuten")
+        logger.error("✗ Timeout nach 5 Minuten")
         return {
             'extracted_text': None,
             'processing_time': 300.0,
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     # Zeige Fehler
     failures = [k for k, v in results.items() if not v.get('success')]
     if failures:
-        print(f"\n⚠️  Fehlgeschlagen:")
+        print("\n⚠️  Fehlgeschlagen:")
         for f in failures:
             error = results[f].get('error', 'Unbekannter Fehler')
             print(f"  - {f}: {error}")

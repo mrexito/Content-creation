@@ -61,10 +61,10 @@ def test_nougat_single_pdf(pdf_path: Path) -> dict:
             ]
             
             logger.info(f"Führe aus: {' '.join(cmd)}")
-            print(f"\n⏳ Starte Nougat (dies dauert lange...):")
-            print(f"   • Beim ersten Mal: Modell-Download (~1-2 GB, 5-10 Min.)")
-            print(f"   • Modell-Initialisierung: ~30-60s")
-            print(f"   • Pro Seite Verarbeitung: ~30-60s\n")
+            print("\n⏳ Starte Nougat (dies dauert lange...):")
+            print("   • Beim ersten Mal: Modell-Download (~1-2 GB, 5-10 Min.)")
+            print("   • Modell-Initialisierung: ~30-60s")
+            print("   • Pro Seite Verarbeitung: ~30-60s\n")
             
             # Start progress indicator in thread
             stop_event = threading.Event()
@@ -119,7 +119,7 @@ def test_nougat_single_pdf(pdf_path: Path) -> dict:
                 }
             else:
                 all_files = list(Path(tmpdir).iterdir())
-                logger.error(f"✗ Keine Output-Datei gefunden")
+                logger.error("✗ Keine Output-Datei gefunden")
                 logger.error(f"  Gefundene Dateien: {[f.name for f in all_files]}")
                 
                 return {
@@ -131,7 +131,7 @@ def test_nougat_single_pdf(pdf_path: Path) -> dict:
                 }
                 
     except subprocess.TimeoutExpired:
-        logger.error(f"✗ Timeout nach 10 Minuten")
+        logger.error("✗ Timeout nach 10 Minuten")
         return {
             'extracted_text': None,
             'processing_time': 600.0,
@@ -169,7 +169,7 @@ if __name__ == '__main__':
     print("="*60)
     
     if result['success']:
-        print(f"✅ Erfolgreich!")
+        print("✅ Erfolgreich!")
         print(f"   Verarbeitungszeit: {result['processing_time']:.1f}s ({result['processing_time']/60:.1f} Min.)")
         print(f"   Text-Länge: {result['text_length']} Zeichen")
         
@@ -185,6 +185,6 @@ if __name__ == '__main__':
             f.write(result['extracted_text'])
         
         print(f"   Gespeichert: {output_path}")
-        print(f"\n💡 Hinweis: Nougat ist sehr langsam (~30-60s pro Seite auf CPU)")
+        print("\n💡 Hinweis: Nougat ist sehr langsam (~30-60s pro Seite auf CPU)")
     else:
         print(f"❌ Fehlgeschlagen: {result.get('error', 'Unbekannter Fehler')}")
