@@ -1,0 +1,961 @@
+{
+  "meta": {
+    "timestamp": "2026-03-09 15:58:37",
+    "frameworks": [
+      "langchain",
+      "langgraph",
+      "hybrid"
+    ],
+    "domains": [
+      "math",
+      "languages",
+      "economics"
+    ],
+    "num_variants": 2,
+    "generator": "evaluate_all_domains.py"
+  },
+  "summary": [
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.75,
+      "valid_variants": 6,
+      "total_variants": 8,
+      "total_time_s": 16.05,
+      "ocr_tool": "mistral"
+    },
+    {
+      "framework": "langgraph",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 35.42,
+      "ocr_tool": "mistral"
+    },
+    {
+      "framework": "hybrid",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0,
+      "ocr_tool": "?"
+    },
+    {
+      "framework": "langchain",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 0.1667,
+      "valid_variants": 1,
+      "total_variants": 6,
+      "total_time_s": 20.17,
+      "ocr_tool": "tesseract"
+    },
+    {
+      "framework": "langgraph",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 39.07,
+      "ocr_tool": "tesseract"
+    },
+    {
+      "framework": "hybrid",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0,
+      "ocr_tool": "?"
+    },
+    {
+      "framework": "langchain",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.3,
+      "valid_variants": 3,
+      "total_variants": 10,
+      "total_time_s": 28.57,
+      "ocr_tool": "tesseract"
+    },
+    {
+      "framework": "langgraph",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 211.13,
+      "ocr_tool": "tesseract"
+    },
+    {
+      "framework": "hybrid",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0,
+      "ocr_tool": "?"
+    }
+  ],
+  "results": [
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 16.05,
+        "ocr_time": 2.85,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 8,
+        "valid_variants": 6,
+        "validation_rate": 0.75
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $5a + 2 = 17$ für die Variable *a*.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Vereinfache: $5(a + 3) - 4(b - 2)$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne die Länge des Umfangs eines Dreiecks, bei dem die Seitenlängen gegeben sind als: Seite 1 = 5 Meter, Seite 2 = 7 Meter, Seite 3 = 9 Meter.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 3: Bestimme die Perimeter eines Dreiecks, deren Seitenlängen wie folgt lauten: z = 5 Einheiten, w = 7 Einheiten, v = 9 Einheiten.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Investition von 1250 € wird zu 4,5 % Zinsen verzinst. Berechne das angesammelte Kapital nach 6 Jahren.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 4: Eine Einlage von 850 € wird mit einem Zinssatz von 2,8 % aufgeschlagen. Bestimme das Endguthaben nach einer Laufzeit von 7 Jahren.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 35.42,
+        "ocr_time": 1.45,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 0,
+        "ocr_time": 0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0
+      },
+      "segments": []
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 20.17,
+        "ocr_time": 2.3,
+        "ocr_tool": "tesseract",
+        "num_segments": 5,
+        "total_variants": 6,
+        "valid_variants": 1,
+        "validation_rate": 0.1667
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Grammatik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n□ Die Villa erhebt sich auf □m einer Bergkuppe.\n□ Einige Jugendliche verbringen ihre Freizeit in □ Park.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. —\n\nEr liest ein Buch. —",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nschnell - rasch - langsam - zügig",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: \n\nDas Haus steht auf __ dem __ Hügel.\nDie Kinder spielen in __ dem __ Garten.",
+            "type": "solution"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "solution",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 39.07,
+        "ocr_time": 1.68,
+        "ocr_tool": "tesseract",
+        "num_segments": 5,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 0,
+        "ocr_time": 0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0
+      },
+      "segments": []
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 28.57,
+        "ocr_time": 1.73,
+        "ocr_tool": "tesseract",
+        "num_segments": 8,
+        "total_variants": 10,
+        "valid_variants": 3,
+        "validation_rate": 0.3
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Eine Bilanzanalyse ist die Untersuchung und Bewertung der Vermögens- und Schuldensituation eines Unternehmens zu einem bestimmten Zeitpunkt. Sie dient dazu, die finanzielle Stabilität des Unternehmens zu beurteilen und Entscheidungsgrundlagen für zukünftige Investitionen oder Finanzierungsentscheidungen zu liefern. Wichtige Kennzahlen sind Eigenkapitalquote, Verschuldungsgrad und Liquidität.",
+            "type": "theory"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Eine Rentabilitätsanalyse vergleicht die Erträge eines Unternehmens mit seinen Kosten, um den wirtschaftlichen Erfolg zu messen und grundlegende Entscheidungen für das Wachstum oder die Konsolidierung eines Unternehmens zu unterstützen. Sie dient dazu, die Fähigkeit eines Unternehmens zu bewerten, Erträge zu erzielen und in angemessener Weise zu nutzen, um die Rentabilität seines Geschäftsmodells zu verbessern. Schlüsselkennzahlen sind Gewinnmargen, Kapitalrendite und Produktivitätsaussichten.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Eine Haushaltsanalyse untersucht und bewertet die Einnahmen- und Ausgabenentwicklung einer Familie über einen bestimmten Zeitraum. Sie dient dazu, das finanzielle Wohlergehen der Familie zu beurteilen und die Grundlage für Budgetierungsentscheidungen sowie die Kontrolle des Konsumverhaltens zu schaffen. Wesentliche Indikatoren sind Sparquote, Schuldenstand und Altersvorsorgebedürfnis.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Eigenkapitalquote = Eigenkapital / Gesamtvermögen\nEigenkapital: 120.000 €\nGesamtvermögen: 230.000 €\nEigenkapitalquote = 120.000 / 230.000 = 0,5217 \nEinheit: Prozent\nEigenkapitalquote = 52,17 %",
+            "type": "example"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "solution",
+            "confidence": 0.98
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Berechne die Eigenkapitalquote.\n\nEigenkapital: 550.000 ISK\nGesamtvermögen: 980.000 ISK\nEigenkapitalquote = 550.000 / 980.000 = 0,5612\nEinheit: Prozent\nEigenkapitalquote = 56,12 %",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Die Eigenkapitalquote beträgt 52,17 %.",
+            "type": "solution"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "solution",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 € Wie hoch ist der Gewinn?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Gewinn = Umsatz - Kosten\nUmsatz: 500.000 €\nKosten: 450.000 €\nGewinn = 500.000 - 450.000 = 50.000 €",
+            "type": "example"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Der Gewinn beträgt 50.000 €.",
+            "type": "solution"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "solution",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 211.13,
+        "ocr_time": 1.71,
+        "ocr_tool": "tesseract",
+        "num_segments": 11,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 0,
+        "ocr_time": 0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0
+      },
+      "segments": []
+    }
+  ]
+}

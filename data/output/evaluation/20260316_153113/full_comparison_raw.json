@@ -1,0 +1,445 @@
+{
+  "timestamp": "2026-03-16 15:31:13",
+  "config": {
+    "variants": 1,
+    "domains": [
+      "math"
+    ],
+    "frameworks": [
+      "langchain",
+      "langgraph",
+      "hybrid"
+    ],
+    "generator": "evaluate_all_frameworks.py"
+  },
+  "summary": [
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 10.89,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langgraph",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 18.17,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 13.14,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    }
+  ],
+  "results": [
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 10.89,
+        "ocr_time": 2.9,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $7y - 3 = 28$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Vereinfache: $5(y + 3) - 4(y - 2)$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Ermittle die Länge des Kreisumfangs eines Polygons, wenn dessen Seitenlängen 6 Meter, 8 Meter und 10 Meter betragen.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Investition von 1500 € wird mit einem Zinssatz von 2,5 % für ein Jahr angelegt. Ermitteln Sie das Kapital am Ende der Einlagezeit.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 18.17,
+        "ocr_time": 1.88,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $6a - 8 = 2$, wobei $a$ eine Variable ist.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Vereinfache: $5(a + 4) - 3(b - 2)$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne die Länge der Begrenzung eines Dreiecks, wenn die Seitenlängen gegeben sind als $p = 5$, $q = 7$ und $r = 9$.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Investition von 1500 Dollar wird zu 6,5 % annualer Zinsen verzinst. Ermitteln Sie das Ergebnis-Gesamt nach 8 Jahren.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 13.14,
+        "ocr_time": 0,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $5t - 2 = 18$.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne: $5(z + 4) - 3(z - 2)$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne den Umfang eines Dreiecks, dessen Seitenlängen die folgenden sind: $p = 12$ Meter, $q = 15$ Meter und $r = 18$ Meter.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Angenommen, ein Anfangsbetrag von 1500 Euro soll zu einer Rendite von 2,5 Prozent pro Jahr ansteigen, berechnen Sie das Kapital nach sieben Jahren.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    }
+  ]
+}

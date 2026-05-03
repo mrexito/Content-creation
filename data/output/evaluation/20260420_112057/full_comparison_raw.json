@@ -1,0 +1,439 @@
+{
+  "timestamp": "2026-04-20 11:20:57",
+  "config": {
+    "variants": 1,
+    "domains": [
+      "math"
+    ],
+    "frameworks": [
+      "langchain"
+    ],
+    "generator": "evaluate_all_frameworks.py"
+  },
+  "summary": [
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": false,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0.0,
+      "ocr_tool": "?",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": false,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0.0,
+      "ocr_tool": "?",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": false,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0.0,
+      "ocr_tool": "?",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.8,
+      "valid_variants": 4,
+      "total_variants": 5,
+      "total_time_s": 65.6,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 5,
+      "total_variants": 5,
+      "total_time_s": 68.55,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    }
+  ],
+  "results": [
+    {
+      "success": false,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": "Timeout nach 600s überschritten",
+      "metrics": {
+        "total_time": 0.0,
+        "ocr_time": 0.0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": []
+    },
+    {
+      "success": false,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "equations_advanced.pdf",
+      "error": "Timeout nach 600s überschritten",
+      "metrics": {
+        "total_time": 0.0,
+        "ocr_time": 0.0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": []
+    },
+    {
+      "success": false,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "word_problems.pdf",
+      "error": "Timeout nach 600s überschritten",
+      "metrics": {
+        "total_time": 0.0,
+        "ocr_time": 0.0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": []
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "geometry_area.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 65.6,
+        "ocr_time": 1.04,
+        "ocr_tool": "mistral",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 4,
+        "validation_rate": 0.8,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Flaechenberechnungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Flaeche des Rechtecks.\nEin Rechteck hat die Laenge 12 cm und die Breite 5 cm.\nWie gross ist seine Flaeche in cm²?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Berechne die Fläche des Rechtecks.  \nEin Rechteck hat die Länge 16 cm und die Breite 7 cm.  \nWie groß ist seine Fläche in cm²?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne den Flaecheninhalt des Kreises.\nEin Kreis hat den Radius r = 7 cm. Benutze pi = 3.14.\nWie gross ist der Flaecheninhalt in cm² (auf zwei Dezimalstellen)?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne die Flaeche des Trapezes.\nEin Trapez hat die parallelen Seiten a = 10 m und c = 6 m.\nDie Hoehe betraegt h = 4 m.\nWie gross ist der Flaecheninhalt?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne die Flaeche des Trapezes.  \nEin Trapez hat die parallelen Seiten a = 14 m und c = 9 m.  \nDie Hoehe betraegt h = 6 m.  \nWie gross ist der Flaecheninhalt?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Berechne die Flaeche des Dreiecks.\nDie Grundlinie betraegt g = 8 cm, die Hoehe h = 5 cm.\nWie gross ist der Flaecheninhalt des Dreiecks?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Berechne die Flaeche des Dreiecks.\nDie Grundlinie betraegt g = 11 cm, die Hoehe h = 7 cm.\nWie gross ist der Flaecheninhalt des Dreiecks?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 5: Vergleiche zwei Flaechen.\nFlaeche A: Quadrat mit Seitenlaenge 6 cm.\nFlaeche B: Rechteck mit Laenge 9 cm und Breite 4 cm.\nWelche Flaeche ist groesser und um wie viel cm²?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 5: Vergleiche zwei Flaechen.  \nFlaeche A: Quadrat mit Seitenlaenge 8 cm.  \nFlaeche B: Rechteck mit Laenge 12 cm und Breite 6 cm.  \nWelche Flaeche ist groesser und um wie viel cm²?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "percentage_ratio.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 68.55,
+        "ocr_time": 1.04,
+        "ocr_tool": "mistral",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 5,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "# Prozentrechnung",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne den Rabatt.\nEin Jacke kostet urspruenglich 80 CHF.\nSie wird um 25% reduziert.\nWie viel kostet die Jacke nach dem Rabatt?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Berechne den Rabatt.  \nEin Mantel kostet ursprünglich 110 CHF.  \nEr wird um 35 % reduziert.  \nWie viel kostet der Mantel nach dem Rabatt?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne den Prozentwert.\nIn einer Klasse von 30 Schuelerinnen und Schuelern\nsind 18 Maedchen. Wie viel Prozent der Klasse sind Maedchen?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Berechne den Prozentwert.\nIn einer Klasse von 42 Schülerinnen und Schülern\nsind 26 Mädchen. Wie viel Prozent der Klasse sind Mädchen?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne die Mehrwertsteuer.\nEin Restaurant-Rechnung betraegt 120 CHF (ohne MwSt.).\nDie Mehrwertsteuer betraegt 7.7%.\nWie hoch ist der Gesamtbetrag inklusive Mehrwertsteuer?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne die Mehrwertsteuer.  \nEin Restaurant-Rechnung beträgt 160 CHF (ohne MwSt.).  \nDie Mehrwertsteuer beträgt 10,0 %.  \nWie hoch ist der Gesamtbetrag inklusive Mehrwertsteuer?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Berechne das Mischungsverhaeltnis.\nEin Getraenk besteht zu 40% aus Fruchtsaft und zu 60% aus Wasser.\nWie viel ml Fruchtsaft sind in einer 500 ml Flasche enthalten?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Berechne das Mischungsverhältnis.  \nEin Getränk besteht zu 70 % aus Fruchtsaft und zu 30 % aus Wasser.  \nWie viel ml Fruchtsaft sind in einer 750 ml Flasche enthalten?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 5: Berechne die prozentuale Aenderung.\nDer Preis eines Produkts stieg von 200 CHF auf 250 CHF.\nUm wie viel Prozent ist der Preis gestiegen?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 5: Berechne die prozentuale Änderung.  \nDer Preis eines Artikels stieg von **260 CHF** auf **340 CHF**.  \nUm wie viel Prozent ist der Preis gestiegen?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "timestamp": "2026-03-16 15:14:28",
+  "config": {
+    "variants": 1,
+    "domains": [
+      "math"
+    ],
+    "frameworks": [
+      "langchain",
+      "langgraph",
+      "hybrid"
+    ],
+    "generator": "evaluate_all_frameworks.py"
+  },
+  "summary": [
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": false,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0.0,
+      "ocr_tool": "?",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langgraph",
+      "domain": "math",
+      "success": false,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0.0,
+      "ocr_tool": "?",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid",
+      "domain": "math",
+      "success": false,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0.0,
+      "ocr_tool": "?",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    }
+  ],
+  "results": [
+    {
+      "success": false,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": "Segmentation failed: Request timed out.",
+      "metrics": {
+        "total_time": 0.0,
+        "ocr_time": 0.0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": []
+    },
+    {
+      "success": false,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": "['Segmentation failed: Request timed out.', 'No segments to classify', 'No classified segments to rewrite', 'No variants to validate']",
+      "metrics": {
+        "total_time": 0.0,
+        "ocr_time": 0.0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": []
+    },
+    {
+      "success": false,
+      "framework": "hybrid",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": "Preprocessing fehlgeschlagen: ['Segmentierung fehlgeschlagen']",
+      "metrics": {
+        "total_time": 0.0,
+        "ocr_time": 0.0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": []
+    }
+  ]
+}

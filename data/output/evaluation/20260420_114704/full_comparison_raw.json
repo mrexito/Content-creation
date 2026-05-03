@@ -1,0 +1,2215 @@
+{
+  "timestamp": "2026-04-20 11:47:04",
+  "config": {
+    "variants": 1,
+    "domains": [
+      "math"
+    ],
+    "frameworks": [
+      "langchain",
+      "langgraph",
+      "hybrid"
+    ],
+    "generator": "evaluate_all_frameworks.py"
+  },
+  "summary": [
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 65.35,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langgraph",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 175.9,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 106.14,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.75,
+      "valid_variants": 3,
+      "total_variants": 4,
+      "total_time_s": 60.8,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langgraph",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.75,
+      "valid_variants": 3,
+      "total_variants": 4,
+      "total_time_s": 172.44,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.75,
+      "valid_variants": 3,
+      "total_variants": 4,
+      "total_time_s": 121.85,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 70.89,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langgraph",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 64.66,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 59.97,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.8,
+      "valid_variants": 4,
+      "total_variants": 5,
+      "total_time_s": 67.18,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langgraph",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.8,
+      "valid_variants": 4,
+      "total_variants": 5,
+      "total_time_s": 220.54,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.8,
+      "valid_variants": 4,
+      "total_variants": 5,
+      "total_time_s": 152.66,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 5,
+      "total_variants": 5,
+      "total_time_s": 84.44,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langgraph",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 5,
+      "total_variants": 5,
+      "total_time_s": 198.67,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 5,
+      "total_variants": 5,
+      "total_time_s": 127.95,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    }
+  ],
+  "results": [
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 65.35,
+        "ocr_time": 0.89,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "# Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung: $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Löse die Gleichung: $3a + 7 = 17$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Vereinfache: $5\\bigl(x + 4\\bigr) - 3\\bigl(x - 2\\bigr)$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten:\na = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten:\na = 8 cm, b = 10 cm, c = 12 cm",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt.\nWie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.92
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Ein Kapital von 1300 € wird zu 4 % Zinsen angelegt.  \nWie hoch ist das Endkapital nach 7 Jahren?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 175.9,
+        "ocr_time": 1.03,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "# Mathematik-Übungen",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung: $2x + 5 = 13$",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Löse die Gleichung: $3a + 7 = 17$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Vereinfache: $4\\bigl(x + 4\\bigr) - 3\\bigl(x - 2\\bigr)$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten:\na = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten:\na = 8 cm, b = 10 cm, c = 13 cm",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt.\nWie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Ein Kapital von 1500 € wird zu 4 % Zinsen angelegt.  \nWie hoch ist das Endkapital nach 7 Jahren?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 106.14,
+        "ocr_time": 0,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "# Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.96
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung: $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Löse die Gleichung: $3a + 7 = 17$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Vereinfache: \\(4(a + 3) - 3(a - 2)\\)",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten:\na = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten:\na = 8 cm, b = 10 cm, c = 13 cm",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt.\nWie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Ein Kapital von 1500 € wird zu 4 % Zinsen angelegt.  \nWie hoch ist das Endkapital nach 7 Jahren?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "equations_advanced.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 60.8,
+        "ocr_time": 0.92,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 3,
+        "validation_rate": 0.75,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "# Fortgeschrittene Gleichungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die quadratische Gleichung: $x^2 - 5x + 6 = 0$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Löse das Gleichungssystem:\n$$\n\\\\begin{array}{l}\n2x + y = 8 \\\\\n x - y = 1\n\\\\end{array}\n$$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Löse das Gleichungssystem:\n$$\n\\begin{array}{l}\n3a + b = 11 \\\\\n a - b = 2\n\\end{array}\n$$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Ein Produkt kostet nach 20% Rabatt 240 CHF.\nWie hoch war der ursprüngliche Preis?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Ein Produkt kostet nach 28 % Rabatt 312 CHF.\nWie hoch war der ursprüngliche Preis?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein rechtwinkliges Dreieck hat die Katheten $a = 6$ cm und $b = 8$ cm.\nBerechne die Hypotenuse c.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Ein rechtwinkliges Dreieck hat die Katheten $a = 9$ cm und $b = 12$ cm.  \nBerechne die Hypotenuse $c\\,. $",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_name": "equations_advanced.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 172.44,
+        "ocr_time": 1.02,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 3,
+        "validation_rate": 0.75,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Fortgeschrittene Gleichungen",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "theory",
+            "confidence": 0.97
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die quadratische Gleichung: $x^2 - 5x + 6 = 0$",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Löse die quadratische Gleichung: $2a^{2} - 7a + 8 = 0$",
+              "is_valid": false,
+              "validation_issues": [
+                "Zahlenvariation zu gering: Ø 17% (Minimum: 30% gemäss Vorstudie)"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Löse das Gleichungssystem:\n$$\n\\begin{array}{l}\n2x + y = 8 \\\\\nx - y = 1\n\\end{array}\n$$",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Löse das Gleichungssystem:\n$$\n\\begin{array}{l}\n3a + 2b = 11 \\\\\na - 2b = 2\n\\end{array}\n$$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Ein Produkt kostet nach 20% Rabatt 240 CHF.\nWie hoch war der ursprüngliche Preis?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Ein Produkt kostet nach 27 % Rabatt 320 CHF.  \nWie hoch war der ursprüngliche Preis?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein rechtwinkliges Dreieck hat die Katheten $a = 6$ cm und $b = 8$ cm.\nBerechne die Hypotenuse c.",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Ein rechtwinkliges Dreieck hat die Katheten $a = 9\\ \\text{cm}$ und $b = 12\\ \\text{cm}$. Berechne die Hypotenuse $c\\,. $",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "math",
+      "pdf_name": "equations_advanced.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 121.85,
+        "ocr_time": 0,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 3,
+        "validation_rate": 0.75,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Fortgeschrittene Gleichungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "theory",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die quadratische Gleichung: $x^2 - 5x + 6 = 0$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Löse das Gleichungssystem:\n$$\n\\begin{array}{l}\n2x + y = 8 \\\\\nx - y = 1\n\\end{array}\n$$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Löse das Gleichungssystem:\n$$\n\\begin{array}{l}\n3a + 2b = 11 \\\\\n2a - 2b = 2\n\\end{array}\n$$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Ein Produkt kostet nach 20% Rabatt 240 CHF.\nWie hoch war der ursprüngliche Preis?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Ein Produkt kostet nach 28 % Rabatt 320 CHF.\nWie hoch war der ursprüngliche Preis?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein rechtwinkliges Dreieck hat die Katheten $a = 6$ cm und $b = 8$ cm.\nBerechne die Hypotenuse c.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Ein rechtwinkliges Dreieck hat die Katheten $a = 9$ cm und $b = 11$ cm. Berechne die Hypotenuse $c\\,. $",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "word_problems.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 70.89,
+        "ocr_time": 0.91,
+        "ocr_tool": "mistral",
+        "num_segments": 4,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Anna legt 2000 CHF zu einem Zinssatz von 4% pro Jahr an.\nWie viel Kapital hat sie nach 3 Jahren (Zinseszinsrechnung)?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Ben legt 2700 CHF zu einem Zinssatz von 6 % pro Jahr an.\nWie viel Kapital hat er nach 5 Jahren (Zinseszinsrechnung)?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Ein Auto fährt mit einer Geschwindigkeit von 80 km/h.\nWie lange braucht es für eine Strecke von 120 km?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Ein Auto fährt mit einer Geschwindigkeit von 110 km/h.  \nWie lange braucht es für eine Strecke von 160 km?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Ein rechteckiger Garten ist 15 m lang und 8 m breit.\nRund um den Garten soll ein 1 m breiter Weg angelegt werden.\nWie gross ist die verbleibende Gartenfläche?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Ein rechteckiger Garten ist 20 m lang und 11 m breit.\nRund um den Garten soll ein 2 m breiter Weg angelegt werden.\nWie groß ist die verbleibende Gartenfläche?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: 5 Arbeiter benötigen 12 Tage für ein Bauprojekt.\nWie lange brauchen 4 Arbeiter für dieselbe Arbeit?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: 8 Arbeiter benötigen 16 Tage für ein Bauprojekt.  \nWie lange brauchen 6 Arbeiter für dieselbe Arbeit?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_name": "word_problems.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 64.66,
+        "ocr_time": 0.94,
+        "ocr_tool": "mistral",
+        "num_segments": 4,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Anna legt 2000 CHF zu einem Zinssatz von 4% pro Jahr an.\nWie viel Kapital hat sie nach 3 Jahren (Zinseszinsrechnung)?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Ben legt 2800 CHF zu einem Zinssatz von 6 % pro Jahr an.\nWie viel Kapital hat er nach 5 Jahren (Zinseszinsrechnung)?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Ein Auto fährt mit einer Geschwindigkeit von 80 km/h.\nWie lange braucht es für eine Strecke von 120 km?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Ein LKW fährt mit einer Geschwindigkeit von 110 km/h.  \nWie lange braucht er für eine Strecke von 160 km?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Ein rechteckiger Garten ist 15 m lang und 8 m breit.\nRund um den Garten soll ein 1 m breiter Weg angelegt werden.\nWie gross ist die verbleibende Gartenfläche?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Ein rechteckiger Garten ist 20 m lang und 11 m breit.\nRund um den Garten soll ein 2 m breiter Weg angelegt werden.\nWie groß ist die verbleibende Gartenfläche?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: 5 Arbeiter benötigen 12 Tage für ein Bauprojekt.\nWie lange brauchen 4 Arbeiter für dieselbe Arbeit?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: 7 Arbeiter benötigen 16 Tage für ein Bauprojekt.  \nWie lange brauchen 6 Arbeiter für dieselbe Arbeit?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "math",
+      "pdf_name": "word_problems.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 59.97,
+        "ocr_time": 0,
+        "ocr_tool": "mistral",
+        "num_segments": 4,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Anna legt 2000 CHF zu einem Zinssatz von 4% pro Jahr an.\nWie viel Kapital hat sie nach 3 Jahren (Zinseszinsrechnung)?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Ben legt 2600 CHF zu einem Zinssatz von 6 % pro Jahr an.  \nWie viel Kapital hat er nach 4 Jahren (Zinseszinsrechnung)?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Ein Auto fährt mit einer Geschwindigkeit von 80 km/h.\nWie lange braucht es für eine Strecke von 120 km?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Ein Bus fährt mit einer Geschwindigkeit von 110 km/h.  \nWie lange braucht er für eine Strecke von 160 km?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Ein rechteckiger Garten ist 15 m lang und 8 m breit.\nRund um den Garten soll ein 1 m breiter Weg angelegt werden.\nWie gross ist die verbleibende Gartenfläche?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Ein rechteckiger Park ist 20 m lang und 11 m breit.  \nRund um den Park soll ein 2 m breiter Weg angelegt werden.  \nWie groß ist die verbleibende Parkfläche?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: 5 Arbeiter benötigen 12 Tage für ein Bauprojekt.\nWie lange brauchen 4 Arbeiter für dieselbe Arbeit?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: 7 Arbeiter benötigen 16 Tage für ein Bauprojekt.  \nWie lange brauchen 6 Arbeiter für dieselbe Arbeit?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "geometry_area.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 67.18,
+        "ocr_time": 0.96,
+        "ocr_tool": "mistral",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 4,
+        "validation_rate": 0.8,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "# Flaechenberechnungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Flaeche des Rechtecks.\nEin Rechteck hat die Laenge 12 cm und die Breite 5 cm.\nWie gross ist seine Flaeche in cm²?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Berechne die Flaeche des Rechtecks.  \nEin Rechteck hat die Laenge 16 cm und die Breite 7 cm.  \nWie gross ist seine Flaeche in cm²?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne den Flaecheninhalt des Kreises.\nEin Kreis hat den Radius r = 7 cm. Benutze pi = 3.14.\nWie gross ist der Flaecheninhalt in cm² (auf zwei Dezimalstellen)?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne die Flaeche des Trapezes.\nEin Trapez hat die parallelen Seiten a = 10 m und c = 6 m.\nDie Hoehe betraegt h = 4 m.\nWie gross ist der Flaecheninhalt?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne die Flaeche des Trapezes.  \nEin Trapez hat die parallelen Seiten a = 13 m und c = 8 m.  \nDie Hoehe betraegt h = 6 m.  \nWie gross ist der Flaecheninhalt?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Berechne die Flaeche des Dreiecks.\nDie Grundlinie betraegt g = 8 cm, die Hoehe h = 5 cm.\nWie gross ist der Flaecheninhalt des Dreiecks?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Berechne die Flaeche des Dreiecks.  \nDie Grundlinie betraegt g = 11 cm, die Hoehe h = 7 cm.  \nWie gross ist der Flaecheninhalt des Dreiecks?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 5: Vergleiche zwei Flaechen.\nFlaeche A: Quadrat mit Seitenlaenge 6 cm.\nFlaeche B: Rechteck mit Laenge 9 cm und Breite 4 cm.\nWelche Flaeche ist groesser und um wie viel cm²?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 5: Vergleiche zwei Flaechen.  \nFlaeche A: Quadrat mit Seitenlaenge 9 cm.  \nFlaeche B: Rechteck mit Laenge 13 cm und Breite 6 cm.  \nWelche Flaeche ist groesser und um wie viel cm²?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_name": "geometry_area.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 220.54,
+        "ocr_time": 0.99,
+        "ocr_tool": "mistral",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 4,
+        "validation_rate": 0.8,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "# Flaechenberechnungen",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "theory",
+            "confidence": 0.97
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Flaeche des Rechtecks.\nEin Rechteck hat die Laenge 12 cm und die Breite 5 cm.\nWie gross ist seine Flaeche in cm²?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Berechne die Flaeche des Rechtecks.  \nEin Rechteck hat die Laenge 16 cm und die Breite 7 cm.  \nWie gross ist seine Flaeche in cm²?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne den Flaecheninhalt des Kreises.\nEin Kreis hat den Radius r = 7 cm. Benutze pi = 3.14.\nWie gross ist der Flaecheninhalt in cm² (auf zwei Dezimalstellen)?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Berechne den Flächeninhalt des Kreises.  \nEin Kreis hat den Radius r = 10 cm. Benutze π = 3.14.  \nWie groß ist der Flächeninhalt in cm² (auf zwei Dezimalstellen)?",
+              "is_valid": false,
+              "validation_issues": [
+                "Zahlenvariation zu gering: Ø 21% (Minimum: 30% gemäss Vorstudie)"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne die Flaeche des Trapezes.\nEin Trapez hat die parallelen Seiten a = 10 m und c = 6 m.\nDie Hoehe betraegt h = 4 m.\nWie gross ist der Flaecheninhalt?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne die Flaeche des Trapezes.  \nEin Trapez hat die parallelen Seiten a = 13 m und c = 9 m.  \nDie Hoehe betraegt h = 6 m.  \nWie gross ist der Flaecheninhalt?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Berechne die Flaeche des Dreiecks.\nDie Grundlinie betraegt g = 8 cm, die Hoehe h = 5 cm.\nWie gross ist der Flaecheninhalt des Dreiecks?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Berechne die Fläche des Dreiecks.  \nDie Grundlinie beträgt g = 11 cm, die Höhe h = 7 cm.  \nWie groß ist der Flächeninhalt des Dreiecks?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 5: Vergleiche zwei Flaechen.\nFlaeche A: Quadrat mit Seitenlaenge 6 cm.\nFlaeche B: Rechteck mit Laenge 9 cm und Breite 4 cm.\nWelche Flaeche ist groesser und um wie viel cm²?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 5: Vergleiche zwei Flächen.  \nFläche A: Quadrat mit Seitenlänge **9 cm**.  \nFläche B: Rechteck mit Länge **12 cm** und Breite **6 cm**.  \nWelche Fläche ist größer und um wie viel cm²?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "math",
+      "pdf_name": "geometry_area.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 152.66,
+        "ocr_time": 0,
+        "ocr_tool": "mistral",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 4,
+        "validation_rate": 0.8,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Flaechenberechnungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "theory",
+            "confidence": 0.96
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Flaeche des Rechtecks.\nEin Rechteck hat die Laenge 12 cm und die Breite 5 cm.\nWie gross ist seine Flaeche in cm²?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Berechne die Flaeche des Rechtecks.  \nEin Rechteck hat die Laenge 16 cm und die Breite 7 cm.  \nWie gross ist seine Flaeche in cm²?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne den Flaecheninhalt des Kreises.\nEin Kreis hat den Radius r = 7 cm. Benutze pi = 3.14.\nWie gross ist der Flaecheninhalt in cm² (auf zwei Dezimalstellen)?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne die Flaeche des Trapezes.\nEin Trapez hat die parallelen Seiten a = 10 m und c = 6 m.\nDie Hoehe betraegt h = 4 m.\nWie gross ist der Flaecheninhalt?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne die Flaeche des Trapezes.\nEin Trapez hat die parallelen Seiten a = 14 m und c = 9 m.\nDie Hoehe betraegt h = 6 m.\nWie gross ist der Flaecheninhalt?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Berechne die Flaeche des Dreiecks.\nDie Grundlinie betraegt g = 8 cm, die Hoehe h = 5 cm.\nWie gross ist der Flaecheninhalt des Dreiecks?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Berechne die Fläche des Dreiecks.  \nDie Grundlinie beträgt g = 11 cm, die Höhe h = 7 cm.  \nWie groß ist der Flächeninhalt des Dreiecks?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 5: Vergleiche zwei Flaechen.\nFlaeche A: Quadrat mit Seitenlaenge 6 cm.\nFlaeche B: Rechteck mit Laenge 9 cm und Breite 4 cm.\nWelche Flaeche ist groesser und um wie viel cm²?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 5: Vergleiche zwei Flächen.  \nFläche A: Quadrat mit Seitenlänge 9 cm.  \nFläche B: Rechteck mit Länge 13 cm und Breite 7 cm.  \nWelche Fläche ist größer und um wie viel cm²?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "percentage_ratio.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 84.44,
+        "ocr_time": 1.17,
+        "ocr_tool": "mistral",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 5,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "# Prozentrechnung",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne den Rabatt.\nEin Jacke kostet urspruenglich 80 CHF.\nSie wird um 25% reduziert.\nWie viel kostet die Jacke nach dem Rabatt?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Berechne den Rabatt.  \nEine Jacke kostet urspruenglich 104 CHF.  \nSie wird um 33 % reduziert.  \nWie viel kostet die Jacke nach dem Rabatt?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne den Prozentwert.\nIn einer Klasse von 30 Schuelerinnen und Schuelern\nsind 18 Maedchen. Wie viel Prozent der Klasse sind Maedchen?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Berechne den Prozentwert.  \nIn einer Klasse von 40 Schülerinnen und Schülern sind 24 Mädchen. Wie viel Prozent der Klasse sind Mädchen?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne die Mehrwertsteuer.\nEin Restaurant-Rechnung betraegt 120 CHF (ohne MwSt.).\nDie Mehrwertsteuer betraegt 7.7%.\nWie hoch ist der Gesamtbetrag inklusive Mehrwertsteuer?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne die Mehrwertsteuer.  \nEin Café-Rechnung betraegt 160 CHF (ohne MwSt.).  \nDie Mehrwertsteuer betraegt 10%.  \nWie hoch ist der Gesamtbetrag inklusive Mehrwertsteuer?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Berechne das Mischungsverhaeltnis.\nEin Getraenk besteht zu 40% aus Fruchtsaft und zu 60% aus Wasser.\nWie viel ml Fruchtsaft sind in einer 500 ml Flasche enthalten?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Berechne das Mischungsverhältnis.  \nEin Getränk besteht zu 55 % aus Fruchtsaft und zu 45 % aus Wasser.  \nWie viel ml Fruchtsaft sind in einer 650 ml Flasche enthalten?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 5: Berechne die prozentuale Aenderung.\nDer Preis eines Produkts stieg von 200 CHF auf 250 CHF.\nUm wie viel Prozent ist der Preis gestiegen?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 5: Berechne die prozentuale Änderung.  \nDer Preis eines Produkts stieg von **260 CHF** auf **340 CHF**.  \nUm wie viel Prozent ist der Preis gestiegen?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_name": "percentage_ratio.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 198.67,
+        "ocr_time": 1.0,
+        "ocr_tool": "mistral",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 5,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Prozentrechnung",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "theory",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne den Rabatt.\nEin Jacke kostet urspruenglich 80 CHF.\nSie wird um 25% reduziert.\nWie viel kostet die Jacke nach dem Rabatt?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Berechne den Rabatt.  \nEin Mantel kostet urspruenglich 110 CHF.  \nEr wird um 35 % reduziert.  \nWie viel kostet der Mantel nach dem Rabatt?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne den Prozentwert.\nIn einer Klasse von 30 Schuelerinnen und Schuelern\nsind 18 Maedchen. Wie viel Prozent der Klasse sind Maedchen?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Berechne den Prozentwert.\nIn einer Klasse von 42 Schülerinnen und Schülern\nsind 26 Mädchen. Wie viel Prozent der Klasse sind Mädchen?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne die Mehrwertsteuer.\nEin Restaurant-Rechnung betraegt 120 CHF (ohne MwSt.).\nDie Mehrwertsteuer betraegt 7.7%.\nWie hoch ist der Gesamtbetrag inklusive Mehrwertsteuer?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne die Mehrwertsteuer.\nEin Restaurant-Rechnung betraegt 160 CHF (ohne MwSt.).\nDie Mehrwertsteuer betraegt 10.5%.\nWie hoch ist der Gesamtbetrag inklusive Mehrwertsteuer?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Berechne das Mischungsverhaeltnis.\nEin Getraenk besteht zu 40% aus Fruchtsaft und zu 60% aus Wasser.\nWie viel ml Fruchtsaft sind in einer 500 ml Flasche enthalten?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Berechne das Mischungsverhältnis.  \nEin Getränk besteht zu 55 % aus Fruchtsaft und zu 45 % aus Wasser.  \nWie viel ml Fruchtsaft sind in einer 650 ml Flasche enthalten?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 5: Berechne die prozentuale Aenderung.\nDer Preis eines Produkts stieg von 200 CHF auf 250 CHF.\nUm wie viel Prozent ist der Preis gestiegen?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 5: Berechne die prozentuale Änderung.  \nDer Preis eines Produkts stieg von 260 CHF auf 340 CHF.  \nUm wie viel Prozent ist der Preis gestiegen?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "math",
+      "pdf_name": "percentage_ratio.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 127.95,
+        "ocr_time": 0,
+        "ocr_tool": "mistral",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 5,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Prozentrechnung",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "theory",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne den Rabatt.\nEin Jacke kostet urspruenglich 80 CHF.\nSie wird um 25% reduziert.\nWie viel kostet die Jacke nach dem Rabatt?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Berechne den Rabatt.  \nEine Jacke kostet urspruenglich 110 CHF.  \nSie wird um 35 % reduziert.  \nWie viel kostet die Jacke nach dem Rabatt?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne den Prozentwert.\nIn einer Klasse von 30 Schuelerinnen und Schuelern\nsind 18 Maedchen. Wie viel Prozent der Klasse sind Maedchen?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Berechne den Prozentwert.  \nIn einer Klasse von 40 Schülerinnen und Schülern sind 24 Mädchen. Wie viel Prozent der Klasse sind Mädchen?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne die Mehrwertsteuer.\nEin Restaurant-Rechnung betraegt 120 CHF (ohne MwSt.).\nDie Mehrwertsteuer betraegt 7.7%.\nWie hoch ist der Gesamtbetrag inklusive Mehrwertsteuer?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Berechne die Mehrwertsteuer.  \nEin Restaurant-Rechnung beträgt 160 CHF (ohne MwSt.).  \nDie Mehrwertsteuer beträgt 10,5 %.  \nWie hoch ist der Gesamtbetrag inklusive Mehrwertsteuer?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Berechne das Mischungsverhaeltnis.\nEin Getraenk besteht zu 40% aus Fruchtsaft und zu 60% aus Wasser.\nWie viel ml Fruchtsaft sind in einer 500 ml Flasche enthalten?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Berechne das Mischungsverhältnis.  \nEin Getränk besteht zu 58 % aus Fruchtsaft und zu 42 % aus Wasser.  \nWie viel ml Fruchtsaft sind in einer 650 ml Flasche enthalten?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 5: Berechne die prozentuale Aenderung.\nDer Preis eines Produkts stieg von 200 CHF auf 250 CHF.\nUm wie viel Prozent ist der Preis gestiegen?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 5: Berechne die prozentuale Änderung.  \nDer Preis eines Produkts stieg von 260 CHF auf 340 CHF.  \nUm wie viel Prozent ist der Preis gestiegen?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    }
+  ]
+}

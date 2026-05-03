@@ -1,0 +1,1431 @@
+{
+  "timestamp": "2026-04-21 20:28:53",
+  "run_id": 99,
+  "config": {
+    "variants": 1,
+    "domains": [
+      "economics"
+    ],
+    "frameworks": [
+      "langchain",
+      "hybrid"
+    ],
+    "generator": "evaluate_all_frameworks.py"
+  },
+  "summary": [
+    {
+      "run_id": 99,
+      "framework": "langchain",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.6667,
+      "valid_variants": 2,
+      "total_variants": 3,
+      "total_time_s": 47.49,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "run_id": 99,
+      "framework": "hybrid",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.6667,
+      "valid_variants": 2,
+      "total_variants": 3,
+      "total_time_s": 93.54,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "run_id": 99,
+      "framework": "langchain",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.75,
+      "valid_variants": 3,
+      "total_variants": 4,
+      "total_time_s": 63.13,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "run_id": 99,
+      "framework": "hybrid",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 133.15,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "run_id": 99,
+      "framework": "langchain",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.25,
+      "valid_variants": 1,
+      "total_variants": 4,
+      "total_time_s": 72.6,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "run_id": 99,
+      "framework": "hybrid",
+      "domain": "economics",
+      "success": false,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0.0,
+      "ocr_tool": "?",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "run_id": 99,
+      "framework": "langchain",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.6,
+      "valid_variants": 3,
+      "total_variants": 5,
+      "total_time_s": 82.86,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "run_id": 99,
+      "framework": "hybrid",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.6,
+      "valid_variants": 3,
+      "total_variants": 5,
+      "total_time_s": 193.68,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "run_id": 99,
+      "framework": "langchain",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.8,
+      "valid_variants": 4,
+      "total_variants": 5,
+      "total_time_s": 84.48,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "run_id": 99,
+      "framework": "hybrid",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.8,
+      "valid_variants": 4,
+      "total_variants": 5,
+      "total_time_s": 152.89,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    }
+  ],
+  "results": [
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 47.49,
+        "ocr_time": 1.45,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 2,
+        "validation_rate": 0.6667,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: TechStart GmbH\nBilanz zum 31.12.2024:\nAKTIVA:\n\nAnlagevermögen: 150.000 €\nUmlaufvermögen: 80.000 €\n\nGesamt: 230.000 €\nPASSIVA:\n\nEigenkapital: 120.000 €\nFremdkapital: 110.000 €\nGesamt: 230.000 €",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Unternehmen: NovaTech AG  \nBilanz zum 31.12.2025:\n\n**AKTIVA**\n\n- Anlagevermögen: 210.000 CHF  \n- Umlaufvermögen: 115.000 CHF  \n\nGesamt: 325.000 CHF  \n\n**PASSIVA**\n\n- Eigenkapital: 175.000 CHF  \n- Fremdkapital: 150.000 CHF  \n\nGesamt: 325.000 CHF",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.98
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Die XYZ AG weist ein Eigenkapital von 12 Mio CHF und ein Gesamtkapital von 28 Mio CHF aus. Bestimme den Eigenkapitalanteil am Gesamtvermögen.",
+              "is_valid": false,
+              "validation_issues": [
+                "Semantische Ähnlichkeit zu gering (Wirtschaft): BERTScore 0.715 < 0.72"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 €\nWie hoch ist der Gewinn?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Der Jahreserlös der NovaTech AG betrug 730.000 CHF, die Betriebsausgaben beliefen sich auf 610.000 CHF. Wie hoch ist der Jahresüberschuss?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ],
+      "run_id": 99
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 93.54,
+        "ocr_time": 1.46,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 2,
+        "validation_rate": 0.6667,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.96
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: TechStart GmbH\nBilanz zum 31.12.2024:\nAKTIVA:\n\nAnlagevermögen: 150.000 €\nUmlaufvermögen: 80.000 €\n\nGesamt: 230.000 €\nPASSIVA:\n\nEigenkapital: 120.000 €\nFremdkapital: 110.000 €\nGesamt: 230.000 €",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "**Unternehmen:** NovaTech AG  \n**Bilanz zum 31.03.2025**\n\n**AKTIVA**  \n\n- Anlagevermögen: 210 000 CHF  \n- Umlaufvermögen: 120 000 CHF  \n\nGesamt: 330 000 CHF  \n\n**PASSIVA**  \n\n- Eigenkapitalanteil: 170 000 CHF  \n- Fremdkapital: 160 000 CHF  \n\nGesamt: 330 000 CHF",
+              "is_valid": false,
+              "validation_issues": [
+                "Anzahl Zahlen stark unterschiedlich: 7 vs 13"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Ermittle den Eigenkapitalanteil, wenn das Eigenkapital 140 000 CHF und das Gesamtkapital 560 000 CHF beträgt.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 €\nWie hoch ist der Gewinn?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.93
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Der Jahreserlös der AlpenTech GmbH beträgt 780 000 CHF, die Betriebsausgaben belaufen sich auf 630 000 CHF. Wie hoch ist der Jahresüberschuss?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ],
+      "run_id": 99
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "economics",
+      "pdf_name": "income_statement.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 63.13,
+        "ocr_time": 1.45,
+        "ocr_tool": "tesseract",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 3,
+        "validation_rate": 0.75,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Erfolgsrechnung - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: BioNova AG\n\nErfolgsrechnung 2024:\n\nUmsatzerlöse: 500.000 CHF\nMaterialkosten: -320.000 CHF\nBruttogewinn: 180.000 CHF\nBetriebskosten: -120.000 CHF\nJahresgewinn: 60.000 CHF",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Die EcoPulse GmbH – Erfolgsrechnung 2024:\n\nErlöse aus dem Verkauf: 750 000 CHF  \nMaterialaufwand: –450 000 CHF  \nRohgewinn: 300 000 CHF  \nBetriebsaufwendungen: –180 000 CHF  \nJahresüberschuss: 120 000 CHF",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Bruttogewinnmarge in Prozent.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Der Jahreserlös der NordicTech GmbH beträgt 1 200 000 CHF, die Herstellungsaufwendungen belaufen sich auf 840 000 CHF. Ermitteln Sie den Bruttogewinnanteil in Prozent.",
+              "is_valid": false,
+              "validation_issues": [
+                "Semantische Ähnlichkeit zu gering (Wirtschaft): BERTScore 0.713 < 0.72"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne die Nettogewinnmarge in Prozent.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Die ABC GmbH erwirtschaftete im Geschäftsjahr einen Erlös von 1 200 000 CHF und erzielte dabei einen Jahresüberschuss von 180 000 CHF. Bestimme die Nettogewinnmarge in Prozent.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Um wie viel CHF muss der Umsatz steigen,\ndamit sich der Jahresgewinn verdoppelt (Kosten bleiben konstant)?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Der Jahreserlös der AlpineTech AG beträgt 1 200 000 CHF, die jährlichen Kosten betragen 800 000 CHF. Um wie viel CHF muss der Erlös steigen, damit sich der Jahresüberschuss verdoppelt (Kosten bleiben unverändert)?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ],
+      "run_id": 99
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "economics",
+      "pdf_name": "income_statement.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 133.15,
+        "ocr_time": 1.43,
+        "ocr_tool": "tesseract",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Erfolgsrechnung - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.92
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: BioNova AG\n\nErfolgsrechnung 2024:\n\nUmsatzerlöse: 500.000 CHF\nMaterialkosten: -320.000 CHF\nBruttogewinn: 180.000 CHF\nBetriebskosten: -120.000 CHF\nJahresgewinn: 60.000 CHF",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Unternehmen: GreenPulse GmbH  \n\nErfolgsrechnung 2024:\n\nErlös: 660 000 CHF  \nProduktionsaufwand: -430 000 CHF  \nBruttomarge: 230 000 CHF  \nVerwaltungskosten: -165 000 CHF  \nJahresüberschuss: 65 000 CHF",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Bruttogewinnmarge in Prozent.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Der Jahreserlös der Nordwest GmbH beträgt 1 320 000 CHF, die Herstellungskosten belaufen sich auf 870 000 CHF. Wie hoch ist die Bruttogewinnmarge in Prozent?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne die Nettogewinnmarge in Prozent.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Der Jahresüberschuss der NordTech GmbH beträgt 312 000 CHF, während der Jahreserlös 1 250 000 CHF beträgt. Ermitteln Sie die Nettogewinnmarge in Prozent.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Um wie viel CHF muss der Umsatz steigen,\ndamit sich der Jahresgewinn verdoppelt (Kosten bleiben konstant)?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Die Firma AlpineTech erzielt einen Jahreserlös von 1 250 000 CHF und hat jährliche Kosten in Höhe von 770 000 CHF. Um den Jahresüberschuss zu verdoppeln, wie stark muss der Erlös steigen, wenn die Kosten unverändert bleiben?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ],
+      "run_id": 99
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "economics",
+      "pdf_name": "investment_calculation.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 72.6,
+        "ocr_time": 1.44,
+        "ocr_tool": "tesseract",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 1,
+        "validation_rate": 0.25,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Investitionsrechnung - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Investitionsprojekt: Neue Produktionsanlage\n\nInvestitionsdaten:\n\nAnschaffungskosten: 100.000 CHF\n\nJährliche Einzahlungen: 30.000 CHF\n\nNutzungsdauer: 5 Jahre\n\nKalkulationszinssatz: 8%",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Investitionsvorhaben: Erweiterte Fertigungsstraße  \n\nInvestitionskennzahlen:\n\n- Anschaffungskosten: 140.000 CHF  \n- Jährliche Rückflüsse: 42.000 CHF  \n- Nutzungsdauer: 7 Jahre  \n- Kalkulationszinssatz: 10 %  \n\nAufgabe: Ermitteln Sie den Kapitalwert des Projekts.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Amortisationsdauer (Payback Period).",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Ein Unternehmen plant die Anschaffung einer Produktionsanlage für 132 000 CHF. Der zu erwartende jährliche Netto‑Cashflow beträgt 28 500 CHF. Bestimmen Sie, nach wie vielen Jahren sich die Investition amortisiert (Payback‑Periode).",
+              "is_valid": false,
+              "validation_issues": [
+                "Semantische Ähnlichkeit zu gering (Wirtschaft): BERTScore 0.684 < 0.72",
+                "Länge weicht stark ab: 231 vs 60 Zeichen (Ratio: 3.85, erlaubt: 0.3–3.5)"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne den Kapitalwert (NPV) bei einem Zinssatz von 8%.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Ermittele den Kapitalwert (NPV) bei einem Diskontierungssatz von 8 %.\n\nVariierte Aufgabe:\nEin Investitionsprojekt der fiktiven Firma NovaTech AG erzeugt über fünf Jahre die folgenden Nettozuflüsse:\n\n- Jahr 1: 1.300 000 CHF  \n- Jahr 2: 1.650 000 CHF  \n- Jahr 3: 2.200 000 CHF  \n- Jahr 4: 1.800 000 CHF  \n- Jahr 5: 2.500 000 CHF  \n\nDie Anfangsinvestition beträgt 6.700 000 CHF. Berechne den Kapitalwert des Projekts bei einem Zinssatz von 8 %.",
+              "is_valid": false,
+              "validation_issues": [
+                "Anzahl Zahlen stark unterschiedlich: 2 vs 20",
+                "Länge weicht stark ab: 452 vs 68 Zeichen (Ratio: 6.65, erlaubt: 0.3–3.5)"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Bei welchem Zinssatz ist der Kapitalwert gleich null (interner Zinsfuss, Näherungswert genügt)?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.98
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Für ein Investitionsvorhaben mit einer Anfangsauszahlung von ‑ 15 000 CHF ergeben sich in den folgenden vier Jahren Rückflüsse von 4 200 CHF, 5 500 CHF, 6 800 CHF bzw. 8 100 CHF. Bestimmen Sie den internen Zinsfuß (Näherungswert genügt), bei dem der Kapitalwert gleich null ist.",
+              "is_valid": false,
+              "validation_issues": [
+                "Anzahl Zahlen stark unterschiedlich: 1 vs 11"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        }
+      ],
+      "run_id": 99
+    },
+    {
+      "success": false,
+      "framework": "hybrid",
+      "domain": "economics",
+      "pdf_name": "investment_calculation.pdf",
+      "error": "Preprocessing fehlgeschlagen: ['Klassifizierung fehlgeschlagen']",
+      "metrics": {
+        "total_time": 0.0,
+        "ocr_time": 0.0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [],
+      "run_id": 99
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "economics",
+      "pdf_name": "cost_analysis.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 82.86,
+        "ocr_time": 1.51,
+        "ocr_tool": "tesseract",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 3,
+        "validation_rate": 0.6,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Kostenrechnung",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: Muster Produktions AG\n\nDas Unternehmen produziert einen Artikel mit folgenden Kenndaten:\n\nFixkosten pro Monat: 15.000 CHF\nVariable Kosten pro Stueck: 25 CHF\nVerkaufspreis pro Stueck: 45 CHF",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.92
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Das Unternehmen Beispiel Fertigung GmbH stellt ein Produkt mit den folgenden Kennzahlen her:\n\nFixe Aufwendungen pro Monat: 21 000 CHF  \nVariable Kosten je Stück: 35 CHF  \nVerkaufspreis je Stück: 65 CHF  \n\nFormuliere die entsprechende Aufgabe unter Beibehaltung der mathematischen Struktur.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne den Deckungsbeitrag pro Stueck.\nDer Deckungsbeitrag ist die Differenz zwischen Verkaufspreis\nund variablen Kosten pro Stueck.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne den Deckungsbeitrag je Einheit für die fiktive Firma NordTech GmbH.  \nDer Verkaufspreis liegt bei 1 200 CHF, die variablen Kosten pro Stück betragen 720 CHF. Wie hoch ist der Deckungsbeitrag?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne die Break-Even-Menge.\nAb welcher Produktionsmenge deckt das Unternehmen seine Fixkosten?\n\nBerechne die Break-Even-Menge in Stueck.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Ermittele die Gewinnschwelle in Stückzahl.  \nAb welcher Produktionsmenge kann die Firma NovaTech ihre Fixkosten decken?\n\nDer fixe Aufwand beträgt 210 000 CHF, die variablen Kosten pro Einheit liegen bei 42 CHF und der Verkaufspreis pro Stück beträgt 78 CHF.  \n\nBerechne die Gewinnschwelle in Stück.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Gewinn bei 1000 Stueck.\nDas Unternehmen produziert und verkauft 1.000 Stueck pro Monat.\n\nWie hoch ist der monatliche Gewinn in CHF?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Ermittele den Gewinn bei 1 300 Stück.  \nDie Firma AlphaTech stellt monatlich 1 300 Einheiten her und verkauft sie.  \n\nWie hoch ist der monatliche Überschuss in CHF?",
+              "is_valid": false,
+              "validation_issues": [
+                "LLM-Check (Wirtschaft): Die Variante enthält keine Angaben zu Preis, variablen Kosten oder Fixkosten, sodass der Gewinn nicht berechnet werden kann.",
+                "LLM-Check (Wirtschaft): Ohne diese betriebswirtschaftlichen Kennzahlen ist die Aufgabenstellung inkonsistent und nicht prüfbar."
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Beurteile die Auswirkung einer Kostensteigerung.\nDie variablen Kosten steigen auf 30 CHF pro Stueck.\nWie veraendert sich die Break-Even-Menge?\n\nBerechne die neue Break-Even-Menge und vergleiche sie mit der alten.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Analysiere die Folgen einer Erhöhung der variablen Kosten.  \nDie variablen Kosten betragen künftig **45 CHF** pro Stück (zuvor 20 CHF).  \n\nBerechne die neue Break‑Even‑Menge und setze sie in Relation zur alten Break‑Even‑Menge.",
+              "is_valid": false,
+              "validation_issues": [
+                "LLM-Check (Wirtschaft): Die Aufgabenstellung liefert keine Angaben zu Fixkosten und Verkaufspreis, die für die Berechnung der Break-Even-Menge zwingend erforderlich sind.",
+                "LLM-Check (Wirtschaft): Ohne diese Kennzahlen kann weder die alte noch die neue Break-Even-Menge eindeutig bestimmt werden, sodass ein Vergleich nicht möglich ist.",
+                "LLM-Check (Wirtschaft): Die reine Angabe einer Kostensteigerung von 20 CHF auf 45 CHF pro Stück ist zwar realistisch, aber die Aufgabe bleibt unvollständig und damit betriebswirtschaftlich inkonsistent."
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        }
+      ],
+      "run_id": 99
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "economics",
+      "pdf_name": "cost_analysis.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 193.68,
+        "ocr_time": 1.58,
+        "ocr_tool": "tesseract",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 3,
+        "validation_rate": 0.6,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Kostenrechnung",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.96
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: Muster Produktions AG\n\nDas Unternehmen produziert einen Artikel mit folgenden Kenndaten:\n\nFixkosten pro Monat: 15.000 CHF\nVariable Kosten pro Stueck: 25 CHF\nVerkaufspreis pro Stueck: 45 CHF",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.85
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Unternehmen: Beispiel Fertigung GmbH\n\nDas Unternehmen stellt ein Produkt mit folgenden Kennzahlen her:\n\nFixkosten pro Monat: 22 000 CHF  \nVariable Kosten pro Stück: 34 CHF  \nVerkaufspreis pro Stück: 62 CHF  \n\nVariierte Aufgabe:",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne den Deckungsbeitrag pro Stueck.\nDer Deckungsbeitrag ist die Differenz zwischen Verkaufspreis\nund variablen Kosten pro Stueck.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Der Deckungsbeitrag je Stück beträgt die Differenz zwischen dem Verkaufspreis und den variablen Kosten pro Einheit.\n\nBeispiel: Der Listenpreis eines Produkts liegt bei 135 CHF, während die variablen Herstellungskosten 92 CHF betragen. Berechne den Deckungsbeitrag pro Stück.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne die Break-Even-Menge.\nAb welcher Produktionsmenge deckt das Unternehmen seine Fixkosten?\n\nBerechne die Break-Even-Menge in Stueck.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Der Jahreserlös der NovaSolutions AG beträgt 2 200 000 CHF, die variablen Kosten pro Stück liegen bei 85 CHF und die fixen Aufwendungen betragen 600 000 CHF. Bestimme die Menge an Stück, ab der das Unternehmen seine Fixkosten deckt.",
+              "is_valid": false,
+              "validation_issues": [
+                "Semantische Ähnlichkeit zu gering (Wirtschaft): BERTScore 0.678 < 0.72",
+                "LLM-Check (Wirtschaft): Die Variante gibt den Jahreserlös (2'200'000 CHF) an, aber nicht die Stückzahl oder den Verkaufspreis pro Stück, sodass der Deckungsbeitrag pro Stück (Preis - variable Kosten) nicht ermittelt werden kann.",
+                "LLM-Check (Wirtschaft): Ohne den Preis pro Einheit lässt sich die Break-Even-Menge nicht berechnen, weil die Formel BE = Fixkosten / (Preis - variable Kosten) unvollständig ist.",
+                "LLM-Check (Wirtschaft): Die Angabe von Jahreserlös allein reicht nicht aus, um die Konsistenz der Zahlen zu prüfen; es fehlt eine Beziehung zwischen Erlös und Menge."
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Gewinn bei 1000 Stueck.\nDas Unternehmen produziert und verkauft 1.000 Stueck pro Monat.\n\nWie hoch ist der monatliche Gewinn in CHF?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.85
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Die Firma AlpenTech AG produziert und verkauft 1 400 Einheiten pro Monat. Der Verkaufspreis beträgt 135 CHF je Stück, die variablen Kosten belaufen sich auf 95 CHF je Stück. Wie hoch ist der monatliche Überschuss in CHF?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Beurteile die Auswirkung einer Kostensteigerung.\nDie variablen Kosten steigen auf 30 CHF pro Stueck.\nWie veraendert sich die Break-Even-Menge?\n\nBerechne die neue Break-Even-Menge und vergleiche sie mit der alten.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Analysiere die Folgen einer Erhöhung der variablen Stückkosten.  \nDie variablen Kosten betragen nun 48 CHF pro Einheit.  \n\nWie verändert sich dadurch die Break‑Even‑Menge?  \n\nBestimme die neue Break‑Even‑Menge und setze sie in Relation zur ursprünglichen Menge.",
+              "is_valid": false,
+              "validation_issues": [
+                "LLM-Check (Wirtschaft): Die Aufgabenstellung liefert keine Angaben zu Fixkosten und Verkaufspreis, die für die Berechnung der Break-Even-Menge zwingend erforderlich sind.",
+                "LLM-Check (Wirtschaft): Ohne diese zusätzlichen Daten kann weder die ursprüngliche noch die neue Break-Even-Menge eindeutig bestimmt werden.",
+                "LLM-Check (Wirtschaft): Die reine Angabe einer geänderten variablen Stückkostengröße (48 CHF) ist daher betriebswirtschaftlich unvollständig und nicht plausibel."
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        }
+      ],
+      "run_id": 99
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "economics",
+      "pdf_name": "market_analysis.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 84.48,
+        "ocr_time": 1.6,
+        "ocr_tool": "tesseract",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 4,
+        "validation_rate": 0.8,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Marktanalyse",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Marktdaten: Softwarebranche Region Bern, Geschaftsjahr 2024\n\nGesamtmarktvolumen: 2.000.000 CHF\n\nUmsatz Firma AlphaCode AG: 600.000 CHF\nUmsatz Firma BetaSoft GmbH: 500.000 CHF\nUmsatz Firma AlphaCode (Vorjahr): 500.000 CHF",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Marktdaten: Softwarebranche Region Bern, Geschäftsjahr 2025  \n\nGesamtmarktvolumen: 2 800 000 CHF  \n\nUmsatz Firma GammaTech AG: 850 000 CHF  \nUmsatz Firma DeltaSoft GmbH: 750 000 CHF  \nUmsatz Firma GammaTech (Vorjahr): 350 000 CHF",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne den Marktanteil.\nBerechne den Marktanteil der Firma AlphaCode AG in Prozent.\n\nBerechne anschliessend auch den Marktanteil der Firma BetaSoft GmbH.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Ermittele den Marktanteil.\n\nDas Unternehmen NovaLogic AG erzielt einen Jahreserlös von 1 200 000 CHF, während der Gesamtmarktvolumen bei 8 500 000 CHF liegt. Bestimme den prozentualen Marktanteil von NovaLogic AG.\n\nBerechne anschließend den Marktanteil von SoftWave GmbH, das einen Jahresumsatz von 950 000 CHF erwirtschaftet, ebenfalls basierend auf dem genannten Gesamtmarktvolumen.",
+              "is_valid": false,
+              "validation_issues": [
+                "Anzahl Zahlen stark unterschiedlich: 1 vs 9"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne die Wachstumsrate.\nUm wie viel Prozent ist der Umsatz der Firma AlphaCode AG\n\ngegenueber dem Vorjahr gewachsen?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Berechne die Wachstumsrate.  \nUm wie viel Prozent ist der Umsatz der Firma BetaTech GmbH im Vergleich zum Vorjahr gestiegen?  \n\nHinweis: Der Umsatz hat sich gegenüber dem Vorjahr um **13 %** erhöht.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den ROl einer Investition.\nAlphaCode AG hat 80.000 CHF in eine neue Marketingkampagne investiert.\nDer dadurch generierte Zusatzgewinn betraegt 24.000 CHF.\n\nBerechne den Return on Investment (ROI) in Prozent.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Ermittele den ROI einer Kapitalanlage.  \nBetaTech GmbH hat 112 000 CHF in ein neues Werbeprojekt investiert.  \nDer daraus resultierende Mehrgewinn beträgt 34 500 CHF.\n\nBerechne die Rendite (Return on Investment) in Prozent.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Beurteile die Marktposition.\nVergleiche die Marktanteile der beiden Firmen.\nWelche Firma hat die staerkere Marktposition und warum?\n\nBegruende deine Antwort mit den berechneten Kennzahlen.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Beurteile die Marktposition.\n\nVergleiche die Marktanteile der beiden Unternehmen.  \nDie AlphaTech GmbH hält einen Marktanteil von 18 % und die BetaSolutions AG verfügt über einen Anteil von 27 %.  \n\nWelche Firma besitzt die stärkere Marktstellung und warum?\n\nBegründe deine Antwort mit den ermittelten Kennzahlen.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ],
+      "run_id": 99
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "economics",
+      "pdf_name": "market_analysis.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 152.89,
+        "ocr_time": 1.55,
+        "ocr_tool": "tesseract",
+        "num_segments": 6,
+        "total_variants": 5,
+        "valid_variants": 4,
+        "validation_rate": 0.8,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Marktanalyse",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.73
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Marktdaten: Softwarebranche Region Bern, Geschaftsjahr 2024\n\nGesamtmarktvolumen: 2.000.000 CHF\n\nUmsatz Firma AlphaCode AG: 600.000 CHF\nUmsatz Firma BetaSoft GmbH: 500.000 CHF\nUmsatz Firma AlphaCode (Vorjahr): 500.000 CHF",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.93
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Marktdaten: Softwarebranche Region Bern, Geschäftsjahr 2024\n\nGesamtmarktvolumen: 2 800 000 CHF  \n\nUmsatz Firma NovaTech SA: 820 000 CHF  \nUmsatz Firma DigiWave Ltd.: 650 000 CHF  \nUmsatz Firma NovaTech (Vorjahr): 690 000 CHF",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne den Marktanteil.\nBerechne den Marktanteil der Firma AlphaCode AG in Prozent.\n\nBerechne anschliessend auch den Marktanteil der Firma BetaSoft GmbH.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne den Marktanteil der Firma **NovaTech AG** in Prozent.\n\nDer Jahreserlös von NovaTech beträgt **2 240 000 CHF**, während der gesamte Marktwert auf **14 600 000 CHF** geschätzt wird.\n\nErmittle anschließend den Marktanteil der Firma **QuantumSystems GmbH**.\n\nDer Jahresumsatz von QuantumSystems beläuft sich auf **4 380 000 CHF**; der Gesamtmarkt bleibt bei **14 600 000 CHF**.",
+              "is_valid": false,
+              "validation_issues": [
+                "Anzahl Zahlen stark unterschiedlich: 1 vs 12",
+                "Semantische Ähnlichkeit zu gering (Wirtschaft): BERTScore 0.719 < 0.72"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Berechne die Wachstumsrate.\nUm wie viel Prozent ist der Umsatz der Firma AlphaCode AG\n\ngegenueber dem Vorjahr gewachsen?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Berechne die Wachstumsrate.  \nUm wie viel Prozent ist der Umsatz der Firma BetaTech GmbH im Vergleich zum Vorjahr gewachsen?  \n\n(Angenommen, der Umsatz ist um **15 %** gestiegen.)",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den ROl einer Investition.\nAlphaCode AG hat 80.000 CHF in eine neue Marketingkampagne investiert.\nDer dadurch generierte Zusatzgewinn betraegt 24.000 CHF.\n\nBerechne den Return on Investment (ROI) in Prozent.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Ermittele den ROI einer Kapitalanlage.  \n\nBetaSolutions GmbH hat 115 000 SEK in eine neue Werbeaktion investiert.  \nDer dadurch erzielte Mehrgewinn beträgt 34 200 SEK.  \n\nBestimme die Rendite (Return on Investment) in Prozent.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Beurteile die Marktposition.\nVergleiche die Marktanteile der beiden Firmen.\nWelche Firma hat die staerkere Marktposition und warum?\n\nBegruende deine Antwort mit den berechneten Kennzahlen.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.97
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Beurteile die Marktposition.\n\nDie beiden Unternehmen AlphaTech GmbH und BetaSolutions AG besitzen folgende Marktanteile:\n\n- AlphaTech: 42 % des relevanten Gesamtmarktes  \n- BetaSolutions: 28 % desselben Marktes  \n\nWelche Firma weist die stärkere Marktstellung auf und aus welchen Gründen?\n\nBegründe deine Einschätzung anhand der angegebenen Anteile.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ],
+      "run_id": 99
+    }
+  ]
+}

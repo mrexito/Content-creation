@@ -1,0 +1,1640 @@
+{
+  "meta": {
+    "timestamp": "2026-03-09 18:17:44",
+    "frameworks": [
+      "langchain",
+      "langgraph",
+      "hybrid"
+    ],
+    "domains": [
+      "math",
+      "languages",
+      "economics"
+    ],
+    "num_variants": 2,
+    "generator": "evaluate_all_domains.py"
+  },
+  "summary": [
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.75,
+      "valid_variants": 6,
+      "total_variants": 8,
+      "total_time_s": 15.34,
+      "ocr_tool": "mistral"
+    },
+    {
+      "framework": "langgraph",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 8,
+      "total_variants": 8,
+      "total_time_s": 72.57,
+      "ocr_tool": "mistral"
+    },
+    {
+      "framework": "hybrid",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 7,
+      "total_variants": 7,
+      "total_time_s": 18.41,
+      "ocr_tool": "mistral"
+    },
+    {
+      "framework": "langchain",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 0.1667,
+      "valid_variants": 1,
+      "total_variants": 6,
+      "total_time_s": 17.62,
+      "ocr_tool": "tesseract"
+    },
+    {
+      "framework": "langgraph",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 0.6667,
+      "valid_variants": 4,
+      "total_variants": 6,
+      "total_time_s": 34.95,
+      "ocr_tool": "tesseract"
+    },
+    {
+      "framework": "hybrid",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 22.47,
+      "ocr_tool": "tesseract"
+    },
+    {
+      "framework": "langchain",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.6,
+      "valid_variants": 6,
+      "total_variants": 10,
+      "total_time_s": 22.41,
+      "ocr_tool": "tesseract"
+    },
+    {
+      "framework": "langgraph",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.5,
+      "valid_variants": 5,
+      "total_variants": 10,
+      "total_time_s": 94.1,
+      "ocr_tool": "tesseract"
+    },
+    {
+      "framework": "hybrid",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.6667,
+      "valid_variants": 12,
+      "total_variants": 18,
+      "total_time_s": 63.98,
+      "ocr_tool": "tesseract"
+    }
+  ],
+  "results": [
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 15.34,
+        "ocr_time": 3.05,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 8,
+        "valid_variants": 6,
+        "validation_rate": 0.75
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $4y - 7 = 21$",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Berechne den Wert von *z*, wenn $3z + 10 = 25$.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Vereinfache: $5(a + 4) - 3(b - 2)$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne die Umkreis eines Dreiecks, dessen Kantenlängen gegeben sind: $p = 5$, $q = 7$ und $r = 9$.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 3: Sei ein Dreieck ABC mit den Seitenlängen AB = 5, BC = 7 und CA = 9. Berechne die Länge der Begrenzung des eingeschriebenen Kreises dieses Dreiecks.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Investition von 1500 Dollar wird mit einem Zinssatz von 2,5% verzinst. Ermitteln Sie das Ergebnis der Investition nach einem Anlagezeitraum von 6 Jahren.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 72.57,
+        "ocr_time": 1.9,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 8,
+        "valid_variants": 8,
+        "validation_rate": 1.0
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $3y - 7 = 19$",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Löse die Gleichung $4z + 12 = 32$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Vereinfache: $5(z + 4) - 3(z - 2)$",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Vereinfache: $4(a + 5) - 6(a - 3)$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne den Umfang eines Dreiecks, dessen Seitenlängen $p$, $q$ und $r$ gegeben sind: $p = 12$ m, $q = 15$ m, $r = 18$ m.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Berechne die Länge des Begrenzungsbogens eines Vierecks mit den Seiten $x = 8$ Meter, $y = 11$ Meter und $z = 13$ Meter.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Investition von 850 € wird auf eine jährliche Verzinsung von 4,5 % angelegt. Berechne das Kapital nach 6 Jahren.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 4: Ein Schulranzen kostet 125 €. Er wird um 8% reduziert. Berechne den neuen Preis des Ranzenes.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 18.41,
+        "ocr_time": 0,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 7,
+        "valid_variants": 7,
+        "validation_rate": 1.0
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Ermittle den Wert von $z$, wenn die Gleichung $3z - 7 = 10$ gilt.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Löse die Gleichung $4a + 9 = 25$.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Vereinfache: 5a + 15 - 4b + 8",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne die Länge des Umfangs eines Dreiecks, dessen Seitenlängen wie folgt gegeben sind: $s_1 = 8$ Meter, $s_2 = 10$ Meter und $s_3 = 12$ Meter.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Berechne die Summe der Längen der Seiten eines Dreiecks, wenn die Seitenlängen $x = 6$ cm, $y = 12$ cm und $z = 15$ cm betragen.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Investition von 1500 Dollar wird mit einem Zinssatz von 2,5 Prozent pro Jahr verzinst. Berechnen Sie das Kapital nach sechs Jahren unter Berücksichtigung dieser Verzinsung.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 4: Ein Betrag von 850 Euro wird auf ein Konto eingezahlt, das eine jährliche Verzinsung von 4,25 Prozent bietet. Wie hoch ist das Endguthaben nach einem Zeitraum von acht Jahren?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 17.62,
+        "ocr_time": 1.68,
+        "ocr_tool": "tesseract",
+        "num_segments": 5,
+        "total_variants": 6,
+        "valid_variants": 1,
+        "validation_rate": 0.1667
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Grammatik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n□ Die Villa thronte auf □ Berg.\n□ Jugendliche vergnügen sich in □ Park.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. —\n\ner liest ein Buch. —",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Welche Wörter sind Synonyme?\nschnell - rasch - langsam - zügig",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1:\n\n__ Haus steht auf dem __ Hügel.\n__ Kinder spielen im __ Garten.",
+            "type": "solution"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "solution",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 34.95,
+        "ocr_time": 1.73,
+        "ocr_tool": "tesseract",
+        "num_segments": 5,
+        "total_variants": 6,
+        "valid_variants": 4,
+        "validation_rate": 0.6667
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Grammatik-Übungen",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n□ Die Villa thront über □ Berg.\n□ Jugendliche vergnügen sich im □ Park.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n□ Schloss befindet sich auf □ Tal.\n□ Jugendliche lachen in □ Feld.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. —\nEr liest ein Buch. —",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Bilde das Perfekt:\n\nDie Katze schläft. —\nDer Vogel fliegt. —",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Bilde das Perfekt:\n\nDer Junge malt. —\nDie Schwester liest den Brief. —",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nschnell - rasch - langsam - zügig",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nWähle aus der folgenden Liste die Begriffe, die in etwa die gleiche Bedeutung tragen wie die genannten Wörter.\n\nschnell – flink – gemächlich – dringend",
+              "is_valid": false,
+              "validation_issues": [
+                "Länge weicht stark ab: 192 vs 74 Zeichen (Ratio: 2.59, erlaubt: 0.6-1.5)"
+              ]
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nNenne die Begriffe aus der Auswahl, welche in ihrer Bedeutung nahekommen – hinsichtlich ihrer Intensität und Konnotation – zu den folgenden Begriffen.\n\nschnell - eilig - ungeschwind - bedingt",
+              "is_valid": false,
+              "validation_issues": [
+                "Länge weicht stark ab: 232 vs 74 Zeichen (Ratio: 3.14, erlaubt: 0.6-1.5)"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1:\n\nHaus steht auf dem Hügel.\nKinder spielen im Garten.",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 22.47,
+        "ocr_time": 0,
+        "ocr_tool": "tesseract",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Grammatik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\nDie Kirche thront auf einem Berg.\nJugendliche lachen im Park.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. —\n\\Ner liest ein Buch. —",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. – Er ist bereits zur Schule gegangen.\nIch lese ein Buch. – Sie liest gerade ein Buch.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nschnell - rasch - langsam - zügig",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nBitte wähle aus der folgenden Auswahl die Begriffe, die inhaltlich eine ähnliche Bedeutung haben.\n\nschnell – unmittelbar – geduldig – eilig\n\nGib nur die passenden Begriffe an.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nWelche der folgenden Wortgruppen bilden eine Gruppe von Begriffen, die in ihrer Bedeutung nahe beieinanderliegen?\n\nNennen Sie das Wort, das die anderen am ehesten beschreibt: schnell – rasch – langsam – zügig",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: \nDas Haus steht auf __ dem __ Hügel.\nDie Kinder spielen in __ dem __ Garten.",
+            "type": "solution"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 22.41,
+        "ocr_time": 1.74,
+        "ocr_tool": "tesseract",
+        "num_segments": 8,
+        "total_variants": 10,
+        "valid_variants": 6,
+        "validation_rate": 0.6
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Die Bilanzanalyse ist eine Methode zur Bewertung der finanziellen Lage eines Unternehmens. Sie beinhaltet die Darstellung von Vermögen und Schulden, um die finanzielle Stabilität und Leistungsfähigkeit des Unternehmens zu beurteilen.",
+            "type": "theory"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Die Liquiditätsanalyse ist eine Methode zur Bewertung der kurzfristigen Zahlungsfähigkeit eines Unternehmens. Sie beinhaltet die Darstellung von Zahlungseingängen und -ausgängen, um die Fähigkeit des Unternehmens zu beurteilen, seine kurzfristigen Verpflichtungen zu erfüllen.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Die SWOT-Analyse ist eine Methode zur Bewertung der strategischen Position eines Unternehmens. Sie beinhaltet die Analyse von Stärken, Schwächen, Chancen und Risiken, um strategische Entscheidungen zu unterstützen.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Um die Eigenkapitalquote zu berechnen, teile das Eigenkapital durch den Gesamt資產 (Gesamtvermögen). In diesem Fall: Eigenkapital = 120.000 € und Gesamt資產 = 230.000 €.  Eigenkapitalquote = 120.000 € / 230.000 € = 0,5217 oder 52,17 %.",
+            "type": "example"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "solution",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Um die Eigenkapitalquote zu bestimmen, dividiere das Eigenkapital durch den gesamten Vermötenumfang. Im konkreten Fall: Kapitalgrundlage = 285.000 JPY und Gesamtvermögen = 670.000 JPY. Eigenkapitalquote = 285.000 JPY / 670.000 JPY = 0,4172 oder 41,72 %.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Um den Anteil des Eigenkapitals am Gesamtvermögen zu ermitteln, wird das Eigenkapital durch den Gesamtbetriebskapital geteilt. Die Schätzungen zeigen: Eigenkapital betrug für die \"Schwarz & Weiß GmbH\" 85.000 Kronen Kč, während das Gesamtbetriebskapital bei 170.000 Kronen Kč lag. Die Eigenkapitalquote resultiert also aus der Division von 85.000 Kč durch 170.000 Kč, was einem Wert von 0,5, also 50,0 % entspricht.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Die Eigenkapitalquote beträgt 52,17 %.",
+            "type": "solution"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "solution",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 € Wie hoch ist der Gewinn?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Der Gewinn wird berechnet, indem der Umsatz vom Gesamt費用の (Gesamtkosten) abgezogen wird.  Gewinn = 500.000 € - 450.000 € = 50.000 €.  Also beträgt der Gewinn 50.000 €.",
+            "type": "example"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "solution",
+            "confidence": 0.98
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Der Gewinn wird ermittelt, indem das Bruttoinlandprodukt vom gesamten Produktionskosten abgezogen wird. Gewinn = 1.250.000 SEK - 1.180.000 SEK = 70.000 SEK. Folglich beträgt der Gewinn 70.000 SEK.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Der Gewinn ergibt sich aus der Differenz zwischen dem Bruttobruttoeinkommen und den allfälligen Aufwendungen. Der Gewinn der \"Stark & Sohn GmbH\" betrug im Wirtschaftsjahr 2023 insgesamt 180.000 DKK, während die Gesamtkosten mit 165.000 DKK kalkuliert wurden. Daher beläuft sich der Gewinn auf 15.000 DKK.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Der Gewinn beträgt 50.000 €.",
+            "type": "solution"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "solution",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 94.1,
+        "ocr_time": 1.72,
+        "ocr_tool": "tesseract",
+        "num_segments": 7,
+        "total_variants": 10,
+        "valid_variants": 5,
+        "validation_rate": 0.5
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Die Bilanzanalyse ist eine Methode zur Bewertung der finanziellen Lage eines Unternehmens. Sie umfasst die Analyse der Vermögens- und Schuldensituation, um die Rentabilität, Liquidität und das finanzielle Risiko des Unternehmens zu beurteilen. Wichtige Kennzahlen sind die Eigenkapitalquote und der Gewinn.",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Die Unternehmensanalyse ist ein Verfahren zur Beurteilung der finanziellen Stabilität eines Konzerns. Sie beinhaltet die Prüfung von Aktiva und Passiva, um die Leistungsfähigkeit, den Zahlungsfähigkeit und das Risikoprofil des Unternehmens zu untersuchen. Zentrale Maße sind der Kapitalausgleich und die Ertragskraft.\n\nDie Bilanzanalyse ist eine Methode zur Bewertung der finanziellen Lage eines Unternehmens. Sie umfasst die Analyse der Vermögens- und Schuldensituation, um die Rentabilität, Liquidität und das finanzielle Risiko des Unternehmens zu beurteilen. Wichtige Kennzahlen sind die Eigenkapitalquote und der Gewinn.\n\nErstelle eine inhaltlich äquivalente, aber DEUTLICH anders formulierte Variante.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Die Kapitalflussanalyse ist ein Instrument zur Bewertung der finanziellen Performance eines Unternehmens über einen bestimmten Zeitraum. Sie beinhaltet die Untersuchung von Ein- und Auszahlungen sowie Veränderungen im Nettovermögen, um die Liquidität, Cashflow-Generierung und zukünftige Investitionsmöglichkeiten des Unternehmens zu analysieren. Wesentliche Indikatoren sind der freier Cashflow und die operative Liquidität.\n\nDie Bilanzanalyse ist eine Methode zur Bewertung der finanziellen Lage eines Unternehmens. Sie umfasst die Analyse der Vermögens- und Schuldensituation, um die Rentabilität, Liquidität und das finanzielle Risiko des Unternehmens zu beurteilen. Wichtige Kennzahlen sind die Eigenkapitalquote und der Gewinn.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Berechne die Eigenkapitalquote.",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Ermittle den Anteil am Eigenkapital des Unternehmens in Prozent.\n\\documentclass{article}\n\\usepackage{amsmath}\n\n\\begin{document}\n\nBerechne die Eigenkapitalquote.\n\nTheoretischer Hintergrund:\nDie Eigenkapitalquote, auch Eigenkapitalanteil genannt, ist ein Kennzahlenbestandteil der Kapitalstruktur eines Unternehmens. Sie gibt den Anteil des Eigenkapitals am Gesamtvermögen an.  Sie wird berechnet, indem der Betrag des Eigenkapitals durch den Betrag des Gesamtvermögens dividiert wird, und das Ergebnis anschließend mit 100 multipliziert wird.\n\nFormel:\n$$ Eigenkapitalquote = \\frac{Eigenkapital}{Gesamtvermögen} \\times 100 $$\n\nEin Unternehmen hat ein Eigenkapital von $250.000 \\text{ EUR}$ und ein Gesamtvermögen von $875.000 \\text{ EUR}$. Bestimme die Eigenkapitalquote in Prozent.\n\\end{document}",
+              "is_valid": false,
+              "validation_issues": [
+                "Länge weicht stark ab: 795 vs 31 Zeichen (Ratio: 25.65, erlaubt: 0.5-2.0)"
+              ]
+            },
+            {
+              "variant_id": 2,
+              "text": "Bestimme den Anteil des Eigenkapitals am Gesamtvermögen.\n\nTheoretischer Hintergrund:\nDer Eigenkapitalanteil ist eine wichtige Kennzahl zur Beurteilung der finanziellen Stabilität eines Unternehmens und stellt den Prozentsatz des Eigenkapitals im Verhältnis zum gesamten Vermögen dar. Er wird ermittelt, indem die Höhe des Eigenkapitals durch die Summe aller Vermögenswerte geteilt wird und das Ergebnis mit 100 vervielfältigt wird.\n\nFormel:\n$$ Eigenkapitalanteil = \\frac{Eigenkapital}{Gesamtvermögen} \\times 100 $$\n\nEin Unternehmen verfügt über ein Eigenkapital in Höhe von $625.000 \\text{ CHF}$ und ein Gesamtvermögen von $1.950.000 \\text{ CHF}$. Berechne den Eigenkapitalanteil als Prozentzahl.",
+              "is_valid": false,
+              "validation_issues": [
+                "Länge weicht stark ab: 696 vs 31 Zeichen (Ratio: 22.45, erlaubt: 0.5-2.0)"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Eigenkapital: 120.000 €\nGesamtvermögen: 230.000 €\nEigenkapitalquote = Eigenkapital / Gesamtvermögen = 120.000 € / 230.000 € \n≈ 0,5217 oder 52,17 %",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Eigenkapital: 750.000 JPY\nGesamtvermögen: 1.875.000 JPY\nEigenkapitalquote = Eigenkapital / Gesamtvermögen = 750.000 JPY / 1.875.000 JPY\n≈ 0,4067 oder 40,67 %",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Eigenkapital: 85.000 NOK\nGesamtvermögen: 310.000 NOK\nEigenkapitalquote = Eigenkapital / Gesamtvermögen = 85.000 NOK / 310.000 NOK\n≈ 0,2742 oder 27,42 %",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Die Eigenkapitalquote beträgt ca. 52,17 %.",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Der Umsatz betrug 500.000 € die Kosten 450.000 € Wie hoch ist der Gewinn?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Der Jahresumsatz der Schmidt & Sohn GmbH betrug 1.850.000 JPY, die Herstellungskosten 1.625.000 JPY. Wie hoch war der Jahresgewinn?",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Die \"NovaTech Scandinavia\" verzeichnete einen Gesamtumsatz von 875.000 DKK, während die operativen Ausgaben 690.000 DKK betrugen. Wie hoch war der operative Gewinn für das Geschäftsjahr 2023?",
+              "is_valid": false,
+              "validation_issues": [
+                "Länge weicht stark ab: 202 vs 73 Zeichen (Ratio: 2.77, erlaubt: 0.4-2.5)"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Umsatz: 500.000 €\nKosten: 450.000 €\nGewinn = Umsatz - Kosten = 500.000 € - 450.000 € = 50.000 €",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Der Jahresumsatz der ‘NovaTech Solutions’ GmbH in Brasilien betrug 850.000 BRL, die zugehörigen Personalkosten 720.000 BRL. Berechne den Jahresgewinn der Gesellschaft, indem du den Gesamtumsatz von 1.200.000 BRL um die Betriebskosten reduzierst.",
+              "is_valid": false,
+              "validation_issues": [
+                "Länge weicht stark ab: 256 vs 95 Zeichen (Ratio: 2.69, erlaubt: 0.4-2.5)"
+              ]
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Die ‘Phoenix Handels AG’ in Argentinien verzeichnete einen Wareneinkauf von 680.000 MXN, die Betriebskosten betrugen 590.000 MXN. Berechne den Gesamtgewinn des Unternehmens, indem du die Gesamteinnahmen von 950.000 MXN von den Betriebskosten abziehen lässt.",
+              "is_valid": false,
+              "validation_issues": [
+                "Länge weicht stark ab: 268 vs 95 Zeichen (Ratio: 2.82, erlaubt: 0.4-2.5)"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 63.98,
+        "ocr_time": 0,
+        "ocr_tool": "tesseract",
+        "num_segments": 15,
+        "total_variants": 18,
+        "valid_variants": 12,
+        "validation_rate": 0.6667
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Die Bilanzanalyse ist eine Methode zur Bewertung der finanziellen Gesundheit eines Unternehmens. Sie ermöglicht die Beurteilung, ob das Unternehmen liquide ist und wie effizient es sein Vermögen nutzt.",
+            "type": "theory"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Die Analyse der Finanzlage ist ein wichtiges Werkzeug, um den wirtschaftlichen Zustand eines Unternehmens zu beurteilen. Sie hilft dabei, festzustellen, ob das Unternehmen ausreichend liquide Mittel hat und wie effizient es seine Ressourcen einsetzt.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Die Bilanzanalyse ist eine Methode, um die finanzielle Stabilität eines Unternehmens zu prüfen. Sie hilft dabei, festzustellen, ob das Unternehmen seinen finanziellen Verpflichtungen nachkommen kann und wie viel Wachstumspotenzial es möglicherweise hat.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: TechStart GmbH",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Eine Bilanz liefert einen Querschnitt des Vermögens und der Finanzierung eines Unternehmens zu einem bestimmten Zeitpunkt.",
+            "type": "theory"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Eine Gewinn- und Verlustrechnung gibt einen Überblick über die Einnahmen und Ausgaben eines Unternehmens innerhalb einer bestimmten Zeitspanne.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Eine Kapitalflussrechnung gibt einen Überblick über die Ein- und Auszahlungen von liquiden Mitteln eines Unternehmens innerhalb eines bestimmten Zeitraums.\n\nEine Balance-Sheet-Auswertung zeigt eine Momentaufnahme der Vermögenswerte und Finanzierungsquellen eines Unternehmens zu einem bestimmten Zeitpunkt.\n\nEin Wirtschaftshof veranschaulicht die Vermögenswerte und Schulden eines Unternehmens zu einem bestimmten Stichtag.\n\nUnternehmen erstellen Finanzberichte, um die finanzielle Lage gegenüber ihren Aktionären zu präsentieren.\n\nDarüber hinaus wird eine Gewinn- und Verlustrechnung erstellt, um den Umsatz, die Kosten sowie das daraus resultierende Ergebnis zu ermitteln.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Bilanz zum 31.12.2024:",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Die Bilanz ist unterteilt in Aktiva (Vermögen) und Passiva (Kapital). Aktiva stellen die Vermögenswerte des Unternehmens dar, während Passiva die Verbindlichkeiten gegenüber Dritten darstellen.",
+            "type": "theory"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Die finanzielle Situation eines Unternehmens wird üblicherweise anhand seiner Bilanz dargestellt. Diese Bilanz besteht aus zwei wesentlichen Teilen: den Vermögenswerten (Aktiva) und den Schulden gegenüber Dritten (Passiva). Die Vermögenswerte repräsentieren alle Ressourcen, die dem Unternehmen zur Verfügung stehen, während die Passiva die Verbindlichkeiten und Darlehen des Unternehmens gegenüber Kreditgebern umfassen.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Die Finanzberichterstattung eines Unternehmens lässt sich oft durch die Analyse seiner Bilanz erstellen. Diese Bilanz gliedert sich in zwei Hauptbereiche: das Anlagevermögen und die Schulden. Das Anlagevermögen umfasst alle langfristigen Vermögenswerte, darunter beispielsweise Immobilien und Anlagen, während die Schulden kurz- und langfristige Verbindlichkeiten gegenüber Gläubigern darstellen.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "AKTIVA:\nAnlagevermögen: 150.000 €\nUmlaufvermögen: 80.000 €\n\nGesamt: 230.000 €",
+            "type": "text"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Die Summe der Aktiva sollte mit der Summe der Passiva übereinstimmen. Dies ist die Grundgleichung der Bilanz.",
+            "type": "theory"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Die Summe aller Vermögenswerte muss dem Gesamtschuldensatz entsprechen. Dieses Prinzip ist für jede finanzielle Bilanz von grundlegender Bedeutung und ein wesentlicher Bestandteil der Buchhaltung.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Die Summe der Anlagepositionen muss mit dem Gesamtbetrag der Verbindlichkeiten übereinstimmen. Dieses grundlegende Prinzip der Finanzkonsolidierung bildet die Basis für jede Bilanzanalyse und ist ein wichtiger Bestandteil des Kreditwesens.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "PASSIVA:",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Eigenkapital ist der Anteil des Unternehmens, der den Eigentümern gehört. Fremdkapital sind Schulden gegenüber Dritten.",
+            "type": "theory"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Eigenkapital bezeichnet die Summe des Geldes, das ein Unternehmen von seinen Eigentümern – den Aktionären – aufgebracht hat. Fremdkapital hingegen umfasst alle finanziellen Verpflichtungen gegenüber externen Kreditgebern, beispielsweise Banken oder Lieferanten.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 2: Eigenkapital ist die Gesamtsumme der Gelder, die ein Unternehmen von seinen Gesellschaftern erhält. Fremdkapital hingegen umfasst die gesamte Verschuldung des Unternehmens gegenüber Kreditgebern, wie beispielsweise Sparkassen und Lieferanten.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Eigenkapital: 120.000 €\nFremdkapital: 110.000 €\n\nGesamt: 230.000 €",
+            "type": "text"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "theory",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne, welcher Anteil des Eigenkapitals am gesamten Vermögen eines Unternehmens besteht.",
+              "is_valid": true,
+              "validation_issues": []
+            },
+            {
+              "variant_id": 2,
+              "text": "Aufgabe 1: Berechne die Kapitalquote einer Aktiengesellschaft.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 2,
+            "valid": 2
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Die Eigenkapitalquote wird berechnet als (Eigenkapital / Gesamtvermögen) * 100.\n\nBerechnung: (120.000 € / 230.000 €) * 100 = 52,17 %\n\nAntwort: Die Eigenkapitalquote beträgt 52,17 %.",
+            "type": "solution"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "solution",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 € Wie hoch ist der Gewinn?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Der Gewinn wird berechnet als Umsatz - Kosten.\n\nBerechnung: 500.000 € - 450.000 € = 50.000 €\n\nAntwort: Der Gewinn beträgt 50.000 €.  \\text{Euro} ",
+            "type": "solution"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "solution",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    }
+  ]
+}

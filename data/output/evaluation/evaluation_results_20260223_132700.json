@@ -1,0 +1,124 @@
+{
+  "timestamp": "2026-02-23T13:27:00.551984",
+  "test_config": {
+    "math": {
+      "pdf": "equations_simple.pdf",
+      "domain": "math",
+      "num_variants": 2
+    },
+    "languages": {
+      "pdf": "grammar_exercise.pdf",
+      "domain": "languages",
+      "num_variants": 2
+    },
+    "economics": {
+      "pdf": "balance_sheet.pdf",
+      "domain": "economics",
+      "num_variants": 2
+    }
+  },
+  "results": [
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_path": "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/input/math/equations_simple.pdf",
+      "total_time": 22.325689792633057,
+      "num_segments": 5,
+      "total_variants": 10,
+      "valid_variants": 7,
+      "validation_rate": 0.7,
+      "ocr_tool": "mistral",
+      "ocr_time": 5.964989185333252,
+      "output_files": [
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langchain/equations_simple.json",
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langchain/equations_simple.txt"
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_path": "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/input/math/equations_simple.pdf",
+      "total_time": 16.77483081817627,
+      "num_segments": 5,
+      "total_variants": 10,
+      "valid_variants": 8,
+      "validation_rate": 0.8,
+      "ocr_tool": "mistral",
+      "ocr_time": 2.3709518909454346,
+      "output_files": [
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langgraph/math/equations_simple.json",
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langgraph/math/equations_simple.txt"
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "languages",
+      "pdf_path": "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/input/languages/grammar_exercise.pdf",
+      "total_time": 19.600330114364624,
+      "num_segments": 4,
+      "total_variants": 8,
+      "valid_variants": 3,
+      "validation_rate": 0.375,
+      "ocr_tool": "tesseract",
+      "ocr_time": 1.077967882156372,
+      "output_files": [
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langchain/grammar_exercise.json",
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langchain/grammar_exercise.txt"
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "languages",
+      "pdf_path": "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/input/languages/grammar_exercise.pdf",
+      "total_time": 15.206654787063599,
+      "num_segments": 4,
+      "total_variants": 8,
+      "valid_variants": 4,
+      "validation_rate": 0.5,
+      "ocr_tool": "tesseract",
+      "ocr_time": 1.099937915802002,
+      "output_files": [
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langgraph/languages/grammar_exercise.json",
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langgraph/languages/grammar_exercise.txt"
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "economics",
+      "pdf_path": "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/input/economics/balance_sheet.pdf",
+      "total_time": 31.86276888847351,
+      "num_segments": 6,
+      "total_variants": 12,
+      "valid_variants": 2,
+      "validation_rate": 0.16666666666666666,
+      "ocr_tool": "tesseract",
+      "ocr_time": 1.1294348239898682,
+      "output_files": [
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langchain/balance_sheet.json",
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langchain/balance_sheet.txt"
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "economics",
+      "pdf_path": "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/input/economics/balance_sheet.pdf",
+      "total_time": 59.46580100059509,
+      "num_segments": 11,
+      "total_variants": 22,
+      "valid_variants": 4,
+      "validation_rate": 0.18181818181818182,
+      "ocr_tool": "tesseract",
+      "ocr_time": 1.1328859329223633,
+      "output_files": [
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langgraph/economics/balance_sheet.json",
+        "/Users/joelk/Desktop/Code/langchain-langgraph-comparison/data/output/langgraph/economics/balance_sheet.txt"
+      ]
+    }
+  ]
+}

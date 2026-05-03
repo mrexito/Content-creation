@@ -1,0 +1,58 @@
+================================================================================
+EVALUATION REPORT: LangChain vs LangGraph
+Generated: 2026-02-23 11:03:20
+================================================================================
+
+
+## DOMAIN: MATH
+--------------------------------------------------------------------------------
+
+Metrik                         LangChain            LangGraph            Delta
+--------------------------------------------------------------------------------
+Total Time (s)                 17.50                22.50                +28.6%
+OCR Time (s)                   2.85                 3.35                
+OCR Tool                       mistral              mistral             
+Segments                       5                    5                   
+Total Variants                 10                   10                  
+Valid Variants                 7                    7                   
+Validation Rate (%)            70.0                 70.0                
+
+
+## DOMAIN: LANGUAGES
+--------------------------------------------------------------------------------
+
+Metrik                         LangChain            LangGraph            Delta
+--------------------------------------------------------------------------------
+Total Time (s)                 29.90                15.44                -48.4%
+OCR Time (s)                   1.21                 1.22                
+OCR Tool                       tesseract            tesseract           
+Segments                       8                    4                   
+Total Variants                 16                   8                   
+Valid Variants                 1                    0                   
+Validation Rate (%)            6.2                  0.0                 
+
+
+## DOMAIN: ECONOMICS
+--------------------------------------------------------------------------------
+
+Metrik                         LangChain            LangGraph            Delta
+--------------------------------------------------------------------------------
+Total Time (s)                 43.15                29.98                -30.5%
+OCR Time (s)                   1.33                 1.35                
+OCR Tool                       tesseract            tesseract           
+Segments                       6                    6                   
+Total Variants                 12                   12                  
+Valid Variants                 2                    2                   
+Validation Rate (%)            16.7                 16.7                
+
+
+## GESAMTSTATISTIK
+--------------------------------------------------------------------------------
+
+Metrik                         LangChain            LangGraph            Delta
+--------------------------------------------------------------------------------
+Durchschn. Zeit (s)            30.18                22.64                -25.0%
+Durchschn. Validierung (%)     31.0                 28.9                 -2.1pp
+Erfolgreiche Tests             3                    3                   
+
+================================================================================

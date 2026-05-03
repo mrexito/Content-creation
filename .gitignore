@@ -22,10 +22,14 @@ build/
 
 # Data
 data/output/*
+!data/output/evaluation/
 !data/output/.gitkeep
 data/parsed/*
 !data/parsed/.gitkeep
 data/input/*
+!data/input/economics/
+!data/input/math/
+!data/input/languages/
 !data/input/.gitkeep
 docs/
 

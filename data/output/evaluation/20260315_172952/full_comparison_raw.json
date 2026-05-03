@@ -1,0 +1,2209 @@
+{
+  "timestamp": "2026-03-15 17:29:52",
+  "config": {
+    "variants": 1,
+    "domains": [
+      "math",
+      "languages",
+      "economics"
+    ],
+    "frameworks": [
+      "langchain",
+      "langgraph",
+      "hybrid",
+      "hybrid_agent",
+      "agent_orchestrator",
+      "agent_multi"
+    ],
+    "generator": "evaluate_all_frameworks.py"
+  },
+  "summary": [
+    {
+      "framework": "langchain",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 10.28,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langgraph",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 20.59,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 12.55,
+      "ocr_tool": "mistral",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid_agent",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 4,
+      "total_variants": 4,
+      "total_time_s": 30.27,
+      "ocr_tool": "mistral",
+      "tool_calls_total": 9,
+      "retries_total": 1,
+      "hallucinated_calls": 0
+    },
+    {
+      "framework": "agent_orchestrator",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.75,
+      "valid_variants": 3,
+      "total_variants": 4,
+      "total_time_s": 34.68,
+      "ocr_tool": "mistral",
+      "tool_calls_total": 13,
+      "retries_total": 5,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "agent_multi",
+      "domain": "math",
+      "success": true,
+      "validation_rate": 0.75,
+      "valid_variants": 3,
+      "total_variants": 4,
+      "total_time_s": 39.0,
+      "ocr_tool": "mistral",
+      "tool_calls_total": 15,
+      "retries_total": 4,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langchain",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 0.6667,
+      "valid_variants": 2,
+      "total_variants": 3,
+      "total_time_s": 18.04,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langgraph",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 0.6667,
+      "valid_variants": 2,
+      "total_variants": 3,
+      "total_time_s": 20.6,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 3,
+      "total_variants": 3,
+      "total_time_s": 16.05,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid_agent",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 0.3333,
+      "valid_variants": 1,
+      "total_variants": 3,
+      "total_time_s": 31.98,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": 10,
+      "retries_total": 7,
+      "hallucinated_calls": 0
+    },
+    {
+      "framework": "agent_orchestrator",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 3,
+      "total_variants": 3,
+      "total_time_s": 31.51,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": 12,
+      "retries_total": 4,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "agent_multi",
+      "domain": "languages",
+      "success": true,
+      "validation_rate": 0.3333,
+      "valid_variants": 1,
+      "total_variants": 3,
+      "total_time_s": 34.28,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": 14,
+      "retries_total": 3,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langchain",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 3,
+      "total_variants": 3,
+      "total_time_s": 8.86,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "langgraph",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 3,
+      "total_variants": 3,
+      "total_time_s": 21.8,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.3333,
+      "valid_variants": 1,
+      "total_variants": 3,
+      "total_time_s": 15.45,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "hybrid_agent",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.6667,
+      "valid_variants": 2,
+      "total_variants": 3,
+      "total_time_s": 40.45,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": 8,
+      "retries_total": 2,
+      "hallucinated_calls": 0
+    },
+    {
+      "framework": "agent_orchestrator",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 1.0,
+      "valid_variants": 3,
+      "total_variants": 3,
+      "total_time_s": 122.11,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": 23,
+      "retries_total": 5,
+      "hallucinated_calls": null
+    },
+    {
+      "framework": "agent_multi",
+      "domain": "economics",
+      "success": true,
+      "validation_rate": 0.6667,
+      "valid_variants": 2,
+      "total_variants": 3,
+      "total_time_s": 29.45,
+      "ocr_tool": "tesseract",
+      "tool_calls_total": 9,
+      "retries_total": 3,
+      "hallucinated_calls": null
+    }
+  ],
+  "results": [
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 10.28,
+        "ocr_time": 2.19,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $5a + 2 = 17$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Vereinfache: $5(a + 3) - 4(b - 2)$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Bestimme den Umfang eines Dreiecks, dessen Seitenlängen gegeben sind: $u = 5$, $v = 7$ und $w = 9$.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Investition von 2500 DM wird mit einem Zinssatz von 4,5 Prozent verzinst. Berechne das Kapital nach 6 Jahren.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 20.59,
+        "ocr_time": 1.74,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $3y - 7 = 16$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Vereinfache: $5(a + 3) - 4(b - 2)$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Gegeben sind die Längen der Seiten eines Dreiecks:  s = 5 m, t = 7 m und u = 9 m. Berechne den Umfang des Dreiecks.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Anlage von 1500 Dollar wird mit einer jährlichen Verzinsung von 4,5 Prozent angelegt. Berechne das angesammelte Kapital nach 6 Jahren.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 12.55,
+        "ocr_time": 0,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $7y - 3 = 26$.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Vereinfache: 5a + 20 - 3b + 6",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne den Umfang eines Dreiecks, dessen Seitenlängen wie folgt gegeben sind: $s_1 = 8$ m, $s_2 = 10$ m und $s_3 = 12$ m.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Ein Betrag von 1250 Euro wird auf ein Sparkonto angelegt, dessen jährliche Verzinsung bei 4,5 Prozent liegt. Berechnen Sie das Kapital nach sechs Jahren unter Berücksichtigung des Säumniszinses.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid_agent",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 30.27,
+        "ocr_time": 0,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 4,
+        "validation_rate": 1.0,
+        "tool_calls_total": 9,
+        "retries_total": 1,
+        "hallucinated_calls": 0
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Die Gleichung $3a + 7 = 20$ kann wie folgt gelöst werden:\n\nZuerst subtrahiere ich von beiden Seiten 7:\n$3a = 13$\n\nDann teile ich beide Seiten durch 3:\n$a = \\frac{13}{3}$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Das Ergebnis ist 3m - 9n + 81.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.99
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne den Umfang der geometrischen Figur, die durch die Seitenlängen $a = 8$ dm, $b = 12$ dm und $c = 15$ dm gegeben ist.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Investition von 1500 Euro wird auf ein Darlehen mit einer jährlichen Verzinsung von 4,5 Prozent angelegt. Wie hoch ist das Kapital nach sechs Jahren?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "agent_orchestrator",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 34.68,
+        "ocr_time": 1.97,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 3,
+        "validation_rate": 0.75,
+        "tool_calls_total": 13,
+        "retries_total": 5,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "math",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $4y - 7 = 15$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task"
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne die Perimeter eines Dreiecks, wenn die Längen der Kanten jeweils $a=8$ cm, $b=12$ cm und $c=15$ cm betragen.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Investition von 1500 DM wird mit einer jährlichen Verzinsung von 2,75% angelegt. Ermitteln Sie das Kapital nach einer Anlageperiode von dreizehn Monaten.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "agent_multi",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 39.0,
+        "ocr_time": 1.92,
+        "ocr_tool": "mistral",
+        "num_segments": 5,
+        "total_variants": 4,
+        "valid_variants": 3,
+        "validation_rate": 0.75,
+        "tool_calls_total": 15,
+        "retries_total": 4,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Mathematik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "math",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Löse die Gleichung $2x + 5 = 13$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Löse die Gleichung $3a + 7 = 20$",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Vereinfache: $3(x + 2) - 2(x - 1)$",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task"
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Berechne den Umfang eines Dreiecks mit den Seiten: a = 5 cm, b = 7 cm, c = 9 cm",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne die Länge der Begrenzung eines dreiseitigen Polygons, wenn die Längen der Seiten gegeben sind: p = 15 m, q = 20 m, r = 25 m",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 4: Ein Kapital von 1000 € wird zu 3% Zinsen angelegt. Wie hoch ist das Endkapital nach 5 Jahren?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 4: Eine Anlagemenge von 1500 Dollar wird zu 6,5 Prozent Zinsen investiert. Ermitteln Sie das resultierende Kapital nach 8 Jahren.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 18.04,
+        "ocr_time": 1.82,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 2,
+        "validation_rate": 0.6667,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Grammatik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\nDas Haus befindet sich auf einem Hügel.\nDie Kinder verspielten sich im Garten.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. —\n\ner liest ein Buch. —",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch besuche die Schule. —\n\nEr liest ein Buch. —",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nschnell - rasch - langsam - zügig",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 20.6,
+        "ocr_time": 1.32,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 2,
+        "validation_rate": 0.6667,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Grammatik-Übungen",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Setze die richtigen Artikel ein:\n\n□ Schloss thront auf □ Berg.\n□ Jugendliche toben in □ Park.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Bilde das Perfekt:\n\nIch gehe in die Schule. —\n\ner liest ein Buch. —",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Bilde das Perfekt:\n\nEr geht zur Schule. —\n\nSie liest ein Buch. —",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Welche Wörter sind Synonyme?\n\nschnell - rasch - langsam - zügig",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\nWelche Wörter sind Synonyme?\n\nschnell – rasch – langsam – zügig\n\nFormuliere eine inhaltlich exakt gleich bleibende, jedoch deutlicher veränderte Version.",
+              "is_valid": false,
+              "validation_issues": [
+                "Länge weicht stark ab: 198 vs 63 Zeichen (Ratio: 3.14, erlaubt: 0.6-1.5)"
+              ]
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 16.05,
+        "ocr_time": 0,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 3,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Grammatik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\nDie Villa thront auf einem Berg.\nDie Kleinkinder toben im Garten.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. —\n\ner liest ein Buch. —",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. – Er ist in die Schule gegangen.\n\nEr liest ein Buch. – Sie versinkt in dem Buch.\n\nLiest er das Buch? – Hat er das Buch bereits vollständig gelesen?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nschnell - rasch - langsam - zügig",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nWelche der genannten Begriffe weist die größte semantische Ähnlichkeit auf? Berücksichtigen Sie dabei die unterschiedlichen Konnotationen und Nuancen der Wörter.\n\nschnell – rasch – langsam – zügig",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid_agent",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 31.98,
+        "ocr_time": 0,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 1,
+        "validation_rate": 0.3333,
+        "tool_calls_total": 10,
+        "retries_total": 7,
+        "hallucinated_calls": 0
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Grammatik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. —\n\ner liest ein Buch. —",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nschnell - rasch - langsam - zügig",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nNennen Sie bitte Synonyme für die folgenden Begriffe:\n\nschnell – rasch – langsam – zügig",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "agent_orchestrator",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 31.51,
+        "ocr_time": 1.22,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 3,
+        "validation_rate": 1.0,
+        "tool_calls_total": 12,
+        "retries_total": 4,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Grammatik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\nDie Villa thront auf dem Berg.\nDie Jugendliche vergnügen sich im Park.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. —\n\ner liest ein Buch. —",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Bewerte die Vollendetemporalform der genannten Verben in die jeweils korrekte Form des Passé Composé um. Berücksichtige dabei die Konjugation und die korrekten Hilfsverben.[TOOL_RESULT]\n[END_TOOL_RESULT]",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nschnell - rasch - langsam - zügig",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "schnell - rasch - langsam - zügig.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "agent_multi",
+      "domain": "languages",
+      "pdf_name": "grammar_exercise.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 34.28,
+        "ocr_time": 1.15,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 1,
+        "validation_rate": 0.3333,
+        "tool_calls_total": 14,
+        "retries_total": 3,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Grammatik-Übungen",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Setze die richtigen Artikel ein:\n\n__ Haus steht auf __ Hügel.\n__ Kinder spielen in __ Garten.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Ausführung:\n\nDas Heim thront auf einem Berg. Die Ernte liegt in der Wiese.\nDie Kleinen versöhnen sich im Garten.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Bilde das Perfekt:\n\nIch gehe in die Schule. —\n\ner liest ein Buch. —",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "task"
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 3: Welche Wörter sind Synonyme?\n\nschnell - rasch - langsam - zügig",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "languages",
+            "content_type": "task"
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langchain",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 8.86,
+        "ocr_time": 1.33,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 3,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "general",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: TechStart GmbH\nBilanz zum 31.12.2024:\nAKTIVA:\n\nAnlagevermögen: 150.000 €\nUmlaufvermögen: 80.000 €\n\nGesamt: 230.000 €\nPASSIVA:\n\nEigenkapital: 120.000 €\nFremdkapital: 110.000 €\nGesamt: 230.000 €",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Unternehmen: InnovaVision Solutions AG\nBilanz zum 31.08.2025:\nAKTIVA:\n\nAnlagevermögen: 175.000 SEK\nUmlaufvermögen: 95.000 NOK\n\nGesamt: 270.000 NOK\nPASSIVA:\n\nEigenkapital: 155.000 SEK\nFremdkapital: 115.000 NOK\n\nGesamt: 270.000 SEK",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Ermittle den Anteil des Eigenkapitals am gesamten Vermögen.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 € Wie hoch ist der Gewinn?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Ermittle den Jahresüberschuss der Firma Stark GmbH. Der Erlös belief sich auf 600'000 SEK, die laufenden Ausgaben auf 520'000 NOK. Wie hoch war der Gewinn?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "langgraph",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 21.8,
+        "ocr_time": 1.26,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 3,
+        "validation_rate": 1.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: TechStart GmbH\nBilanz zum 31.12.2024:\nAKTIVA:\nAnlagevermögen: 150.000 €\nUmlaufvermögen: 80.000 €\nGesamt: 230.000 €\nPASSIVA:\nEigenkapital: 120.000 €\nFremdkapital: 110.000 €\nGesamt: 230.000 €",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Unternehmen: NovaTech Solutions AG\nBilanz zum 31.08.2025:\nWERTE:\nInvestitionsvermögen: 175.000 SEK\nLiquiden Mittel: 65.000 NOK\nGesamt: 240.000 SEK\nVERBINDLICHKEITEN:\nStammkapital: 135.000 SEK\nKredite: 105.000 SEK\nGesamt: 240.000 SEK\n\nErmittle den Eigenkapitalanteil am Gesamtvermögen.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Berechne den Anteil des Eigenkapitals an den gesamten Aktiengewinnen.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 €\nWie hoch ist der Gewinn?",
+            "type": "unknown"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Die Erlöse der Schmidt GmbH beliefen sich auf 800.000 SEK, die Kalkulationskosten auf 720.000 NOK. Wie hoch ist der Gewinnbetrag?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 15.45,
+        "ocr_time": 0,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 1,
+        "validation_rate": 0.3333,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: TechStart GmbH\nBilanz zum 31.12.2024:\nAKTIVA:\n\nAnlagevermögen: 150.000 €\nUmlaufvermögen: 80.000 €\n\nGesamt: 230.000 €\nPASSIVA:\n\nEigenkapital: 120.000 €\nFremdkapital: 110.000 €\nGesamt: 230.000 €",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Berechne den Anteil des Eigenkapitals am Gesamtvermögen eines Unternehmens.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 € Wie hoch ist der Gewinn?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "hybrid_agent",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 40.45,
+        "ocr_time": 0,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 2,
+        "validation_rate": 0.6667,
+        "tool_calls_total": 8,
+        "retries_total": 2,
+        "hallucinated_calls": 0
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: TechStart GmbH\nBilanz zum 31.12.2024:\nAKTIVA:\n\nAnlagevermögen: 150.000 €\nUmlaufvermögen: 80.000 €\n\nGesamt: 230.000 €\nPASSIVA:\n\nEigenkapital: 120.000 €\nFremdkapital: 110.000 €\nGesamt: 230.000 €",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "example",
+            "confidence": 0.95
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 1: Berechnen Sie den Anteil des Kurswerts an der Gesamtkapitalisierung einer Aktiengesellschaft, wobei der Kurswert 120.000 € und das Gesamtvermögen 600.000 € beträgt.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 € Wie hoch ist der Gewinn?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task",
+            "confidence": 0.95
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Ermittle den Jahresüberschuss der Firma Berg & Sohn. Im vergangenen Geschäftsjahr lag dieser bei 620.000 SEK, während die Betriebskosten mit 580.000 NOK zu Buche gingen. Wie hoch war der Gewinn?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "agent_orchestrator",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 122.11,
+        "ocr_time": 1.28,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 3,
+        "validation_rate": 1.0,
+        "tool_calls_total": 23,
+        "retries_total": 5,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: TechStart GmbH\nBilanz zum 31.12.2024:\nAKTIVA:\n\nAnlagevermögen: 150.000 €\nUmlaufvermögen: 80.000 €\n\nGesamt: 230.000 €\nPASSIVA:\n\nEigenkapital: 120.000 €\nFremdkapital: 110.000 €\nGesamt: 230.000 €",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "data"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Unternehmen: VisionTech International GmbH\nBilanz zum 31.08.2026:\nVermögen:\n\nFestvermögen: 195.000 DKK\nBargeldreserven: 70.000 PLN\n\nGesamt: 265.000 DKK\nForderungen:\n\nEigenkapital: 170.000 PLN\nAnleihen: 120.000 DKK\nGesamt: 290.000 DKK",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "mathematics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Bestimme den Prozentsatz des Eigenkapitals im Vermögen eines Unternehmens. Berechne den Kapitalanteil nach der Formel: Kapitalanteil = (Eigencapital / Gesamtsystemvermögen) * 100.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 €\nWie hoch ist der Gewinn?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Ermittle den Jahresüberschuss der \"NovaTech Solutions Ltd.\". Der Ertrag belief sich auf 600.000 SEK, die Betriebskosten auf 540.000 NOK.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "framework": "agent_multi",
+      "domain": "economics",
+      "pdf_name": "balance_sheet.pdf",
+      "error": null,
+      "metrics": {
+        "total_time": 29.45,
+        "ocr_time": 1.28,
+        "ocr_tool": "tesseract",
+        "num_segments": 4,
+        "total_variants": 3,
+        "valid_variants": 2,
+        "validation_rate": 0.6667,
+        "tool_calls_total": 9,
+        "retries_total": 3,
+        "hallucinated_calls": null
+      },
+      "segments": [
+        {
+          "original_segment": {
+            "text": "Bilanzanalyse - Fallstudie",
+            "type": "title"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "title",
+            "confidence": 1.0
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Unternehmen: TechStart GmbH\nBilanz zum 31.12.2024:\nAKTIVA:\n\nAnlagevermögen: 150.000 €\nUmlaufvermögen: 80.000 €\n\nGesamt: 230.000 €\nPASSIVA:\n\nEigenkapital: 120.000 €\nFremdkapital: 110.000 €\nGesamt: 230.000 €",
+            "type": "data"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "data"
+          },
+          "validated_variants": [],
+          "validation_statistics": {
+            "total": 0,
+            "valid": 0
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 1: Berechne die Eigenkapitalquote.",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Ermittle den Eigenkapitalanteil am Gesamtvermögen der Firma StahlKraft AG.",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        },
+        {
+          "original_segment": {
+            "text": "Aufgabe 2: Der Umsatz betrug 500.000 € die Kosten 450.000 €\nWie hoch ist der Gewinn?",
+            "type": "task"
+          },
+          "classification": {
+            "domain": "economics",
+            "content_type": "task"
+          },
+          "validated_variants": [
+            {
+              "variant_id": 1,
+              "text": "Aufgabe 2: Die Erlöse der Firma Berg & Sohn GmbH summierten sich auf 600.000 SEK, die Betriebskosten beliefen sich auf 520.000 NOK. Wie hoch war der Gewinn?",
+              "is_valid": true,
+              "validation_issues": []
+            }
+          ],
+          "validation_statistics": {
+            "total": 1,
+            "valid": 1
+          }
+        }
+      ]
+    }
+  ]
+}

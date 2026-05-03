@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-03-16 10:18:16",
+  "config": {
+    "variants": 1,
+    "domains": [
+      "math"
+    ],
+    "frameworks": [
+      "agent_multi"
+    ],
+    "generator": "evaluate_all_frameworks.py"
+  },
+  "summary": [
+    {
+      "framework": "agent_multi",
+      "domain": "math",
+      "success": false,
+      "validation_rate": 0.0,
+      "valid_variants": 0,
+      "total_variants": 0,
+      "total_time_s": 0.0,
+      "ocr_tool": "?",
+      "tool_calls_total": null,
+      "retries_total": null,
+      "hallucinated_calls": null
+    }
+  ],
+  "results": [
+    {
+      "success": false,
+      "framework": "agent_multi",
+      "domain": "math",
+      "pdf_name": "equations_simple.pdf",
+      "error": "Segmentation failed: Request timed out.",
+      "metrics": {
+        "total_time": 0.0,
+        "ocr_time": 0.0,
+        "ocr_tool": "?",
+        "num_segments": 0,
+        "total_variants": 0,
+        "valid_variants": 0,
+        "validation_rate": 0.0,
+        "tool_calls_total": null,
+        "retries_total": null,
+        "hallucinated_calls": null
+      },
+      "segments": []
+    }
+  ]
+}
