@@ -19,13 +19,25 @@ Dieses Repository enthält den vollständigen Quellcode zum Vergleich von LangCh
 
 ## Voraussetzungen
 
-| Komponente | Version | Installation (macOS) |
-|---|---|---|
-| Python | 3.12 | `brew install python@3.12` |
-| Node.js | ≥ 18 | `brew install node` |
-| Tesseract OCR | aktuell | `brew install tesseract tesseract-lang` |
+| Komponente | Version | macOS | Windows |
+|---|---|---|---|
+| Python | 3.12 | `brew install python@3.12` | [python.org/downloads](https://python.org/downloads) → Installer |
+| Node.js | ≥ 18 | `brew install node` | [nodejs.org](https://nodejs.org) → LTS Installer |
+| Tesseract OCR | aktuell | `brew install tesseract tesseract-lang` | [UB-Mannheim Installer](https://github.com/UB-Mannheim/tesseract/wiki) → Sprachpaket `deu+eng` auswählen |
+| Poppler (pdftoppm) | aktuell | `brew install poppler` | [poppler-windows](https://github.com/oschwartz10612/poppler-windows) → ZIP entpacken, `bin/` zu PATH hinzufügen |
+| Git | aktuell | `brew install git` | [git-scm.com](https://git-scm.com) → Installer |
 
 Für die Mathematikdomäne wird zusätzlich ein **Mistral API-Key** benötigt (kostenpflichtig, Pay-per-use). Ohne diesen Key schaltet das System automatisch auf Tesseract um, wobei die Formelerkennungsqualität eingeschränkt ist.
+
+Die korrekte Installation kann mit folgenden Befehlen geprüft werden:
+
+```bash
+python --version
+node --version
+git --version
+tesseract --version
+pdftoppm -v
+```
 
 ---
 
@@ -39,30 +51,35 @@ cd langchain-langgraph-comparison
 # 2. Python-Abhängigkeiten installieren (ca. 3–5 Minuten)
 pip install -r requirements.txt
 
-# 3. Umgebungsvariablen einrichten
-cp .env.dev .env.dev.local
+# 3. Konfigurationsdatei einrichten
+cp env.template .env.dev       # macOS
+copy env.template .env.dev     # Windows
+```
+
+**Hinweis zu Versionskonflikten:** Falls es beim Installieren zu Konflikten zwischen `openai`, `langchain-openai` und abhängigen Paketen kommt, empfiehlt es sich, die Versionsangaben für diese Pakete aus `requirements.txt` zu entfernen und pip die Auflösung selbst übernehmen zu lassen. Alternativ kann die Umgebung in einem neuen Virtual Environment aufgesetzt werden:
+
+```bash
+# macOS
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Windows
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
 ---
 
 ## Konfiguration
 
-Alle Einstellungen werden in `.env.dev.local` gesetzt. Die Datei enthält folgende Variablen:
+Das Repository enthält eine Vorlagedatei `env.template` mit allen verfügbaren Einstellungen. Nach dem Kopieren (siehe Installation) werden die Pflichtfelder in `.env.dev` eingetragen:
 
 ```env
-# Virtuelles Environment (optional, nur lokal relevant)
-# source venv/bin/activate
-
-# --- LLM Allgemein ---
-LLM_PROVIDER=bfh              # 'bfh', 'openai' oder 'auto'
-LLM_TEMPERATURE=0.7
-LLM_MAX_TOKENS=2000
-MAX_ITERATIONS=3
-BERT_SCORE_THRESHOLD=0.92
-
 # --- BFH LLM (empfohlen) ---
 BFH_LLM_ENDPOINT=https://inference.mlmp.ti.bfh.ch/api/v1
-BFH_LLM_API_KEY=              # Pflichtfeld
+BFH_LLM_API_KEY=              # Pflichtfeld — siehe https://infra.pages.ti.bfh.ch/mlmp/src/llm/
 BFH_LLM_MODEL=gpt-oss:120b
 
 # --- OpenAI (alternativ) ---
@@ -70,21 +87,7 @@ OPENAI_API_KEY=               # nur bei LLM_PROVIDER=openai
 OPENAI_MODEL=gpt-4o-mini
 
 # --- OCR ---
-OCR_DEFAULT_TOOL=auto         # 'auto', 'tesseract' oder 'mistral'
-OCR_DPI=300
-OCR_TESSERACT_LANG=deu+eng
-OCR_DOMAIN_MATH=mistral       # Mistral für Mathematik (Formelerkennung)
-OCR_DOMAIN_LANGUAGES=tesseract
-OCR_DOMAIN_ECONOMICS=tesseract
 MISTRAL_API_KEY=              # Pflichtfeld für Mathematikdomäne
-
-# --- Logging ---
-LOG_LEVEL=INFO
-
-# --- Pfade (nicht ändern) ---
-DATA_INPUT_PATH=data/input
-DATA_OUTPUT_PATH=data/output
-DATA_PARSED_PATH=data/parsed
 ```
 
 **Pflichtfelder:** `BFH_LLM_API_KEY` und `MISTRAL_API_KEY`. Alle anderen Werte können unverändert übernommen werden.
@@ -128,19 +131,34 @@ python src/hybrid_prototype/run_hybrid.py
 ### Mit Parametern
 
 ```bash
+# macOS
 python src/langchain_prototype/run_langchain.py \
   --pdf data/input/math/equations_simple.pdf \
   --domain math \
   --variants 1 \
   --retries 3
+
+# Windows (PowerShell)
+python src/langchain_prototype/run_langchain.py `
+  --pdf data/input/math/equations_simple.pdf `
+  --domain math --variants 1 --retries 3
 ```
+
+| Parameter | Beschreibung | Standardwert |
+|---|---|---|
+| `--pdf` | Pfad zur Input-PDF | erstes verfügbares Test-PDF |
+| `--domain` | `math`, `languages`, `economics` | Auto-Detect |
+| `--variants` | Anzahl Varianten pro Segment | 3 |
+| `--retries` | Maximale Retry-Iterationen | 2 |
 
 ### PYTHONPATH
 
 Skripte setzen `src/` automatisch auf den Python-Pfad. Für direkte Importe ausserhalb der Skriptumgebung:
 
 ```bash
-export PYTHONPATH=src
+export PYTHONPATH=src        # macOS
+set PYTHONPATH=src           # Windows CMD
+$env:PYTHONPATH = "src"      # Windows PowerShell
 ```
 
 ---
@@ -229,7 +247,7 @@ langchain-langgraph-comparison/
 │   └── parsed/                  # Zwischenergebnisse OCR
 ├── tests/
 ├── requirements.txt
-├── .env.dev                     # Vorlage für Umgebungsvariablen
+├── env.template                 # Vorlage für Umgebungsvariablen
 └── README.md
 ```
 
