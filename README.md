@@ -73,7 +73,7 @@ pip install -r requirements.txt
 ---
 
 ## Konfiguration
-
+**ACHTUNG:** Der BFH Endpunkt kann nur via VPN der BFH benutzt werden.
 Das Repository enthält eine Vorlagedatei `env.template` mit allen verfügbaren Einstellungen. Nach dem Kopieren (siehe Installation) werden die Pflichtfelder in `.env.dev` eingetragen:
 
 ```env
@@ -115,33 +115,14 @@ data/input/
 
 ## Prototypen ausführen
 
-### Einzeln
+### Hybrid-Prototyp (direkt via src/)
+
+Der Hybrid-Prototyp verfügt über einen eigenständigen Einstiegspunkt:
 
 ```bash
-# LangChain Pipeline
-python src/langchain_prototype/run_langchain.py
-
-# LangGraph StateGraph
-python src/langgraph_prototype/run_langgraph.py
-
-# Hybrid (LC + LG + LC)
 python src/hybrid_prototype/run_hybrid.py
-```
-
-### Mit Parametern
-
-```bash
-# macOS
-python src/langchain_prototype/run_langchain.py \
-  --pdf data/input/math/equations_simple.pdf \
-  --domain math \
-  --variants 1 \
-  --retries 3
-
-# Windows (PowerShell)
-python src/langchain_prototype/run_langchain.py `
-  --pdf data/input/math/equations_simple.pdf `
-  --domain math --variants 1 --retries 3
+python src/hybrid_prototype/run_hybrid.py --domain math --variants 2
+python src/hybrid_prototype/run_hybrid.py --pdf data/input/economics/case_study.pdf
 ```
 
 | Parameter | Beschreibung | Standardwert |
@@ -149,11 +130,48 @@ python src/langchain_prototype/run_langchain.py `
 | `--pdf` | Pfad zur Input-PDF | erstes verfügbares Test-PDF |
 | `--domain` | `math`, `languages`, `economics` | Auto-Detect |
 | `--variants` | Anzahl Varianten pro Segment | 3 |
-| `--retries` | Maximale Retry-Iterationen | 2 |
+| `--retries` | Maximale Retry-Iterationen im LangGraph-Loop | 2 |
+
+### LangChain- und LangGraph-Prototypen (via scripts/)
+
+LangChain und LangGraph werden über die Frontend-Wrapper-Skripte ausgeführt, die Fortschritt und Ergebnis als JSON schreiben:
+
+```bash
+# LangChain LCEL-Pipeline
+python scripts/run_langchain_pipeline.py \
+  --pdf data/input/math/equations_simple.pdf \
+  --domain math \
+  --variants 2 \
+  --output-dir data/output/langchain/test-run \
+  --progress data/output/langchain/test-run/progress.json \
+  --run-id test-run
+
+# LangGraph StateGraph
+python scripts/run_langgraph_pipeline.py \
+  --pdf data/input/math/equations_simple.pdf \
+  --domain math \
+  --variants 2 \
+  --output-dir data/output/langgraph/test-run \
+  --progress data/output/langgraph/test-run/progress.json \
+  --run-id test-run
+```
+
+| Parameter | Beschreibung |
+|---|---|
+| `--pdf` | Pfad zur Input-PDF (Pflichtfeld) |
+| `--domain` | `math`, `languages`, `economics` (Standard: `auto`) |
+| `--variants` | Anzahl Varianten pro Segment (Standard: 2) |
+| `--retries` | Maximale Retry-Iterationen (Standard: 3) |
+| `--output-dir` | Output-Verzeichnis (Pflichtfeld) |
+| `--progress` | Pfad zur progress.json (Pflichtfeld) |
+| `--run-id` | Eindeutige Run-ID (optional) |
+| `--ocr-tool` | `auto`, `tesseract`, `mistral` (Standard: `auto`) |
+
+Diese Skripte schreiben während der Ausführung kontinuierlich `progress.json` und legen nach Abschluss `result.json` im angegebenen Output-Verzeichnis ab. Das Frontend ruft sie intern via `child_process.spawn` auf.
 
 ### PYTHONPATH
 
-Skripte setzen `src/` automatisch auf den Python-Pfad. Für direkte Importe ausserhalb der Skriptumgebung:
+Alle Skripte setzen `src/` via `sys.path.insert` automatisch auf den Python-Pfad. Für direkte Importe ausserhalb der Skriptumgebung:
 
 ```bash
 export PYTHONPATH=src        # macOS
@@ -187,23 +205,43 @@ Anschliessend unter `http://localhost:3000` erreichbar.
 python scripts/evaluate_all_frameworks.py
 ```
 
-Führt alle drei Frameworks über alle drei Domänen aus (540 Einzelläufe). Ergebnisse werden als JSON-Reports mit Zeitstempel abgelegt:
+Führt alle drei Haupt-Frameworks (LangChain, LangGraph, Hybrid) über alle drei Domänen aus. Ergebnisse werden als JSON- und Markdown-Reports mit Zeitstempel abgelegt:
 
 ```
 data/output/evaluation/
 └── [zeitstempel]/
-    ├── report.json      # Aggregierte Metriken
-    ├── report.md        # Lesbare Zusammenfassung
-    └── segments/        # Einzelergebnisse pro Segment
+    ├── full_comparison_raw.json   # Aggregierte Metriken aller Runs
+    ├── full_comparison_raw.md     # Lesbare Zusammenfassung
+    └── [domäne]/                  # Einzelergebnisse pro Segment und Domäne
 ```
 
 ### LangChain-Variantenvergleich (Pipeline vs. Orchestrator vs. Multi-Agent)
 
 ```bash
-python scripts/pipeline_comparison.py
-python scripts/pipeline_comparison.py data/input/math/equations_simple.pdf
-python scripts/pipeline_comparison.py data/input/math/equations_simple.pdf --combos 1,3
+# Alle drei Domänen mit Default-PDFs
+python scripts/compare_langchain_variants.py --all-domains
+
+# Einzelne Domäne mit explizitem PDF
+python scripts/compare_langchain_variants.py \
+  --pdf data/input/math/equations_simple.pdf \
+  --domain mathematics
+
+# Selektive Varianten (z.B. nur Pipeline und Orchestrator)
+python scripts/compare_langchain_variants.py --all-domains --skip-multi
 ```
+
+| Parameter | Beschreibung |
+|---|---|
+| `--all-domains` | Alle drei Domänen mit Default-PDFs ausführen |
+| `--pdf` | Pfad zur Input-PDF (erforderlich ohne `--all-domains`) |
+| `--domain` | `mathematics`, `languages`, `economics` (erforderlich ohne `--all-domains`) |
+| `--variants` | Anzahl Varianten pro Segment (Standard: 1) |
+| `--retries` | Max. Retries für Orchestrator (Standard: 3) |
+| `--skip-pipeline` | `langchain_pipeline`-Variante überspringen |
+| `--skip-orchestrator` | `agent_orchestrator`-Variante überspringen |
+| `--skip-multi` | `agent_multi`-Variante überspringen |
+
+Ergebnisse werden in `data/output/langchain_comparison/` gespeichert.
 
 ### BERTScore-Kalibrierung
 
@@ -238,9 +276,15 @@ langchain-langgraph-comparison/
 │   │       └── consistency_validator.py
 │   ├── langchain_prototype/     # LangChain LCEL-Pipeline
 │   ├── langgraph_prototype/     # LangGraph StateGraph
-│   └── hybrid_prototype/        # Dreiphasige Hybridarchitektur
+│   └── hybrid_prototype/        # Dreiphasige Hybridarchitektur (LC + LG + LC)
 ├── frontend/                    # Next.js Demonstrationsumgebung
 ├── scripts/                     # Evaluations- und Hilfsskripte
+│   ├── evaluate_all_frameworks.py      # Hauptevaluationsskript (alle Frameworks)
+│   ├── compare_langchain_variants.py   # LangChain-Variantenvergleich
+│   ├── run_langchain_pipeline.py       # Frontend-Wrapper LangChain
+│   ├── run_langgraph_pipeline.py       # Frontend-Wrapper LangGraph
+│   ├── generate_test_pdfs.py           # Test-PDFs generieren
+│   └── calibrate_bert_threshold.py     # BERTScore-Schwellwert kalibrieren
 ├── data/
 │   ├── input/                   # Test-PDFs (nach generate_test_pdfs.py)
 │   ├── output/                  # Evaluationsergebnisse
