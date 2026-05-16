@@ -56,8 +56,38 @@ class Config:
         cls.DATA_INPUT_PATH.mkdir(parents=True, exist_ok=True)
         cls.DATA_OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
         cls.DATA_PARSED_PATH.mkdir(parents=True, exist_ok=True)
-        
+
         return True
+
+    @classmethod
+    def apply_llm_cli_overrides(cls, provider: str = 'auto', model: str = '') -> None:
+        """
+        Übernimmt LLM-Auswahl aus CLI/Frontend in die Config.
+
+        Muss VOR der Konstruktion von Chains/Pipelines aufgerufen werden, da die
+        LCEL-Factory (langchain_prototype.lcel_llm.get_lcel_llm) ausschließlich
+        Config.LLM_PROVIDER liest. Ohne diesen Override würde die UI-Auswahl im
+        LangChain-Pfad ignoriert und stattdessen .env.dev gelten.
+
+        - provider='auto' oder leer: Config.LLM_PROVIDER bleibt unverändert
+        - model leer: Provider-Modelle bleiben unverändert
+        - model gesetzt: Override gilt für den effektiv aktiven Provider
+        """
+        if provider and provider != 'auto':
+            cls.LLM_PROVIDER = provider
+
+        if model:
+            effective = cls.LLM_PROVIDER if cls.LLM_PROVIDER and cls.LLM_PROVIDER != 'auto' else None
+            if effective is None:
+                # Auto-Detect wie in LLMHandler: BFH hat Vorrang
+                if cls.BFH_LLM_API_KEY:
+                    effective = 'bfh'
+                elif cls.OPENAI_API_KEY:
+                    effective = 'openai'
+            if effective == 'openai':
+                cls.OPENAI_MODEL = model
+            elif effective == 'bfh':
+                cls.BFH_LLM_MODEL = model
 
 # Validiere Config beim Import.
 # HINWEIS: Config.validate() hat einen Filesystem-Seiteneffekt — es legt die

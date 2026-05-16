@@ -133,6 +133,9 @@ def main():
     # Singleton-Handler mit CLI-Einstellungen initialisieren
     from common.ocr_handler import reset_ocr_handler, get_ocr_handler
     from common.llm_handler import reset_llm_handler, get_llm_handler
+    # Config-Override – wichtig falls Nodes intern LCEL-Komponenten nutzen
+    # und für konsistente Provider-/Modell-Auflösung über alle Pfade.
+    Config.apply_llm_cli_overrides(args.llm_provider, args.llm_model)
     reset_ocr_handler()
     get_ocr_handler(default_tool=args.ocr_tool)
     reset_llm_handler()

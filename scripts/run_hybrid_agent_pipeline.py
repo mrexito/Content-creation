@@ -21,6 +21,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
+from common.config import Config
 from common.logger import setup_logger
 from hybrid_agent_prototype.pipeline import get_pipeline
 
@@ -113,6 +114,8 @@ def main():
 
     from common.ocr_handler import reset_ocr_handler, get_ocr_handler
     from common.llm_handler import reset_llm_handler, get_llm_handler
+    # Config-Override – Phase 2 (Agent) und Phase 1/3 (LCEL) lesen Config.LLM_PROVIDER.
+    Config.apply_llm_cli_overrides(args.llm_provider, args.llm_model)
     reset_ocr_handler()
     get_ocr_handler(default_tool=args.ocr_tool)
     reset_llm_handler()

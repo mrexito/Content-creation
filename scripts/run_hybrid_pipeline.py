@@ -20,6 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
+from common.config import Config
 from common.logger import setup_logger
 from hybrid_prototype.pipeline import get_pipeline
 
@@ -119,6 +120,9 @@ def main():
     # Initialise OCR and LLM singletons with CLI settings
     from common.ocr_handler import reset_ocr_handler, get_ocr_handler
     from common.llm_handler import reset_llm_handler, get_llm_handler
+    # Config-Override – Phase 1 und 3 nutzen LCEL-Chains, die Config.LLM_PROVIDER
+    # direkt lesen. Ohne Override würde die UI-Auswahl ignoriert.
+    Config.apply_llm_cli_overrides(args.llm_provider, args.llm_model)
     reset_ocr_handler()
     get_ocr_handler(default_tool=args.ocr_tool)
     reset_llm_handler()
