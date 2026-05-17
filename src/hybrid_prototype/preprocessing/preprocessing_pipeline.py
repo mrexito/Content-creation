@@ -114,7 +114,10 @@ class HybridPreprocessingPipeline:
         seg_result = self.segmentation_chain.invoke({"text": state["raw_text"]})
 
         if not seg_result["success"]:
-            error_msg = "Segmentierung fehlgeschlagen"
+            # Detail aus metadata.error mitnehmen (z.B. 401-Antwort vom LLM),
+            # damit Runner und Frontend die echte Ursache sehen statt nur "fehlgeschlagen".
+            seg_err = (seg_result.get("metadata") or {}).get("error") or "unbekannte Ursache"
+            error_msg = f"Segmentierung fehlgeschlagen: {seg_err}"
             logger.error(error_msg)
             state["errors"].append(error_msg)
             state["current_phase"] = "error"

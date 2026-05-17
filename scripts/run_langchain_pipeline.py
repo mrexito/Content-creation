@@ -235,7 +235,10 @@ def main():
                     seg_result = self.segmentation_chain.invoke({'text': text})
                     step("segmentation")
                     if not seg_result['success']:
-                        raise Exception(f"Segmentation failed")
+                        # Detail aus metadata.error mitnehmen (z.B. 401-Antwort),
+                        # damit der Frontend-User die echte Ursache sieht.
+                        seg_err = (seg_result.get('metadata') or {}).get('error') or 'unbekannte Ursache'
+                        raise RuntimeError(f"Segmentation failed: {seg_err}")
                     pipeline_results['segmentation'] = seg_result['metadata']
                     segments = seg_result['segments']
 
