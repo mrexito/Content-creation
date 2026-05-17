@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { ResultEntry } from "./comparison-view";
 import { FW_CONFIG } from "./comparison-view";
 import { ChevronDown, ChevronRight, CheckCircle, XCircle } from "lucide-react";
+import { MathText } from "./math-text";
 
 interface SegmentComparisonProps {
   results: ResultEntry[];
@@ -159,9 +160,11 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
                     Originaltext
                   </p>
                   <div className="max-h-32 overflow-y-auto rounded bg-gray-50 border border-gray-100 px-3 py-2">
-                    <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap font-mono">
-                      {originalText || "Kein Originaltext verfügbar"}
-                    </p>
+                    <MathText
+                      text={originalText}
+                      emptyFallback="Kein Originaltext verfügbar"
+                      className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap"
+                    />
                   </div>
                 </div>
 
@@ -263,9 +266,10 @@ export function SegmentComparison({ results }: SegmentComparisonProps) {
 
                                 {/* Variant text */}
                                 <div className="max-h-28 overflow-y-auto rounded bg-white border border-gray-100 px-2.5 py-1.5">
-                                  <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap font-mono">
-                                    {variant.text || "—"}
-                                  </p>
+                                  <MathText
+                                    text={variant.text}
+                                    className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap"
+                                  />
                                 </div>
 
                                 {/* Validation issues */}

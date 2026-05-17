@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { PipelineResult } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronRight, CheckCircle, XCircle } from "lucide-react";
+import { MathText } from "./math-text";
 
 const DOMAIN_STYLES: Record<string, string> = {
   math: "bg-blue-100 text-blue-700",
@@ -75,9 +76,11 @@ export function SegmentsTable({ result }: SegmentsTableProps) {
                     Original
                   </p>
                   <div className="max-h-40 overflow-y-auto rounded border border-gray-100 bg-white px-3 py-2">
-                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                      {seg.original_segment?.text ?? "–"}
-                    </p>
+                    <MathText
+                      text={seg.original_segment?.text ?? ""}
+                      emptyFallback="–"
+                      className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap"
+                    />
                   </div>
                 </div>
 
@@ -107,9 +110,10 @@ export function SegmentsTable({ result }: SegmentsTableProps) {
                       )}
                     </div>
                     <div className="max-h-48 overflow-y-auto rounded bg-gray-50 px-3 py-2">
-                      <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                        {variant.text}
-                      </p>
+                      <MathText
+                        text={variant.text}
+                        className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap"
+                      />
                     </div>
                     {variant.validation_issues?.length > 0 && (
                       <ul className="text-xs text-red-600 space-y-0.5">
