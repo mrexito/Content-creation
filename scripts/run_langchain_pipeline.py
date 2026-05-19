@@ -121,9 +121,13 @@ def main():
     # Singleton-Handler mit CLI-Einstellungen initialisieren
     from common.ocr_handler import reset_ocr_handler, get_ocr_handler
     from common.llm_handler import reset_llm_handler, get_llm_handler
+<<<<<<< Updated upstream
     # Config-Override greift in LCEL-Chains (lesen Config.LLM_PROVIDER direkt).
     # Muss vor get_pipeline() laufen, da Chains beim Konstruieren das LLM bauen.
     Config.apply_llm_cli_overrides(args.llm_provider, args.llm_model)
+=======
+    from common.config import Config
+>>>>>>> Stashed changes
     reset_ocr_handler()
     get_ocr_handler(default_tool=args.ocr_tool)
     reset_llm_handler()
@@ -131,6 +135,9 @@ def main():
         provider=args.llm_provider,
         model=args.llm_model if args.llm_model else None,
     )
+    # LCEL-Chains lesen Config.LLM_PROVIDER direkt — CLI-Wert hier setzen
+    if args.llm_provider and args.llm_provider != "auto":
+        Config.LLM_PROVIDER = args.llm_provider
 
     # Load shared OCR result if provided
     pre_parsed_text = None

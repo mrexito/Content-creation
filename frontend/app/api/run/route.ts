@@ -7,6 +7,9 @@ import path from "path"
 
 const PROJECT_ROOT = path.resolve(process.cwd(), "..")
 
+const VENV_PYTHON = path.join(PROJECT_ROOT, "venv", "Scripts", "python.exe")
+const PYTHON = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : "python"
+
 const OCR_TIMEOUT_MS = 180_000 // 3 minutes
 
 /** Run OCR once and write result to outputPath. Returns true on success. */
@@ -18,7 +21,7 @@ async function runOCR(opts: {
 }): Promise<boolean> {
   const scriptPath = path.join(PROJECT_ROOT, "scripts", "run_ocr.py")
   const ocrPromise = new Promise<boolean>((resolve) => {
-    const proc = spawn("python", [
+    const proc = spawn(PYTHON, [
       scriptPath,
       "--pdf", opts.pdfPath,
       "--domain", opts.domain,
@@ -30,6 +33,7 @@ async function runOCR(opts: {
         ...process.env,
         PYTHONPATH: path.join(PROJECT_ROOT, "src"),
         PYTHONUNBUFFERED: "1",
+        PYTHONUTF8: "1",
       },
     })
     proc.on("close", (code) => resolve(code === 0))

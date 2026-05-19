@@ -6,6 +6,9 @@ const PROJECT_ROOT = path.resolve(process.cwd(), "..")
 const SCRIPTS_DIR = path.join(PROJECT_ROOT, "scripts")
 const DATA_OUTPUT_DIR = path.join(PROJECT_ROOT, "data", "output")
 
+const VENV_PYTHON = path.join(PROJECT_ROOT, "venv", "Scripts", "python.exe")
+const PYTHON = fs.existsSync(VENV_PYTHON) ? VENV_PYTHON : "python"
+
 export interface RunOptions {
   pdfPath: string
   domain: string
@@ -60,12 +63,13 @@ export function runPipeline(opts: RunOptions): Promise<{ success: boolean; error
   ]
 
   return new Promise((resolve) => {
-    const proc = spawn("python", args, {
+    const proc = spawn(PYTHON, args, {
       cwd: PROJECT_ROOT,
       env: {
         ...process.env,
         PYTHONPATH: path.join(PROJECT_ROOT, "src"),
-        PYTHONUNBUFFERED: "1",  // flush Python stdout immediately
+        PYTHONUNBUFFERED: "1",
+        PYTHONUTF8: "1",
       },
     })
 
